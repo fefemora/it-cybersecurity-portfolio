@@ -3,38 +3,71 @@
 
 Welcome to my professional portfolio.
 
-I am an IT professional with experience in IT Support, Systems Administration, Networking, and Cybersecurity. My background includes supporting business operations, troubleshooting technical issues, managing IT infrastructure, and contributing to information security initiatives.
+I am an IT professional with a practical background in IT Support, troubleshooting, and systems administration. My experience includes assisting users, resolving technical incidents, supporting IT infrastructure, and contributing to information security operations.
 
-This portfolio documents practical projects, technical exercises, and home labs that demonstrate my skills, technical knowledge, and continuous learning.
+My professional development is focused on building on this foundation in three connected areas:
 
-## Areas of Focus
+1. **IT Support & Troubleshooting:** My core professional foundation, including L1/L2 support, incident resolution, user assistance, and systems administration.
+2. **Cybersecurity & Information Security:** Extending that operational experience through endpoint security, identity and access management, security monitoring, and security best practices.
+3. **Cloud Networking & Security:** My next development focus, expanding into cloud infrastructure, networking, connectivity, and cloud security.
 
-- **IT Support:** L1/L2 technical support, troubleshooting, incident management, and user assistance.
-- **Systems Administration:** Windows environments, user and access management, server administration, and hybrid infrastructure.
-- **Networking:** Network fundamentals, connectivity troubleshooting, infrastructure monitoring, and network services.
-- **Cybersecurity:** Endpoint security, identity and access management, security monitoring, and security best practices.
+This repository documents practical projects, technical labs, and learning exercises. Each project is intended to demonstrate how I approach technical problems, implement solutions, document results, and apply security considerations.
 
-## Featured Projects
+## Core Skills & Areas of Focus
 
-Projects will be added as they are completed and documented.
+### IT Support & Systems Administration
+
+- L1/L2 technical support and troubleshooting
+- Incident handling and technical documentation
+- Windows environments and user support
+- User onboarding, offboarding, and access management
+- Systems, servers, and IT infrastructure support
+
+### Cybersecurity & Information Security
+
+- Endpoint protection and security hardening
+- Identity and access management (IAM)
+- Security monitoring and SIEM fundamentals
+- EDR concepts and administration
+- Information security practices and awareness
+
+### Developing Knowledge: Cloud Networking & Security
+
+- Cloud infrastructure fundamentals
+- Cloud networking and connectivity
+- Network security concepts for cloud environments
+- Secure configuration and access controls
+
+## Projects
+
+Projects will be added as they are completed and documented. Planned topics include:
 
 | Area | Project | Status |
 |---|---|---|
 | IT Support | Windows Troubleshooting Lab | Planned |
-| Systems Administration | Active Directory & Identity Management | Planned |
+| Systems Administration | Active Directory & Identity Management Lab | Planned |
 | Networking | Network Troubleshooting Lab | Planned |
 | Cybersecurity | Wazuh SIEM Home Lab | Planned |
 | Cybersecurity | Windows Security Hardening | Planned |
+| Cloud | Cloud Networking & Security Lab | Future learning path |
 
-## Technical Approach
+## Documentation Approach
 
-My approach is based on practical learning, structured troubleshooting, clear documentation, and security awareness.
+Where applicable, each project will include:
 
-Each project aims to include its objectives, environment, implementation steps, evidence, troubleshooting notes, and key takeaways.
+- Overview and objectives
+- Lab environment and tools
+- Implementation steps
+- Evidence and results
+- Troubleshooting notes
+- Security considerations
+- Lessons learned
 
-## Professional Goals
+All demonstrations will use personal lab environments or appropriately sanitized examples. No confidential employer, customer, or internal infrastructure information will be published.
 
-I am continuously developing my skills across IT operations and cybersecurity, with a particular interest in remote IT support, systems administration, and security operations.
+## Professional Development
+
+I believe strong cybersecurity practices are built on a solid understanding of IT operations. My goal is to continue growing from hands-on IT support and troubleshooting into broader cybersecurity responsibilities, while developing deeper knowledge of cloud networking and security.
 
 ## Contact
 
