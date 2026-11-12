@@ -1,0 +1,44 @@
+
+INC-001 - STORAGE VALIDATION
+========================================
+
+Evidence type: Storage capacity assessment
+Source: Windows PowerShell
+Collection stage: Initial and post-remediation
+
+VOLUME INFORMATION
+----------------------------------------
+Drive: C:
+File System: NTFS
+Health Status: Healthy
+Total Capacity: 475.88 GiB
+
+INITIAL STATE
+----------------------------------------
+Available Storage: 18.60 GiB
+Free Space: 3.91%
+
+POST-REMEDIATION STATE
+----------------------------------------
+Available Storage: 63.06 GiB
+Free Space: 13.25%
+
+RESULT
+----------------------------------------
+Approximate Storage Recovered: 44.46 GiB
+
+COMMAND USED
+----------------------------------------
+Get-Volume -DriveLetter C |
+Select-Object DriveLetter, FileSystem, HealthStatus,
+@{Name='TotalGiB';Expression={[math]::Round($_.Size/1GB,2)}},
+@{Name='FreeGiB';Expression={[math]::Round($_.SizeRemaining/1GB,2)}},
+@{Name='FreePercent';Expression={[math]::Round(($_.SizeRemaining/$_.Size)*100,2)}} |
+Format-List
+
+VALIDATION
+----------------------------------------
+The system volume remained Healthy after cleanup.
+Available storage increased significantly.
+
+The storage improvement was verified using PowerShell.
