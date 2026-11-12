@@ -40,8 +40,10 @@ This repository documents practical projects, technical labs, and learning exerc
 
 ## Projects
 
-Projects will be added as they are completed and documented. Planned topics include:
+| IT Support | [Windows Troubleshooting Lab — INC-001](IT-Support/Windows-Troubleshooting-Lab/) | Completed |
 
+
+Conserva las demás filas y los encabezados de la tabla.
 | Area | Project | Status |
 |---|---|---|
 | IT Support | Windows Troubleshooting Lab | Planned |
