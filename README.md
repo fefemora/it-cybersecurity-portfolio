@@ -42,8 +42,6 @@ This repository documents practical projects, technical labs, and learning exerc
 
 | IT Support | [Windows Troubleshooting Lab — INC-001](IT-Support/Windows-Troubleshooting-Lab/) | Completed |
 
-
-Conserva las demás filas y los encabezados de la tabla.
 | Area | Project | Status |
 |---|---|---|
 | Systems Administration | Active Directory & Identity Management Lab | Planned |
