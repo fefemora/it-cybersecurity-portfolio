@@ -203,7 +203,7 @@ Final storage results:
 | Free space | 3.9% | 13.3% |
 | Volume health | Healthy | Healthy |
 
-Approximately **44.6 GiB** of storage was recovered.
+Approximately **44.5 GiB** of storage was recovered.
 
 ## 8. Results and Validation
 
@@ -220,7 +220,23 @@ The issue was considered functionally resolved based on successful update attemp
 
 The exact root cause was not conclusively isolated. Both the release of application resources during restart and the increased available storage may have contributed to the successful outcome.
 
-## 9. Security Considerations
+## 9. Technical Evidence
+
+The following files contain sanitized technical evidence collected during the troubleshooting process.
+
+| Evidence | Description |
+|---|---|
+| [System Information](evidence/system-information.txt) | Initial and post-remediation Windows version and build information. |
+| [Storage Validation](evidence/storage-validation.txt) | Storage capacity, available space, and volume health verification. |
+| [Update Error Events](evidence/update-errors.txt) | Historical Windows Update error events associated with error 0x80073D02. |
+| [Validation Notes](evidence/validation-notes.md) | Functional validation, findings, root cause assessment, and limitations. |
+
+All evidence has been reviewed to avoid exposing personal information or sensitive system identifiers.
+
+The evidence includes historical diagnostic findings and post-remediation observations. It does not establish a single confirmed root cause.
+
+
+## 10. Security Considerations
 
 The troubleshooting process followed several security and operational principles:
 
@@ -231,7 +247,7 @@ The troubleshooting process followed several security and operational principles
 - Prioritized low-risk and reversible troubleshooting actions.
 - Avoided exposing sensitive system or user information.
 
-## 10. Lessons Learned
+## 11. Lessons Learned
 
 This lab reinforced several important troubleshooting practices:
 
@@ -243,7 +259,7 @@ This lab reinforced several important troubleshooting practices:
 6. Verify the outcome and distinguish confirmed findings from technical hypotheses.
 7. Document both successful actions and diagnostic limitations.
 
-## 11. Skills Demonstrated
+## 12. Skills Demonstrated
 
 - Windows 11 troubleshooting
 - PowerShell diagnostics
