@@ -46,7 +46,6 @@ This repository documents practical projects, technical labs, and learning exerc
 Conserva las demás filas y los encabezados de la tabla.
 | Area | Project | Status |
 |---|---|---|
-| IT Support | Windows Troubleshooting Lab | Planned |
 | Systems Administration | Active Directory & Identity Management Lab | Planned |
 | Networking | Network Troubleshooting Lab | Planned |
 | Cybersecurity | Wazuh SIEM Home Lab | Planned |
