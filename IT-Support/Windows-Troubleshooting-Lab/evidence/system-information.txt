@@ -1,0 +1,38 @@
+
+INC-001 - SYSTEM INFORMATION
+========================================
+
+Evidence type: Windows version verification
+Source: Windows PowerShell / Windows Registry
+Collection stage: Post-remediation
+
+INITIAL SYSTEM STATE
+----------------------------------------
+Operating System: Windows 11
+Display Version: 25H2
+OS Build: 26200.9711
+Architecture: 64-bit
+
+POST-REMEDIATION SYSTEM STATE
+----------------------------------------
+Display Version: 26H2
+Current Build: 26300
+Update Build Revision: 9974
+Full Build: 26300.9974
+
+COMMAND USED
+----------------------------------------
+Get-ItemProperty 'HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion' |
+Select-Object DisplayVersion, CurrentBuild, UBR |
+Format-List
+
+OBSERVATIONS
+----------------------------------------
+The Windows version and build changed between the
+initial assessment and post-remediation verification.
+
+This confirms a system version change but does not,
+by itself, establish which installation mechanism
+completed the upgrade.
+
+No device identifiers or personal information included.
