@@ -16,9 +16,11 @@ The goal is to demonstrate a structured approach to identifying technical issues
 
 ## Projects
 
+
 | Project | Description | Status |
 |---|---|---|
-| Windows Troubleshooting Lab | Practical scenarios involving common Windows issues and their resolution. | Planned |
+| [Windows Troubleshooting Lab](Windows-Troubleshooting-Lab/) | Real Windows 11 update incident (INC-001), including PowerShell diagnostics, event log analysis, remediation, validation, and technical evidence. | Completed |
+
 
 ## Methodology
 
