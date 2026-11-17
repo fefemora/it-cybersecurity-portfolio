@@ -10,6 +10,21 @@
 
 ---
 
+## Incident Workflow Visualization
+
+```mermaid
+flowchart LR
+    A[Update failures reported] --> B[Review Windows Update events]
+    B --> C[Error 0x80073D02 identified]
+    C --> D[Check storage and services]
+    D --> E[Free disk space and restart]
+    E --> F[Retry updates]
+    F --> G[Updates successful]
+    G --> H[Functional resolution verified]
+```
+
+**Verified case:** Available disk space increased from 18.6 GiB to 63.1 GiB (approximately 44.5 GiB recovered). The exact root cause was not conclusively established.
+
 ## 1. Overview
 
 This project documents a real troubleshooting scenario involving recurring Windows and application update failures.
