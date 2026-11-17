@@ -21,9 +21,19 @@ Get-WinEvent -ListLog Security | Select-Object LogName, IsEnabled, RecordCount, 
 
 **Purpose:** Determine whether the Security log is enabled, how many records it currently holds, its maximum size, and its retention mode.
 
-**Observed result:** **Not yet obtained.** The first attempted paste placed `Select-Object` before `Get-WinEvent`, leaving a trailing pipeline operator and causing `ParserError: EmptyPipeElement`. This was a command-entry error, **not** a Security log failure.
+**Observed result (verified after retry):**
 
-**Next action:** Rerun the single-line version and record the sanitized output.
+```text
+LogName            : Security
+IsEnabled          : True
+RecordCount        : 33898
+MaximumSizeInBytes : 20971520
+LogMode            : Circular
+```
+
+**Interpretation:** The Security log is enabled, with 33,898 stored records and a configured maximum of **20 MiB** (20,971,520 bytes). `Circular` means older records may be overwritten as the log fills. The actual oldest retained event and duration of retention have not yet been checked.
+
+**Troubleshooting note:** The first attempted paste placed `Select-Object` before `Get-WinEvent`, leaving a trailing pipeline operator and causing `ParserError: EmptyPipeElement`. This was a command-entry error, **not** a Security log failure. The corrected command ran successfully.
 
 ## Step 2 — Count selected Security events in the last seven days
 
