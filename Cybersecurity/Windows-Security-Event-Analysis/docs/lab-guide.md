@@ -131,9 +131,37 @@ Name Count
 
 **Sampling limitation:** This is a cap of 100 **most recent** records, not a random sample and not a full analysis of the 638 records from the earlier seven-day query. The circular log may also continue changing between commands; the 100-record result must not be extrapolated to all logons.
 
-## Step 5 — Investigate event details (planned)
+## Step 5 — Classify the account category in a five-event sample
 
-Before proceeding, confirm Step 1 and select a bounded, privacy-safe inspection query. Record only the fields needed for the investigation and redact identifying information before publication.
+An initial account-grouping query over 100 records did not return promptly. To minimize workstation processing, the analysis was reduced to **five** recent event 4624 records.
+
+**Successful command (one-line version actually executed):**
+
+```powershell
+Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4624} -MaxEvents 5 | ForEach-Object { $e = [xml]$_.ToXml(); $d = @{}; foreach ($x in $e.Event.EventData.Data) { $d[$x.Name] = $x.'#text' }; [PSCustomObject]@{ LogonType=$d['LogonType']; AccountCategory=$(switch ($d['TargetUserSid']) { 'S-1-5-18' {'SYSTEM'; break} 'S-1-5-19' {'LOCAL SERVICE'; break} 'S-1-5-20' {'NETWORK SERVICE'; break} default {'Other'} }) } }
+```
+
+**Purpose:** Extract the logon type and classify the target security identifier into well-known built-in Windows account categories without displaying usernames, network addresses or complete event details.
+
+**Observed output (real PowerShell console result):**
+
+```text
+LogonType AccountCategory
+--------- ---------------
+5         SYSTEM
+5         SYSTEM
+5         SYSTEM
+5         SYSTEM
+5         SYSTEM
+```
+
+**Interpretation:** All five sampled records were service logons (type 5) associated with the well-known **LocalSystem SID (S-1-5-18)**. This is consistent with legitimate Windows service activity and is **not** by itself evidence of compromise.
+
+**Sampling and performance limitations:** This is a small, most-recent-events sample; it does not prove that the other 95 records in the earlier sample—or the previously counted 638 records—belonged to LocalSystem. The successful five-record command does not establish precisely why the prior 100-record query was slow.
+
+## Step 6 — Further security-context investigation (planned)
+
+Review audit policy and, if necessary, inspect a few bounded 4672 records without publishing personally identifying account information.
 
 ## Documentation rules
 
@@ -147,4 +175,5 @@ Before proceeding, confirm Step 1 and select a bounded, privacy-safe inspection 
 - [Microsoft Learn — Event 4624](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624)
 - [Microsoft Learn — Event 4634](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4634)
 - [Microsoft Learn — Event 4672](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672)
+- [Microsoft Learn — Well-known security identifiers](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
 - [Microsoft Learn — Event 4688](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688)
