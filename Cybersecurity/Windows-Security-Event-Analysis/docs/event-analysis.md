@@ -41,19 +41,31 @@ The earlier seven-day query should **not** be described as seven days of observe
 
 **Total returned records: 1,302.** Counts represent records matching the query, not distinct sessions, accounts, processes, or security incidents.
 
+## Verified logon-type sample
+
+A later bounded command retrieved the **100 most recent event 4624 records** and extracted the `LogonType` XML field. The output contained one group:
+
+| Logon type | Interpretation | Count in sampled records |
+|---|---|---:|
+| 5 | Service logon | 100 |
+
+**Interpretation:** Service logons can be normal operating-system activity; no malicious behavior was established from this sample. The initial unbounded XML-processing query did not return promptly and was replaced by a limited query. This was an efficiency/troubleshooting change, not an evidence of a failed audit log.
+
+**Limitation:** These are the latest 100 records at the time of sampling, not all 638 events from the earlier count and not a representative random sample.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
 - The absence of 4625 or 1102 from the result set does **not** prove those events never occurred.
 - The query suppresses non-terminating errors with `-ErrorAction SilentlyContinue`; a later validation should consider error visibility and audit policy.
 - The Security log configuration was verified after correcting the first command's paste-order error. Circular retention limits what can be inferred about historical coverage.
-- No event details, screenshots, or exported logs have been reviewed yet. No attribution, root cause, or incident severity is established.
+- Only the `LogonType` field has been inspected in a bounded sample; detailed account/context fields, screenshots, and exported logs have not yet been reviewed. No attribution, root cause, or incident severity is established.
 
 ## Next investigation steps
 
 1. Inspect the audit policy relevant to logon and process creation if needed.
-2. Summarize the distribution of logon types among event 4624 records without exposing account names or network identifiers.
-3. Select a small number of representative 4624 and 4672 records for privacy-safe field-level review.
+2. Expand the investigation beyond the latest service-logon-heavy sample only if needed, with bounded read-only queries.
+3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
