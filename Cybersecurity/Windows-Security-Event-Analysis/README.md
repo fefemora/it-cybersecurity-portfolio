@@ -1,7 +1,7 @@
 # Windows Security Event Analysis Lab
 
 **Area:** Cybersecurity / Blue Team  
-**Status:** In progress — real event counts, log configuration and retained date range verified; investigation not yet completed  
+**Status:** In progress — real event counts, log configuration, retained date range and sampled logon types verified; investigation not yet completed  
 **Environment:** Windows workstation, local Security event log, Windows PowerShell. No SIEM or additional virtual machines required.
 
 [Portfolio home](../../README.md) · [Lab guide](docs/lab-guide.md) · [Event analysis](docs/event-analysis.md)
@@ -15,13 +15,14 @@ Investigate native Windows Security events with read-only PowerShell commands, i
 1. Verify Security log configuration (**completed after correcting an initial paste-order error**).
 2. Count selected event IDs over a seven-day lookback (**completed; retained data covers only about 2.03 days**).
 3. Verify oldest/newest retained timestamps (**completed**).
-4. Inspect selected events' fields with sensitive values redacted (**pending**).
-5. Evaluate explanations, limitations, and security significance (**pending**).
-6. Publish a concise, evidence-backed case report (**pending**).
+4. Sample and classify 100 recent successful logons by logon type (**completed: all 100 were type 5 / Service**).
+5. Inspect selected event fields with sensitive values redacted (**pending**).
+6. Evaluate explanations, limitations, and security significance (**pending**).
+7. Publish a concise, evidence-backed case report (**pending**).
 
 ## Initial findings
 
-The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. No malicious activity has been established.
+The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. A separate, later sample of the 100 most recent 4624 events returned **100 service logons (Logon Type 5)**. This is a recent sample, **not** the distribution of all 638 earlier records. No malicious activity has been established.
 
 Read the [step-by-step guide](docs/lab-guide.md) and [initial event analysis](docs/event-analysis.md) for commands, observed output, caveats, and next steps.
 
