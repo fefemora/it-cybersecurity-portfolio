@@ -108,6 +108,13 @@ Specific framework subcategories and safeguards will be cross-referenced in the 
 **Criticality approval:** Not performed.  
 **Next step:** Develop a risk register with explicit threat scenarios, likelihood, impact, and treatment assumptions.
 
+## References & Official Documentation
+
+- [NIST Cybersecurity Framework 2.0 — Identify and asset management](https://www.nist.gov/cyberframework)
+- [CIS Controls v8.1 Navigator — enterprise asset and software inventories](https://www.cisecurity.org/controls/cis-controls-navigator)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
+
 ---
 
 *Portfolio case study. All numbers and asset records are fictional assumptions created for educational risk assessment.*
