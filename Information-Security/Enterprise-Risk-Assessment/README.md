@@ -136,6 +136,12 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 
 *Proposed sequencing only. No controls have been implemented or verified.*
 
+## Risk Distribution
+
+[![Distribution of eight fictional risks](reports/risk-distribution.svg)](risk-register/risk-register.md)
+
+*25% Critical, 50% High and 25% Moderate among the eight illustrative scenarios.*
+
 ## Executive Dashboard
 
 [![Executive risk dashboard](reports/executive-dashboard.svg)](reports/executive-summary.md)
