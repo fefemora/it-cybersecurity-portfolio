@@ -291,6 +291,15 @@ This lab reinforced several important troubleshooting practices:
 - Technical documentation
 - Incident resolution and validation
 
+## References & Official Documentation
+
+- [Windows Update troubleshooting (Microsoft Support)](https://support.microsoft.com/en-us/windows/windows-update-troubleshooter-19bc41ca-ad72-ae67-af3c-89ce169755dd)
+- [Get-WinEvent — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent)
+- [Get-Volume — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/storage/get-volume)
+- [Get-Service — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-service)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
+
 ---
 
 **Project Status:** Completed  
