@@ -1,5 +1,7 @@
 # Asset Inventory — Emerald Technologies
 
+![Emerald Technologies asset inventory overview](asset-overview.svg)
+
 **Project:** Enterprise Information Security Risk Assessment  
 **Organization:** Emerald Technologies (fictional)  
 **Framework context:** NIST CSF 2.0 / CIS Controls v8.1 IG1  
