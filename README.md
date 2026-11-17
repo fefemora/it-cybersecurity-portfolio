@@ -1,73 +1,84 @@
-
 # IT Support & Cybersecurity Portfolio
 
-Welcome to my professional portfolio.
+**IT Support L1/L2 · Systems Administration · Information Security · Cybersecurity**
 
-I am an IT professional with a practical background in IT Support, troubleshooting, and systems administration. My experience includes assisting users, resolving technical incidents, supporting IT infrastructure, and contributing to information security operations.
+Welcome! I am an IT professional with experience in troubleshooting, user support, and systems administration. I use this portfolio to demonstrate how I investigate problems, document technical decisions, and approach cybersecurity risk.
 
-My professional development is focused on building on this foundation in three connected areas:
+My work connects three areas: **hands-on IT support**, **security-aware operations**, and **information security risk management**. Cloud networking and cloud security remain part of my ongoing development path.
 
-1. **IT Support & Troubleshooting:** My core professional foundation, including L1/L2 support, incident resolution, user assistance, and systems administration.
-2. **Cybersecurity & Information Security:** Extending that operational experience through endpoint security, identity and access management, security monitoring, and security best practices.
-3. **Cloud Networking & Security:** My next development focus, expanding into cloud infrastructure, networking, connectivity, and cloud security.
+> **Evidence transparency:** Projects are labeled as **Real case**, **Simulated case study**, or **Planned**. Fictional scenarios do not represent real customer incidents, implemented security controls, or audited organizations.
 
-This repository documents practical projects, technical labs, and learning exercises. Each project is intended to demonstrate how I approach technical problems, implement solutions, document results, and apply security considerations.
+## Featured Projects
 
-## Core Skills & Areas of Focus
+| Project | What it demonstrates | Evidence type | Status |
+|---|---|---|---|
+| **[INC-001 — Windows Update and Application Troubleshooting](IT-Support/Windows-Troubleshooting-Lab/README.md)** | PowerShell diagnostics, Event Viewer, storage analysis, functional validation | **Real troubleshooting case**, sanitized evidence | **Completed** |
+| **[Service Desk Incident Management — L2 Case Studies](IT-Support/Service-Desk-Incident-Management/README.md)** | Microsoft 365 authentication, DNS, VPN troubleshooting and escalation | **Three simulated incidents** | **Documented** |
+| **[Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, NIST CSF 2.0 / CIS IG1 mapping, treatment planning, executive reporting | **Fictional enterprise assessment** | **Documentation completed** |
 
-### IT Support & Systems Administration
+## Project Highlights
 
-- L1/L2 technical support and troubleshooting
-- Incident handling and technical documentation
-- Windows environments and user support
-- User onboarding, offboarding, and access management
-- Systems, servers, and IT infrastructure support
+### 01 — Real Windows Troubleshooting: INC-001
 
-### Cybersecurity & Information Security
+[![Windows disk recovery graphic](IT-Support/Windows-Troubleshooting-Lab/storage-recovery.svg)](IT-Support/Windows-Troubleshooting-Lab/README.md)
 
-- Endpoint protection and security hardening
-- Identity and access management (IAM)
-- Security monitoring and SIEM fundamentals
-- EDR concepts and administration
-- Information security practices and awareness
+A Windows 11 update investigation documented error `0x80073D02`, an increase in available disk space from **18.6 GiB to 63.1 GiB**, and successful update validation after cleanup and restart. The **exact root cause remains unconfirmed**.
 
-### Developing Knowledge: Cloud Networking & Security
+**[Explore the real troubleshooting case →](IT-Support/Windows-Troubleshooting-Lab/README.md)**
 
-- Cloud infrastructure fundamentals
-- Cloud networking and connectivity
-- Network security concepts for cloud environments
-- Secure configuration and access controls
+### 02 — L2 Service Desk: Simulated Incident Cases
 
-## Projects
+[![L2 service desk scenarios](IT-Support/Service-Desk-Incident-Management/incident-overview.svg)](IT-Support/Service-Desk-Incident-Management/README.md)
 
-| IT Support | [Windows Troubleshooting Lab — INC-001](IT-Support/Windows-Troubleshooting-Lab/) | Completed |
+Three fictional incident reports demonstrate structured diagnostics, security-conscious escalation, and clear separation of proposed actions from verified outcomes.
 
-| Area | Project | Status |
-|---|---|---|
-| Systems Administration | Active Directory & Identity Management Lab | Planned |
-| Networking | Network Troubleshooting Lab | Planned |
-| Cybersecurity | Wazuh SIEM Home Lab | Planned |
-| Cybersecurity | Windows Security Hardening | Planned |
-| Cloud | Cloud Networking & Security Lab | Future learning path |
+**[Explore the service desk case studies →](IT-Support/Service-Desk-Incident-Management/README.md)**
 
-## Documentation Approach
+### 03 — Enterprise Information Security Risk Assessment
 
-Where applicable, each project will include:
+[![Executive information security dashboard](Information-Security/Enterprise-Risk-Assessment/reports/executive-dashboard.svg)](Information-Security/Enterprise-Risk-Assessment/README.md)
 
-- Overview and objectives
-- Lab environment and tools
-- Implementation steps
-- Evidence and results
-- Troubleshooting notes
-- Security considerations
-- Lessons learned
+A fictional 50-person enterprise assessment identifies **eight illustrative risk scenarios** (two Critical, four High, two Moderate), maps candidate safeguards to NIST CSF 2.0 and CIS Controls v8.1 IG1, and proposes a **90-day treatment roadmap**. **No real environment was assessed and no controls were verified.**
 
-All demonstrations will use personal lab environments or appropriately sanitized examples. No confidential employer, customer, or internal infrastructure information will be published.
+**[Explore the complete risk assessment →](Information-Security/Enterprise-Risk-Assessment/README.md)**
 
-## Professional Development
+## Technical Skills Demonstrated
 
-I believe strong cybersecurity practices are built on a solid understanding of IT operations. My goal is to continue growing from hands-on IT support and troubleshooting into broader cybersecurity responsibilities, while developing deeper knowledge of cloud networking and security.
+| Area | Portfolio evidence |
+|---|---|
+| **Windows & PowerShell** | Real diagnostic commands, event analysis, storage verification |
+| **IT Support L2 / ITIL-aligned practices** | Incident documentation, prioritization, investigation and escalation |
+| **Microsoft 365 & Identity** | Simulated Entra ID / MFA troubleshooting |
+| **Networking** | Simulated DNS and VPN troubleshooting workflows |
+| **Information Security / GRC** | Asset criticality, inherent risk scoring, control mapping and risk treatment |
+| **Executive Communication** | Decision-oriented summaries, diagrams, risk visualization and evidence limitations |
+
+## Next Projects — Planned
+
+These are future work, **not completed deliverables**.
+
+| Area | Planned project |
+|---|---|
+| Systems Administration | Active Directory & Identity Management Lab |
+| Networking | Network Troubleshooting Lab |
+| Cybersecurity | Wazuh SIEM Home Lab |
+| Cybersecurity | Windows Security Hardening |
+| Cloud | Cloud Networking & Security Lab |
+
+## Documentation Standards
+
+Each project aims to provide a clear problem statement, scope, methods, relevant commands or decisions, evidence, validation, security considerations, and lessons learned. **Simulations are explicitly identified**, and examples are never presented as real operational measurements.
+
+Sensitive employer, customer, and infrastructure details are excluded from this public repository.
+
+## Professional Direction
+
+My focus is to combine practical IT Support and troubleshooting with stronger cybersecurity and information security skills, while developing cloud networking and security capabilities.
 
 ## Contact
 
-- **GitHub:** https://github.com/fefemora
+- **GitHub:** [github.com/fefemora](https://github.com/fefemora)
+
+---
+
+*English-language professional portfolio. Real and simulated work are distinguished throughout.*
