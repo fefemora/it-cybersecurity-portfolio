@@ -1,5 +1,7 @@
 # Enterprise Information Security Risk Assessment
 
+![Emerald Technologies asset inventory overview](assets/asset-overview.svg)
+
 **Framework references:** NIST Cybersecurity Framework (CSF) 2.0 · CIS Controls v8.1, Implementation Group 1 (IG1)  
 **Organization:** Emerald Technologies (fictional)  
 **Project type:** Portfolio case study — simulated assessment  
