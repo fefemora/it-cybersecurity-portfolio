@@ -7,6 +7,28 @@
 **Environment:** Windows 11 Enterprise / Corporate Network  
 **Status:** Simulated — Investigation and Resolution Plan
 
+## DNS Troubleshooting Workflow
+
+```mermaid
+flowchart TD
+    A[Hostname access failure reported] --> B[Review ipconfig /all]
+    B --> C{Valid IP and approved DNS settings?}
+    C -->|No| D[Investigate adapter, DHCP or VPN]
+    C -->|Yes| E[Query approved DNS resolver]
+    E --> F{Expected DNS response?}
+    F -->|Yes| G[Investigate application, proxy or cache]
+    F -->|No| H[Compare internal and external names]
+    H --> I{Internal names only?}
+    I -->|Yes| J[Investigate internal zones and VPN DNS]
+    I -->|No| K[Investigate resolver, forwarding or filtering]
+    D --> L[Document findings and resolve or escalate]
+    G --> L
+    J --> L
+    K --> L
+```
+
+> **Simulation:** These are decision points, not recorded test results. Use only authorized DNS resolvers and preserve corporate security controls.
+
 ## 1. Incident Description
 
 A fictional employee reports being unable to access corporate web applications and selected external websites using their domain names.
