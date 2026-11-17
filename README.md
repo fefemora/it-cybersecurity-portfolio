@@ -8,6 +8,12 @@ My work connects three areas: **hands-on IT support**, **security-aware operatio
 
 > **Evidence transparency:** Projects are labeled as **Real case**, **Simulated case study**, or **Planned**. Fictional scenarios do not represent real customer incidents, implemented security controls, or audited organizations.
 
+## Explore the Portfolio
+
+**[IT Support & Troubleshooting — Browse all four INC cases](IT-Support/README.md)** · [Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)
+
+[![Visual map of IT Support projects and incident IDs](IT-Support/it-support-navigation.svg)](IT-Support/README.md)
+
 ## Featured Projects
 
 | Project | What it demonstrates | Evidence type | Status |
