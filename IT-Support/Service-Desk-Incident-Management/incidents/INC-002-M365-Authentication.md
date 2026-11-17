@@ -122,3 +122,11 @@ Escalate to the Identity or Security team when:
 ## Portfolio Disclaimer
 
 This incident is a fictional enterprise support scenario. No real Microsoft 365 tenant was accessed, no user account was modified, and no production remediation was performed.
+
+## References & Official Documentation
+
+- [Manage authentication methods in Microsoft Entra](https://learn.microsoft.com/en-us/entra/identity/authentication/concept-authentication-methods-manage)
+- [Microsoft Entra sign-in logs](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins)
+- [Microsoft Entra Conditional Access overview](https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
