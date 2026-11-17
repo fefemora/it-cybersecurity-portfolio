@@ -1,7 +1,7 @@
 # Windows Security Event Analysis Lab
 
 **Area:** Cybersecurity / Blue Team  
-**Status:** In progress — initial real event-count evidence collected; investigation not yet completed  
+**Status:** In progress — real event counts and Security log configuration verified; investigation not yet completed  
 **Environment:** Windows workstation, local Security event log, Windows PowerShell. No SIEM or additional virtual machines required.
 
 [Portfolio home](../../README.md) · [Lab guide](docs/lab-guide.md) · [Event analysis](docs/event-analysis.md)
@@ -12,7 +12,7 @@ Investigate native Windows Security events with read-only PowerShell commands, i
 
 ## Investigation workflow
 
-1. Verify Security log configuration and retention (**pending: initial command encountered a PowerShell parsing error**).
+1. Verify Security log configuration and retention (**completed after correcting an initial paste-order error**).
 2. Count selected event IDs over a seven-day lookback (**completed**).
 3. Inspect selected events' fields with sensitive values redacted (**pending**).
 4. Evaluate explanations, limitations, and security significance (**pending**).
@@ -26,7 +26,7 @@ Read the [step-by-step guide](docs/lab-guide.md) and [initial event analysis](do
 
 ## Evidence status
 
-Initial counts were provided as copied PowerShell console output; independent log export and exact collection timestamp have not yet been recorded. Do not interpret absent IDs as proof that the underlying activity never occurred. The log-configuration check remains unverified.
+Initial counts were provided as copied PowerShell console output; independent log export and exact collection timestamp have not yet been recorded. Do not interpret absent IDs as proof that the underlying activity never occurred. The log-configuration query was subsequently completed: enabled, 33,898 records, 20 MiB maximum size, circular retention. The exact collection timestamp and oldest retained event remain unknown.
 
 ## References & Official Documentation
 
