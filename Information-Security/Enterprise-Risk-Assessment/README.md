@@ -13,6 +13,47 @@ The goal is to demonstrate how an IT and cybersecurity professional can identify
 
 > **Evidence disclaimer:** All organizational details, asset inventories, ratings, and findings are fictional. No production environment was assessed. This is an educational portfolio exercise, not a certification or compliance audit.
 
+## Visual Organization Overview
+
+> **Illustrative figures:** Emerald Technologies is fictional. The 50 employees and the five security domains below are assumptions for this portfolio case study, not observed operational metrics.
+
+| 👥 Employees | 🛡️ Security domains | 📋 Assessment approach | 📚 Frameworks |
+|:---:|:---:|:---:|:---:|
+| **50** | **5** | **5 × 5** risk matrix | **2** |
+| Assumed headcount | Identity · Endpoints · Email · Backup · VPN | Project-defined scoring | NIST CSF 2.0 · CIS v8.1 IG1 |
+
+### Illustrative Technology Landscape
+
+```mermaid
+flowchart TB
+    E["Emerald Technologies<br/>50 employees (fictional)"]
+    E --> I["Identity & Access<br/>Microsoft 365 / Entra ID"]
+    E --> W["Endpoints<br/>Windows workstations"]
+    E --> M["Email & Collaboration<br/>Microsoft 365"]
+    E --> B["Business Data<br/>Files & backups"]
+    E --> V["Remote Access<br/>Corporate VPN"]
+    I --> R["Risk assessment<br/>Identify · Score · Treat · Review"]
+    W --> R
+    M --> R
+    B --> R
+    V --> R
+    style E fill:#d1fae5,stroke:#059669,color:#064e3b
+    style R fill:#d1fae5,stroke:#059669,color:#064e3b
+```
+
+### Assessment Workflow
+
+```mermaid
+flowchart LR
+    A["Asset inventory"] --> B["Threat scenarios"]
+    B --> C["Likelihood × Impact"]
+    C --> D["NIST CSF / CIS IG1 mapping"]
+    D --> E["Treatment plan"]
+    E --> F["Executive reporting"]
+    style A fill:#d1fae5,stroke:#059669,color:#064e3b
+    style F fill:#d1fae5,stroke:#059669,color:#064e3b
+```
+
 ## Business Context and Scope
 
 ### Assumed environment
