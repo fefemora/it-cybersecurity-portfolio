@@ -1,5 +1,7 @@
 # INC-002 — Microsoft 365 Authentication Failure
 
+[← Service Desk Overview](../README.md) · [IT Support Hub](../../README.md) · [Portfolio Home](../../../README.md)
+
 **Incident Type:** User Authentication Issue  
 **Category:** Identity and Access Management  
 **Priority:** P3 — Medium (proposed; subject to organizational SLA)  
