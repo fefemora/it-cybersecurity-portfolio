@@ -239,3 +239,11 @@ Escalate to the Network or Infrastructure team when:
 ## Portfolio Disclaimer
 
 This is a fictional enterprise support scenario. No production DNS configuration was modified, and no diagnostic commands were executed as part of this case study.
+
+## References & Official Documentation
+
+- [Resolve-DnsName — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname)
+- [DnsClient PowerShell module](https://learn.microsoft.com/en-us/powershell/module/dnsclient)
+- [DNS overview — Microsoft Learn](https://learn.microsoft.com/en-us/windows-server/networking/dns/dns-overview)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
