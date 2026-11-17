@@ -1,5 +1,7 @@
 # INC-002 — Technical Troubleshooting Analysis
 
+[← INC-002 Case](INC-002-M365-Authentication.md) · [Service Desk Overview](../README.md) · [IT Support Hub](../../README.md)
+
 **Related Incident:** INC-002 — Microsoft 365 Authentication Failure  
 **Technology:** Microsoft Entra ID / Microsoft 365  
 **Support Level:** L2 Helpdesk  
