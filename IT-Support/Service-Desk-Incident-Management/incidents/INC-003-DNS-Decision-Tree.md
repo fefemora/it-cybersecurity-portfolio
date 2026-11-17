@@ -1,5 +1,7 @@
 # INC-003 — DNS Troubleshooting Decision Tree
 
+[← INC-003 Case](INC-003-DNS-Resolution.md) · [Service Desk Overview](../README.md) · [IT Support Hub](../../README.md)
+
 **Related incident:** [INC-003 — Corporate DNS Resolution Failure](INC-003-DNS-Resolution.md)  
 **Support level:** L2 Helpdesk  
 **Status:** Simulated — diagnostic reference; not executed
