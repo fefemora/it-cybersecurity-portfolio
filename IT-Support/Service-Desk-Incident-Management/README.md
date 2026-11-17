@@ -1,4 +1,8 @@
-# Service Desk Incident Management
+# Service Desk Incident Management — L2 Case Studies
+
+![Service desk incident overview](incident-overview.svg)
+
+**Scope:** Three fictional L2 incident scenarios; diagnostic plans only, not executed.
 
 > **Portfolio simulation:** All incidents and organizations described in this project are fictional. The scenarios demonstrate technical troubleshooting methodology and do not represent actual customer tickets.
 
