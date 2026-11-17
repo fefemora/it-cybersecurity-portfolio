@@ -124,13 +124,19 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 
 *Eight fictional scenarios: 2 Critical, 4 High, 2 Moderate. Scores are assumptions, not verified findings.*
 
+## Security Control Mapping Preview
+
+[![Security control mapping overview](controls/control-mapping-overview.svg)](controls/control-mapping.md)
+
+*Candidate safeguards only; no control implementation or effectiveness has been verified.*
+
 ## Planned Deliverables
 
 | Deliverable | Purpose | Status |
 |---|---|---|
 | [Asset Inventory](assets/asset-inventory.md) | Identify assets, business value, and ownership | **Completed — simulated** |
 | [Risk Register](risk-register/risk-register.md) | Document scenarios and inherent risk scores | **Completed — simulated** |
-| [Control Mapping](controls/control-mapping.md) | Map risk treatment to CSF 2.0 and CIS IG1 | Planned |
+| [Control Mapping](controls/control-mapping.md) | Map risk treatment to CSF 2.0 and CIS IG1 | **Completed — proposed** |
 | [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | Planned |
 | [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | Planned |
 
