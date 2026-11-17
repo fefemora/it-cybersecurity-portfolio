@@ -235,3 +235,12 @@ Include a sanitized symptom summary, scope, timestamps, client status, relevant 
 ## Portfolio Disclaimer
 
 This is a fictional enterprise support case study. Commands are examples and have not been executed for this scenario. No production network changes or user recovery actions were performed.
+
+## References & Official Documentation
+
+- [Get-NetRoute — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/nettcpip/get-netroute)
+- [Test-NetConnection — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/nettcpip/test-netconnection)
+- [Resolve-DnsName — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname)
+- [Remote Access overview — Microsoft Learn](https://learn.microsoft.com/en-us/windows-server/remote/remote-access/remote-access)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
