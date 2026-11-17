@@ -159,9 +159,40 @@ LogonType AccountCategory
 
 **Sampling and performance limitations:** This is a small, most-recent-events sample; it does not prove that the other 95 records in the earlier sample—or the previously counted 638 records—belonged to LocalSystem. The successful five-record command does not establish precisely why the prior 100-record query was slow.
 
-## Step 6 — Further security-context investigation (planned)
+## Step 6 — Inspect advanced audit policy (verified)
 
-Review audit policy and, if necessary, inspect a few bounded 4672 records without publishing personally identifying account information.
+```powershell
+auditpol /get /category:*
+```
+
+**Purpose:** Display the workstation's effective system audit policy without changing configuration.
+
+**Observed excerpts (translated from Spanish console labels, preserving reported settings):**
+
+| Audit subcategory | Observed setting |
+|---|---|
+| Logon | Success and Failure |
+| Logoff | Success |
+| Special Logon | Success |
+| Account Lockout | Success |
+| Process Creation | No Auditing |
+| Process Termination | No Auditing |
+| File System | No Auditing |
+| Registry | No Auditing |
+| Audit Policy Change | Success |
+| User Account Management | Success |
+| Security Group Management | Success |
+| System Integrity | Success and Failure |
+
+**Interpretation:** The current policy supports collecting successful and failed logon audit events and successful special-logon events. No returned 4625 records in an earlier query is not proof that failed-logon auditing is disabled or that failures never occurred.
+
+**Finding requiring follow-up:** The first event count included **13 records of event ID 4688**, but **Process Creation is currently set to No Auditing**. This could reflect earlier policy settings; no cause is confirmed. Review the timestamps of a small bounded sample before drawing conclusions.
+
+**Security visibility note:** Lack of Process Creation, Registry, and File System auditing constrains certain types of investigations. Enabling additional categories may increase log volume and expose sensitive data; configuration changes should be considered separately and are not part of this read-only lab phase.
+
+## Step 7 — Check timestamps of a small 4688 sample (planned)
+
+Use a bounded, read-only query without process names or command-line data; do not assume earlier 4688 records were produced under the current audit policy.
 
 ## Documentation rules
 
@@ -171,6 +202,8 @@ Review audit policy and, if necessary, inspect a few bounded 4672 records withou
 
 ## References & Official Documentation
 
+- [Microsoft Learn — auditpol /get](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/auditpol-get)
+- [Microsoft Learn — Audit Process Creation](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/audit-process-creation)
 - [Microsoft Learn — Get-WinEvent](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent)
 - [Microsoft Learn — Event 4624](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624)
 - [Microsoft Learn — Event 4634](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4634)
