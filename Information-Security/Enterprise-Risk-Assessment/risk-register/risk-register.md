@@ -82,6 +82,13 @@ pie showData
 
 Map each risk to relevant **NIST CSF 2.0** outcomes and **CIS Controls v8.1 IG1** safeguards, then produce an owner-assigned treatment plan with measurable validation criteria.
 
+## References & Official Documentation
+
+- [NIST SP 800-30 Rev. 1 — Guide for Conducting Risk Assessments](https://csrc.nist.gov/pubs/sp/800/30/r1/final)
+- [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
+
 ---
 
 *Fictional portfolio scenario. No real enterprise has been assessed.*
