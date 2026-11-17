@@ -114,3 +114,11 @@ However, no real Microsoft Entra sign-in logs were examined.
 **Validation Status:** Not performed
 
 The case demonstrates a structured L2 investigation and security-aware recovery process rather than a verified production resolution.
+
+## References & Official Documentation
+
+- [Microsoft Entra sign-in logs](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins)
+- [Microsoft Entra authentication methods](https://learn.microsoft.com/en-us/entra/identity/authentication/concept-authentication-methods-manage)
+- [Microsoft Entra sign-in error codes](https://learn.microsoft.com/en-us/entra/identity-platform/reference-error-codes)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
