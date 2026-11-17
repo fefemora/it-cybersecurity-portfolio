@@ -1,5 +1,7 @@
 # Service Desk Incident Management — L2 Case Studies
 
+[← IT Support Hub](../README.md) · [Portfolio Home](../../README.md)
+
 ![Service desk incident overview](incident-overview.svg)
 
 **Scope:** Three fictional L2 incident scenarios; diagnostic plans only, not executed.
