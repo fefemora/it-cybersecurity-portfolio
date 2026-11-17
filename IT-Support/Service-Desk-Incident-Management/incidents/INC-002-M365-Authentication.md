@@ -7,6 +7,23 @@
 **Environment:** Microsoft 365 / Microsoft Entra ID  
 **Status:** Simulated — Investigation and Resolution Plan
 
+## Authentication Recovery Workflow
+
+```mermaid
+flowchart TD
+    A[User reports Microsoft 365 sign-in failure] --> B[Verify user identity]
+    B --> C[Review Entra ID sign-in logs]
+    C --> D{Failure category?}
+    D -->|MFA method unavailable| E[Follow approved MFA recovery]
+    D -->|Conditional Access block| F[Review policy and escalate]
+    D -->|Suspicious activity| G[Escalate to Security]
+    E --> H[Register approved authentication method]
+    H --> I[Validate Outlook and Teams access]
+    I --> J[Document and close after confirmation]
+```
+
+> **Simulation:** This is a proposed diagnostic workflow. No Microsoft 365 tenant or sign-in logs were accessed. MFA and Conditional Access should not be disabled as troubleshooting shortcuts.
+
 ## 1. Incident Description
 
 A fictional employee reports being unable to access Microsoft 365 applications, including Outlook and Microsoft Teams, after replacing their mobile phone.
