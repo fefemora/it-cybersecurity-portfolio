@@ -76,7 +76,7 @@ gantt
 - **Owner:** Infrastructure Administrator
 - **Proposed actions:** Identify critical datasets; document recovery objectives with business owners; confirm backup coverage and protected copies; monitor backup jobs; execute a controlled restore test of representative data.
 - **NIST CSF 2.0:** PR.DS; RC.RP.
-- **CIS IG1 candidates:** 11.1, 11.2, 11.5.
+- **CIS IG1 candidates:** 11.1, 11.2, 11.3, 11.4.
 - **Required evidence:** Approved backup inventory and schedule, protected-copy configuration, recent job results, restore-test report, recovery time measurements.
 - **Acceptance criterion:** An authorized restore test succeeds for an approved representative dataset and demonstrates performance against business-approved recovery objectives.
 - **Status:** Proposed; not tested.
@@ -146,7 +146,7 @@ gantt
 - **Owner:** Infrastructure Administrator
 - **Proposed actions:** Document service dependencies and restoration runbook; verify backup/recovery dependencies; conduct a controlled restoration exercise.
 - **NIST CSF 2.0:** PR.IR; RC.RP.
-- **CIS IG1 candidates:** 11.1, 11.5.
+- **CIS IG1 candidates:** 11.1, 11.4.
 - **Required evidence:** Approved recovery runbook, service dependency inventory, recovery exercise report, corrective-action log.
 - **Acceptance criterion:** Recovery exercise demonstrates the agreed service restoration procedure and meets approved business targets or generates tracked remediation.
 - **Status:** Proposed; not tested.
@@ -181,6 +181,8 @@ A safeguard should be marked **Verified** only after its acceptance criteria are
 
 **Do not automatically subtract points from inherent risk scores when a safeguard is proposed.** Residual scoring requires evidence of control design, implementation, operating effectiveness, and the organization's approved risk assessment method.
 
+**CIS scope note:** Restore testing remains a proposed verification activity, but CIS **11.5** is **IG2/IG3**, not IG1; CIS **11.1–11.4** are IG1. See the official Navigator below.
+
 ## 7. Exit Criteria for the 90-Day Plan
 
 The proposed plan may be presented for closure review only when:
@@ -196,6 +198,14 @@ No exit criterion has been achieved in this fictional exercise.
 ## 8. Next Step
 
 Create an [Executive Summary](../reports/executive-summary.md) that explains the simulated risk profile, top priorities, control strategy, and proposed 90-day plan in business language.
+
+## References & Official Documentation
+
+- [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
+- [CIS Controls v8.1 Navigator — implementation group applicability](https://www.cisecurity.org/controls/cis-controls-navigator)
+- [NIST SP 800-30 Rev. 1 — risk assessment guidance](https://csrc.nist.gov/pubs/sp/800/30/r1/final)
+
+*References support the proposed method; no remediation or testing has occurred.*
 
 ---
 
