@@ -1,5 +1,7 @@
 # INC-003 — Corporate DNS Resolution Failure
 
+[← Service Desk Overview](../README.md) · [IT Support Hub](../../README.md) · [Portfolio Home](../../../README.md)
+
 **Incident Type:** Network Connectivity / DNS Resolution  
 **Category:** Networking  
 **Priority:** P3 — Medium (proposed; subject to organizational SLA)  
