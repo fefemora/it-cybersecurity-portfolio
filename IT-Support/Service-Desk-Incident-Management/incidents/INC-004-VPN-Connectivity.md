@@ -1,5 +1,7 @@
 # INC-004 — Corporate VPN Connectivity Failure
 
+[← Service Desk Overview](../README.md) · [IT Support Hub](../../README.md) · [Portfolio Home](../../../README.md)
+
 **Incident Type:** Remote Access / Network Connectivity  
 **Category:** Networking and Remote Access  
 **Priority:** P3 — Medium (proposed; subject to business impact and organizational SLA)  
