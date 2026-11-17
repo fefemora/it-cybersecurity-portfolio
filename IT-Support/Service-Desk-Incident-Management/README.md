@@ -21,9 +21,15 @@ The incident management workflow follows ITIL 4-aligned practices, emphasizing s
 
 | Incident ID | Description | Technology | Status |
 |---|---|---|---|
-| INC-002 | Microsoft 365 Authentication Failure | Microsoft 365 / Entra ID | Planned |
-| INC-003 | DNS Resolution Failure | Windows / DNS / Networking | Planned |
-| INC-004 | VPN Connectivity Failure | VPN / Remote Access | Planned |
+| [INC-002](incidents/INC-002-M365-Authentication.md) | Microsoft 365 Authentication Failure | Microsoft 365 / Entra ID | Documented — simulated |
+| [INC-003](incidents/INC-003-DNS-Resolution.md) | DNS Resolution Failure | Windows / DNS / Networking | Documented — simulated |
+| [INC-004](incidents/INC-004-VPN-Connectivity.md) | VPN Connectivity Failure | VPN / Remote Access | Documented — simulated |
+
+## Technical Deep Dives
+
+- [INC-002 — Entra ID Sign-in Log Analysis](incidents/INC-002-Technical-Analysis.md)
+- [INC-003 — DNS Decision Tree](incidents/INC-003-DNS-Decision-Tree.md) *(planned; not yet available in this repository)*
+- [Reusable Incident Report Template](templates/incident-report-template.md)
 
 ## Incident Management Workflow
 
