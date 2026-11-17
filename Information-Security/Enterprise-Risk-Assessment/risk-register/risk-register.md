@@ -2,6 +2,8 @@
 
 ![Risk assessment heatmap](risk-heatmap.svg)
 
+![Distribution of eight fictional risk scenarios](../reports/risk-distribution.svg)
+
 **Assessment:** Fictional enterprise information security risk assessment  
 **Method:** Project-defined qualitative 5 × 5 likelihood × impact  
 **Status:** Scenario analysis only — no technical testing or stakeholder validation
