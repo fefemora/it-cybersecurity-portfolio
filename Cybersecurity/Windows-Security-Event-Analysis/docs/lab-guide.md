@@ -96,7 +96,42 @@ OldestEvent         NewestEvent         RetainedDays
 
 **Limitations:** The timestamp range is one point-in-time observation. Event counts and retention metadata came from separate command runs; do not assume they share identical collection times.
 
-## Step 4 — Investigate event details (planned)
+## Step 4 — Classify a bounded sample of successful logons
+
+**Original attempt:** An unbounded query retrieved every available 4624 event and processed each XML record. It did not return promptly in the user's session. It was replaced with a capped 100-event query; no configuration change was made.
+
+**Successful bounded command:**
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+} -MaxEvents 100 |
+ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data |
+        Where-Object Name -eq 'LogonType').'#text'
+} |
+Group-Object |
+Sort-Object Count -Descending |
+Select-Object Name, Count
+```
+
+**Purpose:** Extract and count only the logon type from the 100 most recent event 4624 records. This avoids collecting or displaying usernames, IP addresses, or full event messages.
+
+**Observed result (real console output):**
+
+```text
+Name Count
+---- -----
+5      100
+```
+
+**Interpretation:** All 100 sampled successful logon records were **Logon Type 5 (Service)**. Service logons may be routine Windows activity, and this result does **not** establish malicious or unauthorized access.
+
+**Sampling limitation:** This is a cap of 100 **most recent** records, not a random sample and not a full analysis of the 638 records from the earlier seven-day query. The circular log may also continue changing between commands; the 100-record result must not be extrapolated to all logons.
+
+## Step 5 — Investigate event details (planned)
 
 Before proceeding, confirm Step 1 and select a bounded, privacy-safe inspection query. Record only the fields needed for the investigation and redact identifying information before publication.
 
