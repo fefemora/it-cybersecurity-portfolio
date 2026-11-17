@@ -1,6 +1,9 @@
 
-# Windows Troubleshooting Lab
-## INC-001: Windows Update & Application Update Failure
+# INC-001 — Windows Update and Application Troubleshooting
+
+![Verified disk space recovery](storage-recovery.svg)
+
+**Project:** Windows Troubleshooting Lab
 
 **Category:** IT Support / Windows Troubleshooting  
 **Difficulty:** Intermediate  
