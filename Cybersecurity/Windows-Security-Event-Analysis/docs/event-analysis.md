@@ -6,6 +6,18 @@
 **Data source:** User-provided PowerShell console output from the local Windows Security log.  
 **Time scope:** Rolling seven-day window relative to command execution; exact collection time not supplied.
 
+## Verified Security log configuration
+
+| Property | Observed value |
+|---|---|
+| LogName | Security |
+| IsEnabled | True |
+| RecordCount | 33,898 |
+| MaximumSizeInBytes | 20,971,520 bytes (20 MiB) |
+| LogMode | Circular |
+
+The log is enabled and stores records. Circular retention can overwrite older records, so a seven-day query does not guarantee complete seven-day historical coverage. The oldest retained event has not yet been determined.
+
 ## Verified observations
 
 | Event ID | Records returned | Meaning |
@@ -24,12 +36,12 @@
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
 - The absence of 4625 or 1102 from the result set does **not** prove those events never occurred.
 - The query suppresses non-terminating errors with `-ErrorAction SilentlyContinue`; a later validation should consider error visibility and audit policy.
-- The Security log configuration and retention settings have not yet been verified because the first configuration query failed to parse.
+- The Security log configuration was verified after correcting the first command's paste-order error. Circular retention limits what can be inferred about historical coverage.
 - No event details, screenshots, or exported logs have been reviewed yet. No attribution, root cause, or incident severity is established.
 
 ## Next investigation steps
 
-1. Confirm log availability, size, and retention mode.
+1. Determine the timestamp of the oldest retained Security event and the latest event to assess coverage.
 2. Inspect the audit policy relevant to logon and process creation if needed.
 3. Select a small number of representative 4624 and 4672 records for field-level review without publishing identifying information.
 4. Document hypotheses and supporting or contradictory evidence.
