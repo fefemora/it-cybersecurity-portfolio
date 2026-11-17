@@ -31,7 +31,7 @@ MaximumSizeInBytes : 20971520
 LogMode            : Circular
 ```
 
-**Interpretation:** The Security log is enabled, with 33,898 stored records and a configured maximum of **20 MiB** (20,971,520 bytes). `Circular` means older records may be overwritten as the log fills. The actual oldest retained event and duration of retention have not yet been checked.
+**Interpretation:** The Security log is enabled, with 33,898 stored records and a configured maximum of **20 MiB** (20,971,520 bytes). `Circular` means older records may be overwritten as the log fills. The oldest and newest retained event timestamps are verified in Step 3.
 
 **Troubleshooting note:** The first attempted paste placed `Select-Object` before `Get-WinEvent`, leaving a trailing pipeline operator and causing `ParserError: EmptyPipeElement`. This was a command-entry error, **not** a Security log failure. The corrected command ran successfully.
 
@@ -67,7 +67,36 @@ Name Count
 
 **Interpretation:** Event 4624 reports a successful logon, 4634 a logoff, 4672 special privileges assigned to a new logon, and 4688 process creation. Counts are not unique people or evidence of malicious behavior.
 
-## Step 3 — Investigate event details (planned)
+## Step 3 — Determine the retained Security log time span
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent  = $oldest.TimeCreated
+    NewestEvent  = $newest.TimeCreated
+    RetainedDays = [math]::Round(
+        ($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2
+    )
+}
+```
+
+**Purpose:** Find the timestamp of the first and last currently retained Security records, then calculate the elapsed time between them.
+
+**Observed output (real PowerShell console result; local date formatting):**
+
+```text
+OldestEvent         NewestEvent         RetainedDays
+-----------         -----------         ------------
+15-11-2026 20:02:39 17-11-2026 20:40:43         2,03
+```
+
+**Interpretation:** Retained records span **approximately 2.03 days**, from November 15 to November 17, 2026. The previous seven-day filtered query could not provide a full seven days of history based on this subsequently observed retained range. The log is configured for circular retention, which **may** overwrite older entries, but this result alone does not prove overwrite occurred or establish uninterrupted logging across the interval.
+
+**Limitations:** The timestamp range is one point-in-time observation. Event counts and retention metadata came from separate command runs; do not assume they share identical collection times.
+
+## Step 4 — Investigate event details (planned)
 
 Before proceeding, confirm Step 1 and select a bounded, privacy-safe inspection query. Record only the fields needed for the investigation and redact identifying information before publication.
 
