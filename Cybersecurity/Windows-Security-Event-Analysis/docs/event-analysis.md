@@ -16,7 +16,17 @@
 | MaximumSizeInBytes | 20,971,520 bytes (20 MiB) |
 | LogMode | Circular |
 
-The log is enabled and stores records. Circular retention can overwrite older records, so a seven-day query does not guarantee complete seven-day historical coverage. The oldest retained event has not yet been determined.
+The log is enabled and stores records. Circular retention can overwrite older records, so a seven-day query does not guarantee complete seven-day historical coverage. The oldest and newest retained events were subsequently identified: **2026-11-15 20:02:39** and **2026-11-17 20:40:43** (local console timestamps), a span of **2.03 days**. This does not establish uninterrupted logging or prove events were overwritten.
+
+## Verified retained time window
+
+| Metric | Observed result |
+|---|---|
+| Oldest retained Security event | 2026-11-15 20:02:39 |
+| Newest retained Security event | 2026-11-17 20:40:43 |
+| Elapsed time between endpoints | 2.03 days |
+
+The earlier seven-day query should **not** be described as seven days of observed activity. Only approximately two days of retained history were present when the later retention query was run.
 
 ## Verified observations
 
@@ -41,9 +51,9 @@ The log is enabled and stores records. Circular retention can overwrite older re
 
 ## Next investigation steps
 
-1. Determine the timestamp of the oldest retained Security event and the latest event to assess coverage.
-2. Inspect the audit policy relevant to logon and process creation if needed.
-3. Select a small number of representative 4624 and 4672 records for field-level review without publishing identifying information.
+1. Inspect the audit policy relevant to logon and process creation if needed.
+2. Summarize the distribution of logon types among event 4624 records without exposing account names or network identifiers.
+3. Select a small number of representative 4624 and 4672 records for privacy-safe field-level review.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
