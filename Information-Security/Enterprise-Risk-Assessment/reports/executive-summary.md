@@ -123,6 +123,14 @@ This is a **fictional, desk-based portfolio assessment**. It contains no intervi
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 - [CIS Critical Security Controls](https://www.cisecurity.org/controls)
 
+## References & Official Documentation
+
+- [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
+- [CIS Controls v8.1 Navigator](https://www.cisecurity.org/controls/cis-controls-navigator)
+- [NIST SP 800-30 Rev. 1 — Guide for Conducting Risk Assessments](https://csrc.nist.gov/pubs/sp/800/30/r1/final)
+
+*Sources support methodology and safeguards; fictional risk ratings are not verified findings.*
+
 ---
 
 *Prepared as a fictional, educational portfolio deliverable. All figures and decisions are illustrative.*
