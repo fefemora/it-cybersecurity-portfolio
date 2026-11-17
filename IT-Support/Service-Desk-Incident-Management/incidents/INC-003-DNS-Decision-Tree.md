@@ -45,3 +45,11 @@ Escalate when corporate DNS services are unavailable, multiple users are affecte
 ## Evidence and Limitations
 
 This is a proposed diagnostic workflow, not a log of executed commands. Record actual outputs and validate any corrective action in an authorized environment before marking a real incident resolved.
+
+## References & Official Documentation
+
+- [Resolve-DnsName — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname)
+- [Test-NetConnection — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/nettcpip/test-netconnection)
+- [DNS overview — Microsoft Learn](https://learn.microsoft.com/en-us/windows-server/networking/dns/dns-overview)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
