@@ -118,12 +118,18 @@ The six CSF Functions — **Govern, Identify, Protect, Detect, Respond, and Reco
 
 IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatment plan will map applicable recommendations to specific IG1 safeguards rather than claiming that implementing IG1 alone guarantees security or compliance.
 
+## Risk Assessment Preview
+
+[![Inherent risk heatmap](risk-register/risk-heatmap.svg)](risk-register/risk-register.md)
+
+*Eight fictional scenarios: 2 Critical, 4 High, 2 Moderate. Scores are assumptions, not verified findings.*
+
 ## Planned Deliverables
 
 | Deliverable | Purpose | Status |
 |---|---|---|
 | [Asset Inventory](assets/asset-inventory.md) | Identify assets, business value, and ownership | **Completed — simulated** |
-| [Risk Register](risk-register/risk-register.md) | Document scenarios and inherent risk scores | Planned |
+| [Risk Register](risk-register/risk-register.md) | Document scenarios and inherent risk scores | **Completed — simulated** |
 | [Control Mapping](controls/control-mapping.md) | Map risk treatment to CSF 2.0 and CIS IG1 | Planned |
 | [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | Planned |
 | [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | Planned |
