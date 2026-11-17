@@ -2,6 +2,8 @@
 
 ![Emerald Technologies executive risk dashboard](executive-dashboard.svg)
 
+![Illustrative inherent risk distribution pie chart](risk-distribution.svg)
+
 **Prepared for:** Executive Management, Emerald Technologies (fictional)  
 **Assessment:** Enterprise Information Security Risk Assessment  
 **Frameworks referenced:** NIST CSF 2.0 · CIS Controls v8.1 IG1  
