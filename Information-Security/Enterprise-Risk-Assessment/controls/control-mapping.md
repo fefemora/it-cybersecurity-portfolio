@@ -87,10 +87,14 @@ Priorities reflect the scenario's assumed inherent risk scores. They may change 
 
 Prepare the [Risk Treatment Plan](../treatment/risk-treatment-plan.md) with accountable owners, recommended actions, priorities, timeframes, and measurable acceptance criteria. The plan will retain **proposed** status until implementation and validation evidence exists.
 
-## References
+**Implementation-group clarification:** CIS Safeguard **11.5 — Test Data Recovery** belongs to **IG2/IG3**, not IG1. Restore testing is still a valuable proposed **additional measure beyond IG1**. CIS 11.1–11.4 are IG1.
+
+## References & Official Documentation
 
 - [NIST Cybersecurity Framework 2.0](https://www.nist.gov/cyberframework)
-- [CIS Critical Security Controls](https://www.cisecurity.org/controls)
+- [CIS Controls v8.1 Navigator — safeguard IDs and IG membership](https://www.cisecurity.org/controls/cis-controls-navigator)
+
+*These sources support control selection, not claims of implementation or compliance.*
 
 ---
 
