@@ -130,6 +130,12 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 
 *Candidate safeguards only; no control implementation or effectiveness has been verified.*
 
+## Risk Treatment Roadmap Preview
+
+[![Proposed 90-day risk treatment roadmap](treatment/risk-treatment-roadmap.svg)](treatment/risk-treatment-plan.md)
+
+*Proposed sequencing only. No controls have been implemented or verified.*
+
 ## Planned Deliverables
 
 | Deliverable | Purpose | Status |
@@ -137,7 +143,7 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 | [Asset Inventory](assets/asset-inventory.md) | Identify assets, business value, and ownership | **Completed — simulated** |
 | [Risk Register](risk-register/risk-register.md) | Document scenarios and inherent risk scores | **Completed — simulated** |
 | [Control Mapping](controls/control-mapping.md) | Map risk treatment to CSF 2.0 and CIS IG1 | **Completed — proposed** |
-| [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | Planned |
+| [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | **Completed — proposed** |
 | [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | Planned |
 
 ## Intended Skills Demonstrated
