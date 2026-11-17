@@ -60,3 +60,11 @@ The incident management workflow follows ITIL 4-aligned practices, emphasizing s
 ## Project Disclaimer
 
 This project is based on simulated enterprise IT incidents. Diagnostic procedures and proposed resolutions are documented for educational and portfolio purposes. They should be tested in an authorized environment before production use.
+
+## References & Official Documentation
+
+- [ITIL 4 — PeopleCert overview](https://www.peoplecert.org/browse-certifications/it-governance-and-service-management/ITIL-1)
+- [Microsoft Entra sign-in logs](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/concept-sign-ins)
+- [Resolve-DnsName — PowerShell reference](https://learn.microsoft.com/en-us/powershell/module/dnsclient/resolve-dnsname)
+
+*These references support the methodology and technical procedures; they do not independently validate execution, findings, or control effectiveness.*
