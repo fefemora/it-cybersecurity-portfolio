@@ -63,6 +63,27 @@ A later **five-event** bounded query classified `TargetUserSid` for the five mos
 
 **Interpretation:** These five service logons are compatible with normal system behavior. This does not establish what service generated them or whether every earlier 4624 record belonged to this account. A larger account-classification command did not return promptly, so the validated query was limited to five records.
 
+## Verified audit-policy assessment
+
+The read-only `auditpol /get /category:*` output was collected from the Windows workstation. Selected subcategories are shown below; reported configurations are translated from Spanish.
+
+| Subcategory | Current setting | Implication |
+|---|---|---|
+| Logon | Success and Failure | Both successful and failed logon auditing configured |
+| Logoff | Success | Successful logoff auditing configured |
+| Special Logon | Success | Special logon events configured |
+| Process Creation | No Auditing | No process-creation audit enabled at inspection time |
+| Process Termination | No Auditing | Process termination auditing disabled |
+| File System / Registry | No Auditing | These object-access subcategories disabled |
+| Audit Policy Change | Success | Successful audit-policy changes configured |
+| System Integrity | Success and Failure | Both outcomes configured |
+
+**Potential visibility gap:** Process creation auditing is disabled at the time of inspection, limiting future 4688 coverage unless policy changes. This is a configuration observation, **not** a confirmed security incident or proof of noncompliance.
+
+**Unresolved discrepancy:** The initial seven-day-lookback query returned **13 events with ID 4688**, despite the current Process Creation policy being disabled. A historical policy change is one possible explanation, not a verified conclusion; inspect record timestamps and policy-change evidence before interpreting.
+
+**Privacy/performance:** No audit-policy modifications were made. The next check should be a bounded, metadata-only query to avoid exposing process paths or command-line arguments.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -73,13 +94,15 @@ A later **five-event** bounded query classified `TargetUserSid` for the five mos
 
 ## Next investigation steps
 
-1. Inspect the audit policy relevant to logon and process creation using a lightweight built-in command.
-2. Expand the investigation beyond the latest service-logon-heavy sample only if needed, with bounded read-only queries.
+1. Check timestamps for at most five retained events 4688 without retrieving their process details.
+2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
 3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
 
+- [Microsoft Learn — auditpol /get](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/auditpol-get)
+- [Microsoft Learn — Audit Process Creation](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/audit-process-creation)
 - [Microsoft Learn — Event 4624](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624)
 - [Microsoft Learn — Well-known security identifiers](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
 - [Microsoft Learn — Event 4672](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672)
