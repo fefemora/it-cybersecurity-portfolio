@@ -5,7 +5,7 @@
 **Framework references:** NIST Cybersecurity Framework (CSF) 2.0 · CIS Controls v8.1, Implementation Group 1 (IG1)  
 **Organization:** Emerald Technologies (fictional)  
 **Project type:** Portfolio case study — simulated assessment  
-**Status:** In progress
+**Status:** Documentation complete — simulated; no controls implemented or validated
 
 ## Executive Overview
 
@@ -136,7 +136,13 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 
 *Proposed sequencing only. No controls have been implemented or verified.*
 
-## Planned Deliverables
+## Executive Dashboard
+
+[![Executive risk dashboard](reports/executive-dashboard.svg)](reports/executive-summary.md)
+
+*Management-facing summary of eight fictional scenarios and a proposed 90-day response.*
+
+## Project Deliverables
 
 | Deliverable | Purpose | Status |
 |---|---|---|
@@ -144,7 +150,7 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 | [Risk Register](risk-register/risk-register.md) | Document scenarios and inherent risk scores | **Completed — simulated** |
 | [Control Mapping](controls/control-mapping.md) | Map risk treatment to CSF 2.0 and CIS IG1 | **Completed — proposed** |
 | [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | **Completed — proposed** |
-| [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | Planned |
+| [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | **Completed — simulated** |
 
 ## Intended Skills Demonstrated
 
