@@ -28,7 +28,7 @@ The incident management workflow follows ITIL 4-aligned practices, emphasizing s
 ## Technical Deep Dives
 
 - [INC-002 — Entra ID Sign-in Log Analysis](incidents/INC-002-Technical-Analysis.md)
-- [INC-003 — DNS Decision Tree](incidents/INC-003-DNS-Decision-Tree.md) *(planned; not yet available in this repository)*
+- [INC-003 — DNS Decision Tree](incidents/INC-003-DNS-Decision-Tree.md)
 - [Reusable Incident Report Template](templates/incident-report-template.md)
 
 ## Incident Management Workflow
