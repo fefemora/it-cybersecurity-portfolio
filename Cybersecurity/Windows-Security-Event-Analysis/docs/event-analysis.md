@@ -53,17 +53,27 @@ A later bounded command retrieved the **100 most recent event 4624 records** and
 
 **Limitation:** These are the latest 100 records at the time of sampling, not all 638 events from the earlier count and not a representative random sample.
 
+## Verified account-category sample
+
+A later **five-event** bounded query classified `TargetUserSid` for the five most recent event 4624 records into well-known account categories without revealing individual account names.
+
+| Logon type | Classified principal | Sampled count |
+|---|---|---:|
+| 5 (Service) | LocalSystem (`S-1-5-18`) | 5 |
+
+**Interpretation:** These five service logons are compatible with normal system behavior. This does not establish what service generated them or whether every earlier 4624 record belonged to this account. A larger account-classification command did not return promptly, so the validated query was limited to five records.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
 - The absence of 4625 or 1102 from the result set does **not** prove those events never occurred.
 - The query suppresses non-terminating errors with `-ErrorAction SilentlyContinue`; a later validation should consider error visibility and audit policy.
 - The Security log configuration was verified after correcting the first command's paste-order error. Circular retention limits what can be inferred about historical coverage.
-- Only the `LogonType` field has been inspected in a bounded sample; detailed account/context fields, screenshots, and exported logs have not yet been reviewed. No attribution, root cause, or incident severity is established.
+- The `LogonType` field was inspected in a 100-record sample, and `TargetUserSid` was classified in a separate five-record sample; detailed account/context fields, screenshots, and exported logs have not yet been reviewed. No attribution, root cause, or incident severity is established.
 
 ## Next investigation steps
 
-1. Inspect the audit policy relevant to logon and process creation if needed.
+1. Inspect the audit policy relevant to logon and process creation using a lightweight built-in command.
 2. Expand the investigation beyond the latest service-logon-heavy sample only if needed, with bounded read-only queries.
 3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
 4. Document hypotheses and supporting or contradictory evidence.
@@ -71,6 +81,7 @@ A later bounded command retrieved the **100 most recent event 4624 records** and
 ## References & Official Documentation
 
 - [Microsoft Learn — Event 4624](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624)
+- [Microsoft Learn — Well-known security identifiers](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
 - [Microsoft Learn — Event 4672](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672)
 - [Microsoft Learn — Event 4688](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688)
 - [Microsoft Learn — Get-WinEvent](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent)
