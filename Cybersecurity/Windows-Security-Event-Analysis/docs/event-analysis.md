@@ -120,6 +120,35 @@ A bounded read-only query returned the five latest event 4672 records:
 
 **Assessment:** This is evidence that five records for assignment of special privileges to new logons exist in the retained Security log. It does not show whether they belong to five different sessions or accounts, which privileges were assigned, or whether any activity was unauthorized. Further correlation or a privacy-safe field-level sample is needed to assess context.
 
+## Verified 4672 privilege sample
+
+A later bounded three-event query parsed the `SubjectUserSid` and `PrivilegeList` XML fields and returned the following anonymized observations:
+
+| Local timestamp | Account category | Privileges assigned |
+|---|---|---:|
+| 2026-11-17 21:05:00 | LocalSystem (`S-1-5-18`) | 12 |
+| 2026-11-17 21:00:46 | LocalSystem (`S-1-5-18`) | 12 |
+| 2026-11-17 20:57:13 | LocalSystem (`S-1-5-18`) | 12 |
+
+**Identical privilege list in all three records:**
+
+- `SeAssignPrimaryTokenPrivilege`
+- `SeTcbPrivilege`
+- `SeSecurityPrivilege`
+- `SeTakeOwnershipPrivilege`
+- `SeLoadDriverPrivilege`
+- `SeBackupPrivilege`
+- `SeRestorePrivilege`
+- `SeDebugPrivilege`
+- `SeAuditPrivilege`
+- `SeSystemEnvironmentPrivilege`
+- `SeImpersonatePrivilege`
+- `SeDelegateSessionUserImpersonatePrivilege`
+
+**Assessment:** LocalSystem is a highly privileged built-in Windows security principal. This sample is compatible with legitimate operating-system activity, but lacks information about the services and logon sessions that generated the records. Event 4672 means special privileges were assigned to new logons; **assignment does not demonstrate actual use**, nor does it prove abuse. Three event records are not necessarily three separate accounts or services.
+
+**Limitations:** These are only the three latest records at that particular collection time, not all 614 records from the initial query. No identity, executable, session correlation, or misuse has been established.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -132,7 +161,7 @@ A bounded read-only query returned the five latest event 4672 records:
 
 1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
-3. Review a very small 4672 sample for built-in account categories and privilege names, keeping identities and logon IDs private.
+3. Correlate a limited 4672 sample with 4624 records using matching logon IDs locally, without exposing those IDs or usernames in public documentation.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
