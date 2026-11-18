@@ -9,7 +9,7 @@
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
-| Logon auditing | Confirm audit visibility for successful and failed sign-ins | **Fresh auditpol result: Logon = Aciertos y errores (Success and Failure)** | Count recent Security 4624/4625 metadata only; verify retention separately | **Success and Failure configured and verified; event delivery not yet checked in this step** |
+| Logon auditing | Confirm audit visibility for successful and failed sign-ins | **Logon = Aciertos y errores (Success and Failure)**; 24-hour query retrieved **235 event 4624** and **no 4625 group** | Group 4624 by logon type (aggregate only); verify retention separately | **Audit policy verified and successful events observed; no recent failure matches** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | PowerShell Transcription policy | Check explicit machine- and current-user session transcription settings | **HKLM and HKCU Transcription policy keys absent at inspected paths** | Assess other mechanisms and privacy/retention before considering any separate change | **Both inspected policy keys absent; effective transcription remains unknown** |
 | PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging keys absent in queried HKLM and HKCU locations; 4103 count query returned 0** | Inspect Transcription policy and optionally verify zero-count query errors explicitly | **No retained 4103 evidence observed; effective module logging unknown** |
@@ -957,6 +957,56 @@ try {
 ```
 
 A missing event ID from grouped results is not proof that the audit subcategory is disabled or that no such event has ever occurred. Only aggregate counts should be shared.
+
+## Step 26 — Retained logon events over the preceding 24 hours (verified; read-only)
+
+**Exact query executed:**
+
+```powershell
+try {
+    $events = Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4624,4625
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop
+
+    $events | Group-Object Id |
+        Select-Object Name, Count |
+        Format-Table -AutoSize
+} catch {
+    Write-Output ('Query status: ' + $_.Exception.Message)
+}
+```
+
+**Actual user-provided output:**
+
+```text
+Name Count
+---- -----
+4624   235
+```
+
+**Interpretation:** The query returned **235 event ID 4624 records** (successful logon) and **no 4625 group** (failed logon) in the queried **preceding 24-hour window**, from retained Security-log data. Since `Get-WinEvent` returned records and the catch branch did not appear, this is consistent with **zero 4625 matches in that combined query**, not proof that failures never occurred or that every possible failure is logged. **235 event records do not imply 235 distinct people or interactive sessions**: service, batch and system logons can also generate 4624. No individual accounts or logon sources were inspected.
+
+**Audit and retention context:** Step 25 verified the Logon audit subcategory as `Aciertos y errores` (Success and Failure). Security log maximum was previously raised to **128 MiB under the sole approved CHG-001**, but the seven-day history objective is not yet validated. This query and all current monitoring steps were **read-only**.
+
+**Next proposed check (read-only; aggregate only):** Group successful 4624 events from the last 24 hours by the `LogonType` field, so interactive, service, network and other login types are not confused with unique human users. Do not share usernames, IP addresses or raw event XML.
+
+```powershell
+$from = (Get-Date).AddHours(-24)
+$types = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $from
+} -ErrorAction Stop | ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data | Where-Object Name -eq 'LogonType').'#text'
+}
+$types | Group-Object | Sort-Object Count -Descending |
+    Select-Object Name, Count | Format-Table -AutoSize
+```
+
+The aggregate type distributions are sampled later and may not sum to 235 because the query time window advances.
 
 ## Classification rules
 
