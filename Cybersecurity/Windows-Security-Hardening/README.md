@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Windows PowerShell ModuleLogging HKLM and HKCU policy keys absent at inspected paths (Steps 20–21).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -830,7 +830,49 @@ $count = (Get-WinEvent -FilterHashtable @{
 
 A zero result would only show that no matching records were retrieved from the currently retained channel; with `-ErrorAction SilentlyContinue`, query errors must be considered separately.
 
-**Next:** Count retained Module Logging event 4103 records only; Secure Boot and BitLocker stay deferred.
+## Step 22 — Retained PowerShell Module Logging event 4103 count (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$count = (Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4103
+} -ErrorAction SilentlyContinue | Measure-Object).Count
+
+[PSCustomObject]@{
+    EventId = 4103
+    Count = $count
+} | Format-List
+```
+
+**Actual output:**
+
+```text
+EventId : 4103
+Count   : 0
+```
+
+**Interpretation:** This query retrieved **zero retained event ID 4103 records** from `Microsoft-Windows-PowerShell/Operational`. The previous read-only ID distribution (11 different IDs, 808 total records at its snapshot) also did not list 4103. The HKLM and HKCU `ModuleLogging` policy registry keys were independently absent at their inspected paths in Steps 20–21. Together these results indicate **no 4103 visibility evidenced in the examined retained channel**, but do **not** establish that module logging was never enabled, that all policy scopes were assessed, or that a security incident occurred.
+
+**Methodological limitation:** `-ErrorAction SilentlyContinue` suppresses non-terminating query errors, so `Count=0` alone cannot distinguish no matches from certain query problems. A follow-up may perform an error-visible metadata-only query if verification is required. Log rotation may also discard historical records.
+
+**Privacy/change control:** No event messages, command lines, modules, scripts, paths or credentials were displayed; no settings modified. Secure Boot and BitLocker remain paused pending backup/recovery readiness.
+
+**Next read-only assessment:** Inspect the existence and enabled flag of the machine-level Windows PowerShell **Transcription** policy only, without accessing transcript output or paths:
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKLM Transcription policy key: Not configured'
+}
+```
+
+**Next:** Inspect Transcription policy state at one machine-level path; Secure Boot and BitLocker remain deferred.
 
 ## Evidence integrity
 
