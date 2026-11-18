@@ -435,6 +435,46 @@ if (Test-Path $path) {
 
 This checks **only** the specified HKCU location, not every possible logging policy or PowerShell edition.
 
+## Step 17 — Current-user PowerShell Script Block Logging policy key (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableScriptBlockLogging |
+        Format-List
+} else {
+    'HKCU policy registry key: Not configured'
+}
+```
+
+**Actual output:**
+
+```text
+HKCU policy registry key: Not configured
+```
+
+**Interpretation:** No `ScriptBlockLogging` policy key was present under the **current user's** inspected HKCU path. Along with the earlier absent inspected **HKLM** policy key, this supports **no explicit setting in either of these two Windows PowerShell policy paths at inspection time**. This does **not** prove the absence of all effective policies, logging behaviors, or alternative PowerShell edition settings. In particular, **438 retained event ID 4104 records** exist in the Operational log despite the two absent keys; no assumption about their origin or detection coverage is warranted.
+
+**Security and privacy:** The check read one registry-key existence and did not edit policies, extract scripts, or query secrets. No configuration changes were performed. This observation is not a confirmed exploit or security incident.
+
+**Proposed next step (read-only, metadata only):** Group the retained event 4104 records by their event severity level without outputting script text:
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4104
+} |
+    Group-Object LevelDisplayName |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+An event's severity alone is not evidence of malicious execution. The script contents and full messages must remain private.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
