@@ -10,7 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
-| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in earlier check, **439 Warning 4104 records** in later check, and **11 IDs totaling 808 events** in earlier distribution | Assess time span from operational event timestamps; do not read scripts | **4104 observed; comprehensive Script Block Logging policy not established** |
+| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in earlier check, **439 Warning 4104 records** in later check, **11 IDs totaling 808 events** in earlier distribution; **Operational channel event-history span 5.05 days** (2026-11-13 to 2026-11-18) | Check Module Logging machine policy metadata; validate retention goals independently | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; system disk 0 GPT (`IsBoot`/`IsSystem=True` on disk); Secure Boot False** | Check independent backup and recovery prerequisites before separate approval | **UEFI/GPT/TPM verified; Secure Boot and disk encryption remain off; no changes** |
@@ -673,6 +673,49 @@ $newest = Get-WinEvent -LogName $log -MaxEvents 1
 ```
 
 Channel-wide retention does not establish how long individual event IDs persist.
+
+## Step 19 — PowerShell Operational retained time span (verified; read-only)
+
+**Executed read-only command:**
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$oldest = Get-WinEvent -LogName $log -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName $log -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console output (local time; decimal comma as displayed):**
+
+```text
+OldestEvent  : 13-11-2026 1:11:52
+NewestEvent  : 18-11-2026 2:20:33
+RetainedDays : 5,05
+```
+
+**Finding:** At the time of this snapshot, the earliest and latest retained `Microsoft-Windows-PowerShell/Operational` events span **5.05 days**, from **2026-11-13 01:11:52** to **2026-11-18 02:20:33**, local time. The earlier configuration check found a **15 MiB Circular** log. This is an **observed event-history span**, **not a configured minimum retention time or SLA** and **not a proven minimum history for ID 4104**. A log's oldest event may reflect when recording began, inactivity, or overwritten records; the cause is not established by these timestamps.
+
+**Limitations:** No event messages, scripts, private identifiers or contents were accessed; no settings were changed. A separate Security log was increased from 20 to 128 MiB under CHG-001, but its seven-day objective remains independently unverified. Secure Boot and BitLocker modifications remain postponed until backup and recovery readiness.
+
+**Next proposed read-only check:** Verify a narrow overview of PowerShell module logging policy at the **HKLM** path only, without enumerating module names or event payloads:
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKLM ModuleLogging policy key: Not configured'
+}
+```
+
+This checks one Windows PowerShell policy path; it cannot alone establish effective logging across all scopes or PowerShell editions.
 
 ## Classification rules
 
