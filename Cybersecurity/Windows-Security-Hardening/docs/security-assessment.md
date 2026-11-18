@@ -10,7 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
-| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM ScriptBlockLogging policy key absent**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records**, and **11 IDs totaling 808 events** in distribution | Check HKCU ScriptBlockLogging policy, then assess scope without reading event contents | **4104 observed; comprehensive Script Block Logging policy not established** |
+| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records**, and **11 IDs totaling 808 events** in distribution | Summarize event 4104 severity counts; distinguish presence from comprehensive coverage | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; system disk 0 GPT (`IsBoot`/`IsSystem=True` on disk); Secure Boot False** | Check independent backup and recovery prerequisites before separate approval | **UEFI/GPT/TPM verified; Secure Boot and disk encryption remain off; no changes** |
@@ -592,6 +592,46 @@ if (Test-Path $path) {
 ```
 
 This checks **only** the specified HKCU location, not every possible logging policy or PowerShell edition.
+
+## Step 17 — Current-user PowerShell Script Block Logging policy key (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableScriptBlockLogging |
+        Format-List
+} else {
+    'HKCU policy registry key: Not configured'
+}
+```
+
+**Actual output:**
+
+```text
+HKCU policy registry key: Not configured
+```
+
+**Interpretation:** No `ScriptBlockLogging` policy key was present under the **current user's** inspected HKCU path. Along with the earlier absent inspected **HKLM** policy key, this supports **no explicit setting in either of these two Windows PowerShell policy paths at inspection time**. This does **not** prove the absence of all effective policies, logging behaviors, or alternative PowerShell edition settings. In particular, **438 retained event ID 4104 records** exist in the Operational log despite the two absent keys; no assumption about their origin or detection coverage is warranted.
+
+**Security and privacy:** The check read one registry-key existence and did not edit policies, extract scripts, or query secrets. No configuration changes were performed. This observation is not a confirmed exploit or security incident.
+
+**Proposed next step (read-only, metadata only):** Group the retained event 4104 records by their event severity level without outputting script text:
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4104
+} |
+    Group-Object LevelDisplayName |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+An event's severity alone is not evidence of malicious execution. The script contents and full messages must remain private.
 
 ## Classification rules
 
