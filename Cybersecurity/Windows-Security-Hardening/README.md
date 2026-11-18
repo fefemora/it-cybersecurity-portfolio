@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Logon audit policy: Success and Failure verified (Step 25).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **Logon audit policy Success and Failure verified (Step 25); 235 event 4624 records and no event 4625 matches in a subsequent 24-hour query (Step 26).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -988,7 +988,57 @@ try {
 
 A missing event ID from grouped results is not proof that the audit subcategory is disabled or that no such event has ever occurred. Only aggregate counts should be shared.
 
-**Next:** Compare recent successful and failed Windows logon event counts; Secure Boot and BitLocker remain deferred.
+## Step 26 — Retained logon events over the preceding 24 hours (verified; read-only)
+
+**Exact query executed:**
+
+```powershell
+try {
+    $events = Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4624,4625
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop
+
+    $events | Group-Object Id |
+        Select-Object Name, Count |
+        Format-Table -AutoSize
+} catch {
+    Write-Output ('Query status: ' + $_.Exception.Message)
+}
+```
+
+**Actual user-provided output:**
+
+```text
+Name Count
+---- -----
+4624   235
+```
+
+**Interpretation:** The query returned **235 event ID 4624 records** (successful logon) and **no 4625 group** (failed logon) in the queried **preceding 24-hour window**, from retained Security-log data. Since `Get-WinEvent` returned records and the catch branch did not appear, this is consistent with **zero 4625 matches in that combined query**, not proof that failures never occurred or that every possible failure is logged. **235 event records do not imply 235 distinct people or interactive sessions**: service, batch and system logons can also generate 4624. No individual accounts or logon sources were inspected.
+
+**Audit and retention context:** Step 25 verified the Logon audit subcategory as `Aciertos y errores` (Success and Failure). Security log maximum was previously raised to **128 MiB under the sole approved CHG-001**, but the seven-day history objective is not yet validated. This query and all current monitoring steps were **read-only**.
+
+**Next proposed check (read-only; aggregate only):** Group successful 4624 events from the last 24 hours by the `LogonType` field, so interactive, service, network and other login types are not confused with unique human users. Do not share usernames, IP addresses or raw event XML.
+
+```powershell
+$from = (Get-Date).AddHours(-24)
+$types = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $from
+} -ErrorAction Stop | ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data | Where-Object Name -eq 'LogonType').'#text'
+}
+$types | Group-Object | Sort-Object Count -Descending |
+    Select-Object Name, Count | Format-Table -AutoSize
+```
+
+The aggregate type distributions are sampled later and may not sum to 235 because the query time window advances.
+
+**Next:** Assess successful-logon event types using aggregate counts only; Secure Boot and BitLocker remain deferred.
 
 ## Evidence integrity
 
