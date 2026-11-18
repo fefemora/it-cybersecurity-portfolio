@@ -170,9 +170,35 @@ RetainedDays   : 1,96
 
 **Preconditions:** Confirm Windows/TPM and boot compatibility, reliable backup, recovery-key creation/storage outside the public repo, safe access if recovery is triggered, and any management policy. Preserve the exact baseline and plan appropriate testing. Do not publish a key protector or recovery password.
 
-**Next read-only test planned:** `Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-List`.
+**TPM read-only check verified:** `TpmPresent=True`, `TpmReady=True`, `TpmEnabled=True`, `TpmActivated=True`. TPM availability alone is not full encryption readiness. **Next planned check:** Secure Boot/firmware and independent backup/recovery preparation.
 
 **Status:** Finding verified; **no BitLocker change authorized or implemented**.
+
+## Step 9 — TPM readiness (verified; read-only)
+
+**Actual executed command:**
+
+```powershell
+Get-Tpm |
+    Select-Object TpmPresent,
+                  TpmReady,
+                  TpmEnabled,
+                  TpmActivated |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+TpmPresent   : True
+TpmReady     : True
+TpmEnabled   : True
+TpmActivated : True
+```
+
+**Assessment:** A TPM is present, ready, enabled and activated according to the Windows `Get-Tpm` status fields. This resolves one platform prerequisite for a potential BitLocker deployment but does **not** validate the complete startup/recovery path, backup reliability, BitLocker policy configuration or availability of a recovery key. The C: system volume remains **fully decrypted and unprotected by BitLocker** in the most recent volume query. No TPM or BitLocker settings were modified.
+
+**Next read-only prerequisite:** Inspect boot mode and Secure Boot support using `Confirm-SecureBootUEFI` (a result of `False` needs context; errors can indicate an unsupported/non-UEFI environment). Do not publish recovery passwords or TPM key material. Verify recovery and backups before any separate authorization for encryption.
 
 ## Evidence fields for every *future* approved change
 
