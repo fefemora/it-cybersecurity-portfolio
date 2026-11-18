@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and validated for configuration and immediate retained-event accessibility:** Security log maximum 20 → 128 MiB; immediate observed span 1.96 days. Seven-day retention goal remains unverified; process-creation auditing remains a separate proposal.  
+**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: baseline verified: fully decrypted, protection Off.** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -22,7 +22,7 @@ This project separates **observation → assessment → proposed change → auth
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Process Creation **No Auditing** in the last read-only check; Security log **20 MiB → 128 MiB** under **CHG-001**, Circular; after-change **33,989** records | **Size change implemented/verified; 7-day retention not yet established** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
-| Update and platform security | Update posture and selected native protections | **Not collected** |
+| Update and platform security | BitLocker C: `FullyDecrypted`, `ProtectionStatus=Off`, `EncryptionPercentage=0`; other protections and updates not checked | **System-volume encryption gap verified; no encryption applied** |
 | Recommendations and validation | CHG-001 Security log maximum-size adjustment; separate future process-auditing pilot | **CHG-001 configuration verified; follow-up retention pending** |
 
 ## Working sequence
@@ -331,7 +331,41 @@ RetainedDays   : 1,96
 
 **Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
 
-**Next:** Reassess retained endpoints after elapsed time without changing other audit controls; seven-day coverage cannot yet be established.
+## Step 8 — BitLocker system-volume encryption baseline (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-BitLockerVolume -MountPoint C: |
+    Select-Object MountPoint,
+                  VolumeStatus,
+                  ProtectionStatus,
+                  EncryptionPercentage |
+    Format-List
+```
+
+**Actual sanitized console output:**
+
+```text
+MountPoint           : C:
+VolumeStatus         : FullyDecrypted
+ProtectionStatus     : Off
+EncryptionPercentage : 0
+```
+
+**Finding:** The C: system volume was **fully decrypted (0% encrypted)** and its **BitLocker protection was Off** when queried. This is a verified **data-at-rest confidentiality exposure** if an attacker gains physical possession of the device/storage. It does not prove compromise or that every file or removable volume is unprotected. The command does not assess other volumes or other encryption solutions.
+
+**Change status:** **No encryption change performed or authorized.** Encryption should not be enabled without confirming recovery readiness, TPM and Windows compatibility, storage and backup condition, and a safe offline recovery-key handling process. Recovery passwords and key-protector details must never be committed to this public portfolio.
+
+**Next suggested read-only prerequisite:**
+
+```powershell
+Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-List
+```
+
+**Limitations:** TPM readiness alone does not validate BitLocker usability or backup/recovery safety. Consider management policy, Windows edition, firmware boot mode and a tested backup before any authorized implementation.
+
+**Next:** Verify TPM readiness using the read-only command; do not enable BitLocker until backups and recovery arrangements are checked.
 
 ## Evidence integrity
 
