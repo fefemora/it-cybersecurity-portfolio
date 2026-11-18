@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, 2, 3 and 4 executed and verified; other baseline checks pending.  
+**Status:** Steps 1, 1b, 2, 3, 4 and 5 verified; remediation has not been implemented.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -143,17 +143,28 @@ DisableBlockAtFirstSeen : False
 
 **Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
 
-## Step 5 — Review relevant audit configuration (planned, read-only)
+## Step 5 — Verify Process Creation audit policy (verified)
+
+**Read-only command actually executed:**
 
 ```powershell
-auditpol /get /category:*
+auditpol /get /subcategory:"{0cce922b-69ae-11d9-bed3-505054503030}"
 ```
 
-**Purpose:** Inspect current advanced audit policy. **Prior observations** in the separate event-analysis lab included Process Creation set to `No Auditing`; this project's current policy state remains **unverified** until a new query.
+**Actual console output (Spanish Windows locale):**
 
-**Privacy note:** Record only the relevant subcategory names and setting values.
+```text
+Directiva de auditoría del sistema
+Categoría o subcategoría                  Configuración
+Seguimiento detallado
+  Creación del proceso                    Sin auditoría
+```
 
-**Evidence status:** **Not executed for this new assessment.**
+**Interpretation:** The advanced audit subcategory **Process Creation** is currently configured as **No Auditing**. This independently confirms the same setting observed in the [prior Windows Security Event Analysis](../../Windows-Security-Event-Analysis/README.md). With this subcategory disabled, routine process creation auditing is not configured to provide continuous Security event 4688 coverage. The earlier retained 4688 records remain unexplained; they are not proof that audit policy changed or that malicious processes ran.
+
+**Security impact and limits:** This is a **monitoring visibility gap**, not proof of an attack or a compliance finding. The local Security log was previously observed at **20 MiB / Circular** with ~2.03 days between oldest/newest retained events; additional process events could accelerate log turnover if retention capacity is unchanged. Command-line inclusion in 4688 is a separate, potentially sensitive setting and was **not assessed or enabled**.
+
+**Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
 
 ## Step 6 — Evaluate additional controls (scoped, not executed)
 
