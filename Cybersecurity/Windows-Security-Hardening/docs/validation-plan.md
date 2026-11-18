@@ -23,6 +23,7 @@
 | Defender health improvements | Detect unavailable protection or aging signatures | Fresh protection/status output | Third-party AV management and policy precedence |
 | Security log retention review — **CHG-001** | Before 20 MiB Circular / **1.93 days**; after 128 MiB enabled/Circular, **33,989 records**, immediate retained span **1.96 days** | Maximum and immediate retained endpoints verified; **7-day target** requires later measurement | Disk consumption, event churn, shorter-than-target retention, policy conflict |
 | Process creation auditing pilot | **Fresh query** confirms `No Auditing` | After approved enabling, verify Success audit policy and new benign 4688 records | Higher event volume, faster overwrite if generated volume outpaces the configured Security log capacity, sensitive fields, managed policy conflicts |
+| BitLocker system-volume encryption (future separate change) | **Verified C: FullyDecrypted, Protection Off, 0%** | Only after approval and recovery preparedness: validate encryption and protection; never publish recovery secrets | Potential lockout, recovery-key loss, backup/firmware conflicts, encryption impact |
 
 ## Proposed controlled change: Process Creation auditing (not approved or executed)
 
@@ -162,6 +163,16 @@ RetainedDays   : 1,96
 **Comparison:** Before CHG-001, the oldest observed timestamp was **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, and rounded observed span **1.93 days**. At immediate follow-up, the oldest observed timestamp was **2026-11-16 00:52:21** (14 seconds later) and newest **2026-11-18 00:00:06**, with a rounded observed span **1.96 days**. This shows that events with timestamps predating CHG-001 remained accessible after the setting change. It is **not** proof of uninterrupted event-by-event continuity or that the added capacity already extends retention to 7 days. Record IDs are metadata and were not checked for gaps or correlated to the pre-change IDs.
 
 **Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
+
+## BitLocker encryption — separate proposed change (not authorized)
+
+**Verified initial state:** C: `FullyDecrypted`; BitLocker protection `Off`; `EncryptionPercentage=0` in the actual read-only `Get-BitLockerVolume` result. This is a system-volume data-at-rest confidentiality gap, not evidence of an incident.
+
+**Preconditions:** Confirm Windows/TPM and boot compatibility, reliable backup, recovery-key creation/storage outside the public repo, safe access if recovery is triggered, and any management policy. Preserve the exact baseline and plan appropriate testing. Do not publish a key protector or recovery password.
+
+**Next read-only test planned:** `Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-List`.
+
+**Status:** Finding verified; **no BitLocker change authorized or implemented**.
 
 ## Evidence fields for every *future* approved change
 
