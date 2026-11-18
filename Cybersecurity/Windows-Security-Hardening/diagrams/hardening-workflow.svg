@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 340" width="1080" height="340" role="img" aria-labelledby="title desc">
+<title id="title">Windows security hardening lifecycle</title>
+<desc id="desc">Five-stage workflow: read-only baseline, assess, propose change, authorized change, validate. No hardening changes have been executed.</desc>
+<rect width="1080" height="340" fill="#F5F7F8" rx="18"/>
+<rect width="1080" height="82" rx="18" fill="#14283F"/><rect y="55" width="1080" height="27" fill="#14283F"/>
+<text x="34" y="37" fill="#fff" font-family="Arial,sans-serif" font-size="24" font-weight="700">WINDOWS SECURITY HARDENING</text>
+<text x="34" y="62" fill="#D1FAE5" font-family="Arial,sans-serif" font-size="13">Baseline → assessment → proposed change → authorized implementation → validation</text>
+<g font-family="Arial,sans-serif">
+<rect x="26" y="121" width="179" height="115" rx="12" fill="#fff" stroke="#059669" stroke-width="2"/>
+<rect x="238" y="121" width="179" height="115" rx="12" fill="#fff" stroke="#CBD5E1" stroke-width="2"/>
+<rect x="450" y="121" width="179" height="115" rx="12" fill="#fff" stroke="#CBD5E1" stroke-width="2"/>
+<rect x="662" y="121" width="179" height="115" rx="12" fill="#fff" stroke="#CBD5E1" stroke-width="2"/>
+<rect x="874" y="121" width="179" height="115" rx="12" fill="#fff" stroke="#CBD5E1" stroke-width="2"/>
+<g fill="#14283F" font-size="15" font-weight="700" text-anchor="middle">
+<text x="115" y="157">01 · BASELINE</text><text x="327" y="157">02 · ASSESS</text><text x="539" y="157">03 · PROPOSE</text><text x="751" y="157">04 · APPROVE</text><text x="963" y="157">05 · VALIDATE</text>
+</g>
+<g fill="#64748B" font-size="12" text-anchor="middle">
+<text x="115" y="187">Read-only commands</text><text x="327" y="187">Compare with goals</text><text x="539" y="187">Scope and rollback</text><text x="751" y="187">Change only if safe</text><text x="963" y="187">Post-change evidence</text>
+<text x="115" y="208">NEXT ACTION</text><text x="327" y="208">PLANNED</text><text x="539" y="208">PLANNED</text><text x="751" y="208">NOT EXECUTED</text><text x="963" y="208">NOT EXECUTED</text>
+</g>
+<g fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M209 179h22l-7 -6m7 6l-7 6"/><path d="M421 179h22l-7 -6m7 6l-7 6"/><path d="M633 179h22l-7 -6m7 6l-7 6"/><path d="M845 179h22l-7 -6m7 6l-7 6"/></g>
+<rect x="26" y="270" width="1027" height="45" rx="9" fill="#E2E8F0"/>
+<text x="42" y="298" fill="#14283F" font-size="14">EVIDENCE RULE: Unknown is not insecure. Proposed does not mean implemented. No configuration changes performed.</text>
+</g></svg>
