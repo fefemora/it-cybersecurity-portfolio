@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Firewall, Defender, Process Creation audit policy and Security log capacity baselines verified.** Changes remain proposed only; no configuration modifications performed.  
+**Evidence status:** **Firewall, Defender, Process Creation audit policy, Security log capacity and retained time-span baselines verified.** Changes remain proposed only; no configuration modifications performed.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -20,7 +20,7 @@ This project separates **observation → assessment → proposed change → auth
 |---|---|---|
 | Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signatures age `0`; MAPS `2`, sample consent `1`; PUA Block `1`, Block at First Sight not disabled (`False`) | **Selected protection statuses/preferences verified; operational effectiveness not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
-| Security auditing | Fresh read-only query: **Process Creation = No Auditing**; Security log **33,959 records, 20 MiB maximum, Circular** | **Both current settings verified; process-audit change proposed only** |
+| Security auditing | Process Creation **No Auditing**; Security log **33,959 records, 20 MiB maximum, Circular**; retained event span **1.93 days** at later inspection | **Visibility and retention concerns verified; changes proposed only** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
 | Recommendations and validation | Prioritized, evidence-based change candidates | **Not implemented** |
@@ -207,7 +207,7 @@ LogMode            : Circular
 
 **Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
 
-### Step 6b — Refresh oldest/newest retained timestamps (planned)
+### Step 6b — Refresh oldest/newest retained timestamps (verified)
 
 ```powershell
 $oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
@@ -224,9 +224,19 @@ $newest = Get-WinEvent -LogName Security -MaxEvents 1
 
 **Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
 
-**Status:** Not executed in this hardening lab.
+**Verified console output:**
 
-**Next:** Refresh retained log time span, then review the [change and validation plan](docs/validation-plan.md) before any optional configuration modification.
+```text
+OldestEvent        NewestEvent         RetainedDays
+-----------        -----------         ------------
+16-11-2026 0:52:07 17-11-2026 23:06:29         1,93
+```
+
+**Assessment:** The observed earliest-to-latest retained event timestamp span is **1.93 days** (November 16, 2026, 00:52:07 to November 17, 2026, 23:06:29, local console time). A separate earlier observation reported **2.03 days** (November 15, 2026, 20:02:39 to November 17, 2026, 20:40:43). The difference is **0.10 days (~2 hours 24 minutes)** between distinct measurements, not an observed data-loss rate, proof of a particular overwrite event, or a consistent daily trend. Current log capacity remains the separately observed **20 MiB maximum, Circular**.
+
+**Limitations:** This measures a span between retained endpoints, **not** disk space free, completeness of events over that interval, or guaranteed future retention. A size change remains proposed only.
+
+**Next:** Define a target retention window and verify free disk capacity before selecting an initial log-size trial. See [change and validation plan](docs/validation-plan.md).
 
 ## Evidence integrity
 
