@@ -319,9 +319,56 @@ Each of these three events contained the same privilege list:
 
 **Sampling limitations:** Only three recent records were inspected, and this is a separate snapshot from the prior five-event metadata query. The new event at 21:05:00 illustrates that the Security log continues to change. No process attribution or causal correlation has yet been established.
 
-## Step 11 — Correlation and contextual analysis (planned)
+## Step 11 — Correlate special-logon and successful-logon events (verified)
 
-Use narrow read-only queries to establish whether selected 4624 and 4672 events share the same logon identifier. Exclude actual identifiers and usernames from public outputs; do not infer correlation from similar timestamps alone.
+```powershell
+$special = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4672
+} -MaxEvents 1
+
+$xml = [xml]$special.ToXml()
+$logonId = ($xml.Event.EventData.Data |
+    Where-Object Name -eq 'SubjectLogonId').'#text'
+
+$start = $special.TimeCreated.AddMinutes(-2)
+$end = $special.TimeCreated.AddMinutes(1)
+
+$matches = @(Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $start
+    EndTime = $end
+} -MaxEvents 100 | Where-Object {
+    $e = [xml]$_.ToXml()
+    ($e.Event.EventData.Data |
+        Where-Object Name -eq 'TargetLogonId').'#text' -eq $logonId
+})
+
+[PSCustomObject]@{
+    Event4672Time = $special.TimeCreated
+    Matching4624Events = $matches.Count
+    CorrelationFound = ($matches.Count -gt 0)
+}
+```
+
+**Purpose:** Compare the selected 4672 event's `SubjectLogonId` with the `TargetLogonId` fields of 4624 records in a narrow window (two minutes before and one minute after the selected 4672). The query returns only the time, match count, and correlation flag—not the raw logon identifier or usernames.
+
+**Observed output (actual console result):**
+
+```text
+Event4672Time       Matching4624Events CorrelationFound
+-------------       ------------------ ----------------
+17-11-2026 21:08:51                  1             True
+```
+
+**Interpretation:** In the bounded query, one successful-logon event (4624) matched the logon identifier of the selected special-privileges-assigned event (4672). This supports a session-level relationship. It does **not** establish the account category for that exact pair, prove any privileges were exercised, or demonstrate malicious behavior.
+
+**Limitations:** One 4672 event and up to 100 candidate 4624 events were inspected. The event log can change over time, and this result must not be generalized to every 4672 event. The time and logon ID correlation were performed locally; no raw identity or identifier was shared.
+
+## Step 12 — Follow-up (planned)
+
+If needed, classify the account and logon type of this correlated pair locally and return only sanitized categories. Otherwise summarize the evidence and limitations in a short case report.
 
 ## Documentation rules
 
