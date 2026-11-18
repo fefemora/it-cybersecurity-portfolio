@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, 2, 3, 4, 5 and 6 verified; no remediation implemented.  
+**Status:** Steps 1, 1b, 2, 3, 4, 5, 6 and 6b verified; no remediation implemented.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -192,7 +192,7 @@ LogMode            : Circular
 
 **Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
 
-### Step 6b — Refresh oldest/newest retained timestamps (planned)
+### Step 6b — Refresh oldest/newest retained timestamps (verified)
 
 ```powershell
 $oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
@@ -209,7 +209,19 @@ $newest = Get-WinEvent -LogName Security -MaxEvents 1
 
 **Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
 
-**Status:** Not executed in this hardening lab.
+**Verified console output:**
+
+```text
+OldestEvent        NewestEvent         RetainedDays
+-----------        -----------         ------------
+16-11-2026 0:52:07 17-11-2026 23:06:29         1,93
+```
+
+**Assessment:** The observed earliest-to-latest retained event timestamp span is **1.93 days** (November 16, 2026, 00:52:07 to November 17, 2026, 23:06:29, local console time). A separate earlier observation reported **2.03 days** (November 15, 2026, 20:02:39 to November 17, 2026, 20:40:43). The difference is **0.10 days (~2 hours 24 minutes)** between distinct measurements, not an observed data-loss rate, proof of a particular overwrite event, or a consistent daily trend. Current log capacity remains the separately observed **20 MiB maximum, Circular**.
+
+**Limitations:** This measures a span between retained endpoints, **not** disk space free, completeness of events over that interval, or guaranteed future retention. A size change remains proposed only.
+
+
 
 ## Step 7 — Evaluate additional controls (scoped, not executed)
 
