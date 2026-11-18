@@ -10,6 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
+| PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging key absent in queried HKLM location** | Inspect HKCU counterpart; separately assess 4103 availability without exposing messages | **Machine policy absent at inspected path; effective module logging unknown** |
 | PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in earlier check, **439 Warning 4104 records** in later check, **11 IDs totaling 808 events** in earlier distribution; **Operational channel event-history span 5.05 days** (2026-11-13 to 2026-11-18) | Check Module Logging machine policy metadata; validate retention goals independently | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
@@ -716,6 +717,47 @@ if (Test-Path $path) {
 ```
 
 This checks one Windows PowerShell policy path; it cannot alone establish effective logging across all scopes or PowerShell editions.
+
+## Step 20 — Windows PowerShell Module Logging machine policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKLM ModuleLogging policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKLM ModuleLogging policy key: Not configured
+```
+
+**Interpretation:** The **Windows PowerShell ModuleLogging machine policy key** was absent in the specific inspected HKLM location. This is evidence of no explicit machine-policy setting at this path, **not proof that all PowerShell module logging is inactive**. Other scopes, edition-specific settings, and actual event 4103 availability have not been evaluated in this step. The previously observed event 4104 counts relate to Script Block Logging and **do not validate Module Logging**.
+
+**Privacy and change-control:** No policy changes, log payloads, module names, command arguments or secrets were accessed. Secure Boot and BitLocker work remains postponed pending backups and recovery planning.
+
+**Next proposed read-only check:** Inspect the current-user counterpart of Module Logging policy, reporting only the flag or whether the exact key is absent:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKCU ModuleLogging policy key: Not configured'
+}
+```
+
+This check does not determine the full effective configuration by itself.
 
 ## Classification rules
 
