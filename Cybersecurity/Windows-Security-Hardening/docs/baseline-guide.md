@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1 and 1b executed and verified; Defender and other baseline checks pending.  
+**Status:** Steps 1, 1b, and 2 executed and verified; other baseline checks pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -53,18 +53,37 @@ Public     True                Block                 Allow
 
 **Limits:** Specific allow/block rules, the active interface's profile, filtering precedence, and live packet behavior have not been tested. `Block` is a default action subject to policy/rule processing, not proof that every inbound connection is denied. No changes were made.
 
-## Step 2 — Review Microsoft Defender Antivirus status (planned, read-only)
+## Step 2 — Review Microsoft Defender Antivirus status (verified, read-only)
 
 ```powershell
 Get-MpComputerStatus |
-    Select-Object AMServiceEnabled, AntivirusEnabled, RealTimeProtectionEnabled, AntivirusSignatureAge, AntivirusSignatureLastUpdated
+    Select-Object AMServiceEnabled,
+                  AntivirusEnabled,
+                  RealTimeProtectionEnabled,
+                  AntivirusSignatureAge,
+                  AntivirusSignatureLastUpdated |
+    Format-List
 ```
 
 **Purpose:** Identify selected antivirus operating and signature status fields without collecting detailed threat detections or personal information.
 
 **Caveat:** Windows may be managed by other endpoint security software or policy. A field does not by itself prove overall protection quality; command availability and value semantics depend on installed components.
 
-**Evidence status:** **Not executed.**
+**Observed output (actual user-provided console):**
+
+```text
+AMServiceEnabled              : True
+AntivirusEnabled              : True
+RealTimeProtectionEnabled     : True
+AntivirusSignatureAge         : 0
+AntivirusSignatureLastUpdated : 17-11-2026 9:41:14
+```
+
+**Interpretation:** At the time of the command, the Windows antimalware service, antivirus and real-time protection all reported `True`. The signature age was `0` days and the last-update timestamp was **November 17, 2026, 09:41:14** (local console format). No deficiency was identified in these five properties.
+
+**Limitations:** This is a point-in-time status check, not evidence that every protection feature is enabled, exclusions are safe, malware detections are effective, or all endpoint security requirements are satisfied. Cloud-delivered protection and tamper protection were not queried. The command did not perform a scan, update signatures, or alter settings.
+
+**Evidence status:** **Verified; no changes performed.**
 
 ## Step 3 — Review relevant audit configuration (planned, read-only)
 
