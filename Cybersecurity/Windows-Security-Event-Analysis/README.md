@@ -19,13 +19,14 @@ Investigate native Windows Security events with read-only PowerShell commands, i
 5. Classify built-in account SIDs on a five-record 4624 sample (**completed: 5 of 5 LocalSystem / S-1-5-18**).
 6. Review current advanced audit policy with `auditpol /get /category:*` (**completed; read-only**).
 7. Check five recent 4688 event timestamps (**completed: 2026-11-16 14:30:43**).
-8. Inspect selected event fields with sensitive values redacted (**pending**).
-9. Evaluate explanations, limitations, and security significance (**pending**).
-10. Publish a concise, evidence-backed case report (**pending**).
+8. Search for retained 4719 audit-policy-change events (**completed: no matching events returned**).
+9. Inspect selected event fields with sensitive values redacted (**pending**).
+10. Evaluate explanations, limitations, and security significance (**pending**).
+11. Publish a concise, evidence-backed case report (**pending**).
 
 ## Initial findings
 
-The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. A separate, later sample of the 100 most recent 4624 events returned **100 service logons (Logon Type 5)**. This is a recent sample, **not** the distribution of all 638 earlier records. An additional, bounded five-event check classified all five as the built-in **LocalSystem** security principal (`S-1-5-18`); this does not establish the account category of all 100 earlier records. The current audit policy enables **success and failure logon auditing**, **success special-logon auditing**, and **success logoff auditing**, but **process creation auditing is disabled** at inspection time. Five recent 4688 records were dated **2026-11-16 14:30:43**, with consecutive record IDs **2266582–2266586**. The cause of their presence while process auditing is currently disabled is **not established**; a prior policy change is only a hypothesis. No malicious activity has been established.
+The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. A separate, later sample of the 100 most recent 4624 events returned **100 service logons (Logon Type 5)**. This is a recent sample, **not** the distribution of all 638 earlier records. An additional, bounded five-event check classified all five as the built-in **LocalSystem** security principal (`S-1-5-18`); this does not establish the account category of all 100 earlier records. The current audit policy enables **success and failure logon auditing**, **success special-logon auditing**, and **success logoff auditing**, but **process creation auditing is disabled** at inspection time. Five recent 4688 records were dated **2026-11-16 14:30:43**, with consecutive record IDs **2266582–2266586**. The cause of their presence while process auditing is currently disabled is **not established**; a prior policy change is only a hypothesis. A subsequent query for event 4719 returned `NoMatchingEventsFound`; this does not rule out historical or unretained changes. No malicious activity has been established.
 
 Read the [step-by-step guide](docs/lab-guide.md) and [initial event analysis](docs/event-analysis.md) for commands, observed output, caveats, and next steps.
 
