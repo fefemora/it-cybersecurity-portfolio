@@ -2,13 +2,13 @@
 
 [Project overview](../README.md) · [Baseline guide](baseline-guide.md) · [Validation plan](validation-plan.md)
 
-**Assessment phase:** Active. **CHG-001 Security log size change implemented and configuration verified; seven-day retention target not yet met or disproven.**
+**Assessment phase:** Active. **CHG-001 Security log size change implemented and immediate after-state observed; seven-day retention target remains unverified.**
 
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
-| Security log retention | Ensure enough history for investigations | **CHG-001:** maximum 20 MiB → **128 MiB**, post-query `IsEnabled=True`, Circular, **33,989** records; pre-change retained span **1.93 days** | Recheck earliest/newest retained timestamps later; compare with proposed 7-day objective | **CHG-001 size change implemented and verified; retention objective pending** |
+| Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
@@ -265,6 +265,37 @@ LogMode            : Circular
 **Not yet validated:** The proposed **7-day retained-history target**. A capacity increase alone does not prove days retained, and the log needs a follow-up observation over time. The independently verified pre-change retained timestamp span was **1.93 days**, measured before this change. **Process Creation auditing remains a separate, unimplemented proposal**, last observed as `No Auditing` before CHG-001.
 
 **Change status:** **Implemented and post-change maximum-size configuration verified**. Long-term retention outcome **pending**; no rollback performed.
+
+### CHG-001 — Immediate post-change retention observation (verified)
+
+**Read-only query executed:**
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    OldestRecordId = $oldest.RecordId
+    NewestRecordId = $newest.RecordId
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console result:**
+
+```text
+OldestEvent    : 16-11-2026 0:52:21
+NewestEvent    : 18-11-2026 0:00:06
+OldestRecordId : 2256643
+NewestRecordId : 2291047
+RetainedDays   : 1,96
+```
+
+**Comparison:** Before CHG-001, the oldest observed timestamp was **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, and rounded observed span **1.93 days**. At immediate follow-up, the oldest observed timestamp was **2026-11-16 00:52:21** (14 seconds later) and newest **2026-11-18 00:00:06**, with a rounded observed span **1.96 days**. This shows that events with timestamps predating CHG-001 remained accessible after the setting change. It is **not** proof of uninterrupted event-by-event continuity or that the added capacity already extends retention to 7 days. Record IDs are metadata and were not checked for gaps or correlated to the pre-change IDs.
+
+**Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
 
 ## Classification rules
 
