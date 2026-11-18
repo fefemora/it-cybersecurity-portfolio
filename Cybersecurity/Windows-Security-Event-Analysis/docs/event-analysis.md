@@ -163,6 +163,20 @@ A bounded read-only query compared the `SubjectLogonId` of the latest selected e
 
 **Limitations:** The query examined one recent 4672 and capped the candidate 4624 set at 100 within a narrow time interval. No raw logon ID was disclosed. The observation cannot be generalized to all records.
 
+## Verified correlated logon classification (separate follow-up run)
+
+A standalone, bounded read-only query selected the latest available 4672, compared its `SubjectLogonId` with `TargetLogonId` on nearby 4624 events, and classified the matching account using its well-known target SID.
+
+| Output field | Observed result |
+|---|---|
+| `MatchFound` | `True` |
+| `LogonType` | `5` (Service) |
+| `AccountCategory` | `LocalSystem` |
+
+**Assessment:** A successful **service logon under LocalSystem** was correlated with a special-privileges-assigned event. This is consistent with legitimate system activity and does not demonstrate abuse or actual exercise of privileges.
+
+**Critical distinction:** This was a **new query of the latest 4672**, and its result did not include a timestamp or record ID. We **cannot confirm** that it classified the same 21:08:51 event from the earlier correlation check. The earlier unsuccessful variable-only check likewise does not invalidate either successful result.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -175,8 +189,8 @@ A bounded read-only query compared the `SubjectLogonId` of the latest selected e
 
 1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
-3. If useful, classify the exact correlated 4672/4624 session locally using non-identifying categories, without publishing usernames or logon IDs.
-4. Document hypotheses and supporting or contradictory evidence.
+3. Consolidate the two separate, successful correlation observations without claiming they represent the same session.
+4. Produce the final initial-triage case summary, distinguishing verified observations, hypotheses, and limitations.
 
 ## References & Official Documentation
 
