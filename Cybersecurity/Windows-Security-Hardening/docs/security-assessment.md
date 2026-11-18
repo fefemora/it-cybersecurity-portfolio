@@ -9,6 +9,7 @@
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
+| Logon auditing | Confirm audit visibility for successful and failed sign-ins | **Fresh auditpol result: Logon = Aciertos y errores (Success and Failure)** | Count recent Security 4624/4625 metadata only; verify retention separately | **Success and Failure configured and verified; event delivery not yet checked in this step** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | PowerShell Transcription policy | Check explicit machine- and current-user session transcription settings | **HKLM and HKCU Transcription policy keys absent at inspected paths** | Assess other mechanisms and privacy/retention before considering any separate change | **Both inspected policy keys absent; effective transcription remains unknown** |
 | PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging keys absent in queried HKLM and HKCU locations; 4103 count query returned 0** | Inspect Transcription policy and optionally verify zero-count query errors explicitly | **No retained 4103 evidence observed; effective module logging unknown** |
@@ -916,6 +917,46 @@ HKCU Transcription policy key: Not configured
 **Assessment:** A missing explicit registry policy at the inspected paths is **not equivalent to no telemetry or a proven vulnerability**. The existence of 4104 events demonstrates some retained script-block-related records, but not comprehensive recording or a security incident. This phase produced **verified configuration and event metadata only**. No logging, TPM, Secure Boot, BitLocker, firewall or audit policy settings were modified.
 
 **Planned follow-up:** Draft a privacy-aware monitoring recommendations summary and prioritize any separate changes only after explicit owner approval. Secure Boot and BitLocker stay deferred until backup/recovery preparations.
+
+## Step 25 — Windows Logon audit policy (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+auditpol /get /subcategory:"{0cce9215-69ae-11d9-bed3-505054503030}"
+```
+
+**Actual observed localized output (policy rows):**
+
+```text
+Directiva de auditoría del sistema
+Categoría o subcategoría                  Configuración
+Inicio/cierre de sesión
+  Inicio de sesión                        Aciertos y errores
+```
+
+**Interpretation:** The Windows Advanced Audit Policy **Logon** subcategory is configured to audit **Success and Failure** (`Aciertos y errores`) on this machine. This supports collection of relevant sign-in activity such as Security event IDs **4624 (successful logon)** and **4625 (failed logon)** when the relevant events are generated and retained. This does not verify actual counts, the completeness of all authentication flows, forwarding, or any suspicious activity.
+
+**Retention and limitations:** The Security event log maximum was previously raised from 20 MiB to 128 MiB under the **only approved change, CHG-001**; long-term seven-day history has not yet been verified. Querying `auditpol` did not change any policies or expose user names, IP addresses or credentials.
+
+**Next proposed read-only check (counts only):** Quantify recent 4624/4625 records in the past 24 hours with an error-visible and privacy-safe query, without printing event messages or user details:
+
+```powershell
+try {
+    $events = Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4624,4625
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop
+    $events | Group-Object Id |
+        Select-Object Name, Count |
+        Format-Table -AutoSize
+} catch {
+    Write-Output ('Query status: ' + $_.Exception.Message)
+}
+```
+
+A missing event ID from grouped results is not proof that the audit subcategory is disabled or that no such event has ever occurred. Only aggregate counts should be shared.
 
 ## Classification rules
 
