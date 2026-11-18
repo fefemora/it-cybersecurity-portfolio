@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Read-only firewall and Microsoft Defender Antivirus status baselines verified.** Further platform checks remain pending; no configuration changes were made.  
+**Evidence status:** **Read-only firewall, Microsoft Defender antivirus and advanced-protection settings verified.** Other controls remain pending; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -18,7 +18,7 @@ This project separates **observation → assessment → proposed change → auth
 
 | Workstream | Initial read-only observation | Current evidence state |
 |---|---|---|
-| Windows Defender Antivirus | `AMServiceEnabled=True`, `AntivirusEnabled=True`, `RealTimeProtectionEnabled=True`; signature age `0` days, updated 2026-11-17 09:41:14 (console local time) | **Verified five selected fields; broader antivirus protections unassessed** |
+| Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signature age `0`; MAPS Advanced (`2`), safe sample submission (`1`) | **Selected health and advanced preferences verified; effectiveness and connectivity not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
@@ -100,7 +100,41 @@ AntivirusSignatureLastUpdated : 17-11-2026 9:41:14
 
 **Finding:** Microsoft Defender antimalware service, antivirus and real-time protection were enabled at inspection time. Reported antivirus signature age was **0 days**, with a last-update timestamp of **2026-11-17 09:41:14** in the console's local time. These five fields show no identified issue in this bounded check; they do **not** establish cloud-delivered protection, tamper protection, exclusions, detection efficacy or enterprise compliance.
 
-**Next proposed read-only step:** Assess additional Defender protection settings or audit policy after reviewing the baseline.
+## Step 3 — Verified Microsoft Defender advanced-protection configuration
+
+**Read-only commands executed:**
+
+```powershell
+Get-MpComputerStatus |
+    Select-Object IsTamperProtected,
+                  RealTimeProtectionEnabled,
+                  NISEnabled |
+    Format-List
+
+Get-MpPreference |
+    Select-Object MAPSReporting,
+                  SubmitSamplesConsent |
+    Format-List
+```
+
+**Real sanitized output:**
+
+```text
+IsTamperProtected         : True
+RealTimeProtectionEnabled : True
+NISEnabled                : True
+
+MAPSReporting        : 2
+SubmitSamplesConsent : 1
+```
+
+**Interpretation:** Tamper Protection, real-time protection, and Network Inspection System reported `True`. `MAPSReporting=2` corresponds to **Advanced** cloud protection membership; `SubmitSamplesConsent=1` corresponds to **automatic submission of safe samples** under Microsoft Defender preference definitions. These settings were read, not modified.
+
+**Limitations:** Preferences and status flags do not independently prove cloud connectivity, malware detection efficacy, or complete endpoint compliance. Advanced MAPS reporting may share more detailed threat-related information; any policy changes should account for privacy and business requirements. No changes or malware tests were performed.
+
+**Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
+
+**Next proposed read-only step:** Check additional Defender preferences such as Block at First Sight and PUA protection, or revisit audit policy in a fresh read-only measurement.
 
 ## Evidence integrity
 
