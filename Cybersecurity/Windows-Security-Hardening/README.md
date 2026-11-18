@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -22,7 +22,7 @@ This project separates **observation → assessment → proposed change → auth
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Process Creation **No Auditing** in the last read-only check; Security log **20 MiB → 128 MiB** under **CHG-001**, Circular; after-change **33,989** records | **Size change implemented/verified; 7-day retention not yet established** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
-| Update and platform security | BitLocker C: 0% / Off; TPM flags `True`; firmware mode **UEFI**; Secure Boot `False` | **UEFI verified; separate Secure Boot and encryption gaps, no changes** |
+| Update and platform security | BitLocker C: 0% / Off; TPM flags `True`; firmware **UEFI**; system disk **GPT**, disk-level `IsBoot`/`IsSystem=True`; Secure Boot `False` | **UEFI/GPT verified; Secure Boot and encryption remain off; no changes** |
 | Recommendations and validation | CHG-001 Security log maximum-size adjustment; separate future process-auditing pilot | **CHG-001 configuration verified; follow-up retention pending** |
 
 ## Working sequence
@@ -436,7 +436,33 @@ Get-Partition -DriveLetter C |
 
 **Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
 
-**Next:** Review system disk partition style and confirm backup/recovery readiness before any proposed firmware or encryption change.
+## Step 12 — Windows system disk partition style (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Actual sanitized output:**
+
+```text
+Number         : 0
+PartitionStyle : GPT
+IsBoot         : True
+IsSystem       : True
+```
+
+**Interpretation:** Windows reported the disk containing C: as **Disk 0, GPT**, with the returned disk object reporting `IsBoot=True` and `IsSystem=True`. This aligns with the separately verified UEFI boot mode. GPT and UEFI are favorable baseline conditions, but **do not establish that Secure Boot can be safely enabled**: `Confirm-SecureBootUEFI` previously returned `False`. The TPM status flags were all `True`; the system volume remained unencrypted at its last BitLocker query.
+
+**Limits:** `IsBoot` and `IsSystem` here are **disk-level properties returned by Get-Disk**, not a claim about the C: partition's special attributes. This query does not establish that EFI boot signatures, firmware key enrollment, recovery media, backup verification, or Windows recovery paths are ready. **No firmware, disk partition, TPM or BitLocker change was performed.**
+
+**Next step:** Confirm the user has a current independent backup and a usable recovery method before planning any Secure Boot or BitLocker change. Never collect or publish BitLocker recovery secrets.
+
+**Next:** Ask about existing offline/independent backup and recovery readiness before considering any boot or encryption changes.
 
 ## Evidence integrity
 
