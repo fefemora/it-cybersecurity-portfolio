@@ -1,6 +1,6 @@
 # Windows Security Event Analysis — Initial Findings
 
-[Project overview](../README.md) · [Reproduction guide](lab-guide.md)
+[Project overview](../README.md) · [Executive summary](executive-summary.md) · [Reproduction guide](lab-guide.md) · [Recommendations](monitoring-recommendations.md)
 
 **Case status:** Initial triage only; no confirmed security incident.  
 **Data source:** User-provided PowerShell console output from the local Windows Security log.  
@@ -190,7 +190,7 @@ A standalone, bounded read-only query selected the latest available 4672, compar
 1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
 3. Consolidate the two separate, successful correlation observations without claiming they represent the same session.
-4. Produce the final initial-triage case summary, distinguishing verified observations, hypotheses, and limitations.
+4. **Completed:** executive summary and non-implemented monitoring recommendations are available as separate, linked documents.
 
 ## References & Official Documentation
 
