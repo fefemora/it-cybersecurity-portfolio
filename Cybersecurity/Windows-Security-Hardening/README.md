@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Firewall, Defender, Process Creation audit policy, Security log capacity and retained time-span baselines verified.** Changes remain proposed only; no configuration modifications performed.  
+**Evidence status:** **Firewall, Defender, Process Creation audit policy, Security log retention and free disk-space baselines verified.** A 128 MiB log-size pilot is proposed, not applied; no configuration modifications performed.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -20,7 +20,7 @@ This project separates **observation → assessment → proposed change → auth
 |---|---|---|
 | Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signatures age `0`; MAPS `2`, sample consent `1`; PUA Block `1`, Block at First Sight not disabled (`False`) | **Selected protection statuses/preferences verified; operational effectiveness not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
-| Security auditing | Process Creation **No Auditing**; Security log **33,959 records, 20 MiB maximum, Circular**; retained event span **1.93 days** at later inspection | **Visibility and retention concerns verified; changes proposed only** |
+| Security auditing | Process Creation **No Auditing**; Security log **33,959 records, 20 MiB maximum, Circular**; retained event span **1.93 days**; C: free space **56.81 GiB** | **Baseline verified; 128 MiB size trial proposed only** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
 | Recommendations and validation | Prioritized, evidence-based change candidates | **Not implemented** |
@@ -236,7 +236,31 @@ OldestEvent        NewestEvent         RetainedDays
 
 **Limitations:** This measures a span between retained endpoints, **not** disk space free, completeness of events over that interval, or guaranteed future retention. A size change remains proposed only.
 
-**Next:** Define a target retention window and verify free disk capacity before selecting an initial log-size trial. See [change and validation plan](docs/validation-plan.md).
+## Step 7 — Check free space on system volume (verified)
+
+**Read-only command executed:**
+
+```powershell
+[PSCustomObject]@{
+    FreeGiB = [math]::Round((Get-PSDrive -Name C).Free / 1GB, 2)
+}
+```
+
+**Observed result (locale decimal comma):**
+
+```text
+FreeGiB
+-------
+  56,81
+```
+
+**Finding:** The system volume **C:** had **56.81 GiB free** at query time. This is a disk-capacity snapshot, not Security log free capacity or a guarantee of available storage at a future date.
+
+**Proposed sizing pilot (NOT applied):** Review a **128 MiB Security log maximum** (134,217,728 bytes), replacing the current **20 MiB** limit, for an initial measured trial. The increase to the maximum is **108 MiB**. A **7-day retention window** is a *proposed target*, **not a predicted or guaranteed result**, especially if Process Creation auditing is enabled later and event volume rises.
+
+**Change constraints:** Confirm device management/authority and collect a fresh pre-change snapshot. Enlarge only the Security log maximum; do not clear events, change the log mode, or enable 4688 auditing simultaneously. Independently verify the applied maximum and observe the retained time span on subsequent days. Recovery would restore the previous 20 MiB configuration only after checking whether a reduction risks record loss or conflicts with device management policies.
+
+**Next:** Review the proposed 7-day target and 128 MiB pilot in the [validation plan](docs/validation-plan.md); make no changes until explicitly authorized.
 
 ## Evidence integrity
 
