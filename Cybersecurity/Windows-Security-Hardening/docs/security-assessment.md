@@ -6,7 +6,7 @@
 
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
-| Firewall | Confirm native protection across network profiles | Domain, Private, Public: `Enabled=True`; inbound/outbound actions each `NotConfigured` in local query | Query `ActiveStore` for same fields; do not infer effective Allow/Block without evidence | **Initial baseline verified; effective actions unknown** |
+| Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | None | Inspect selected `Get-MpComputerStatus` fields | **Pending evidence** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
 | Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
@@ -22,7 +22,23 @@ Get-NetFirewallProfile |
     Format-Table -AutoSize
 ```
 
-The actual output returned three profiles (`Domain`, `Private`, `Public`), all `Enabled=True`, and `NotConfigured` for both default-action properties across the three. This indicates profile enablement, **not** proof of effective traffic-allowance policy. The next read-only step is to inspect `-PolicyStore ActiveStore` and evaluate any remaining ambiguity. No firewall rules or settings have been modified.
+The actual output returned three profiles (`Domain`, `Private`, `Public`), all `Enabled=True`, and `NotConfigured` for both default-action properties across the three. This initial result did **not** establish effective default actions.
+
+## Verified firewall evidence — ActiveStore follow-up
+
+```powershell
+Get-NetFirewallProfile -PolicyStore ActiveStore |
+    Select-Object Name, Enabled, DefaultInboundAction, DefaultOutboundAction |
+    Format-Table -AutoSize
+```
+
+| Profile | Enabled | ActiveStore default inbound | ActiveStore default outbound |
+|---|---|---|---|
+| Domain | True | Block | Allow |
+| Private | True | Block | Allow |
+| Public | True | Block | Allow |
+
+**Assessment:** The `ActiveStore` query resolves the ambiguous local property values: all three profiles have default **Block inbound / Allow outbound**. The inspected defaults do not identify a security weakness. This is not a rule-level inspection or a test of actual network traffic; exceptions and other controls may apply. **No firewall rules or settings have been changed.**
 
 ## Classification rules
 
