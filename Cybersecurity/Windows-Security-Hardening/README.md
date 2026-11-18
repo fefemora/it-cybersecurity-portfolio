@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Read-only firewall local and ActiveStore profile baselines verified.** Defender and other control checks remain pending; no configuration changes were made.  
+**Evidence status:** **Read-only firewall and Microsoft Defender Antivirus status baselines verified.** Further platform checks remain pending; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -18,7 +18,7 @@ This project separates **observation → assessment → proposed change → auth
 
 | Workstream | Initial read-only observation | Current evidence state |
 |---|---|---|
-| Windows Defender Antivirus | Antivirus, real-time protection, signature state | **Not collected** |
+| Windows Defender Antivirus | `AMServiceEnabled=True`, `AntivirusEnabled=True`, `RealTimeProtectionEnabled=True`; signature age `0` days, updated 2026-11-17 09:41:14 (console local time) | **Verified five selected fields; broader antivirus protections unassessed** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
@@ -74,7 +74,33 @@ Private    True                Block                 Allow
 Public     True                Block                 Allow
 ```
 
-**Finding:** All three profile defaults are **inbound Block / outbound Allow** in ActiveStore. Specific allow rules, active network profile, and actual packet behavior were **not** examined. **Next:** read-only Microsoft Defender Antivirus health check.
+**Finding:** All three profile defaults are **inbound Block / outbound Allow** in ActiveStore. Specific allow rules, active network profile, and actual packet behavior were **not** examined. **Next:** read-only Microsoft Defender Antivirus health check (completed, shown below).
+
+## Step 2 — Verified Microsoft Defender Antivirus health
+
+```powershell
+Get-MpComputerStatus |
+    Select-Object AMServiceEnabled,
+                  AntivirusEnabled,
+                  RealTimeProtectionEnabled,
+                  AntivirusSignatureAge,
+                  AntivirusSignatureLastUpdated |
+    Format-List
+```
+
+**Observed console output (real):**
+
+```text
+AMServiceEnabled              : True
+AntivirusEnabled              : True
+RealTimeProtectionEnabled     : True
+AntivirusSignatureAge         : 0
+AntivirusSignatureLastUpdated : 17-11-2026 9:41:14
+```
+
+**Finding:** Microsoft Defender antimalware service, antivirus and real-time protection were enabled at inspection time. Reported antivirus signature age was **0 days**, with a last-update timestamp of **2026-11-17 09:41:14** in the console's local time. These five fields show no identified issue in this bounded check; they do **not** establish cloud-delivered protection, tamper protection, exclusions, detection efficacy or enterprise compliance.
+
+**Next proposed read-only step:** Assess additional Defender protection settings or audit policy after reviewing the baseline.
 
 ## Evidence integrity
 
