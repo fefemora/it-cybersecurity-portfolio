@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM present, ready, enabled and activated.** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -22,7 +22,7 @@ This project separates **observation → assessment → proposed change → auth
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Process Creation **No Auditing** in the last read-only check; Security log **20 MiB → 128 MiB** under **CHG-001**, Circular; after-change **33,989** records | **Size change implemented/verified; 7-day retention not yet established** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
-| Update and platform security | BitLocker C: `FullyDecrypted`, `ProtectionStatus=Off`, `EncryptionPercentage=0`; **TPM present/ready/enabled/activated = True**; other protections not checked | **TPM prerequisite verified; system-volume encryption remains off; no change applied** |
+| Update and platform security | BitLocker C: 0% / Off; TPM present/ready/enabled/activated = `True`; **Secure Boot = `False`** | **Two distinct gaps verified (disk encryption and Secure Boot); changes not implemented** |
 | Recommendations and validation | CHG-001 Security log maximum-size adjustment; separate future process-auditing pilot | **CHG-001 configuration verified; follow-up retention pending** |
 
 ## Working sequence
@@ -391,7 +391,21 @@ TpmActivated : True
 
 **Next read-only prerequisite:** Inspect boot mode and Secure Boot support using `Confirm-SecureBootUEFI` (a result of `False` needs context; errors can indicate an unsupported/non-UEFI environment). Do not publish recovery passwords or TPM key material. Verify recovery and backups before any separate authorization for encryption.
 
-**Next:** Verify Secure Boot state and recovery/backup preparations before considering any separate encryption change.
+## Step 10 — Secure Boot status (verified; read-only)
+
+**Command executed:** `Confirm-SecureBootUEFI`
+
+**Actual result (user confirmed):**
+
+```text
+False
+```
+
+**Interpretation:** Windows reported **Secure Boot disabled**. This is a verified boot-integrity configuration gap, not evidence of compromise or a malfunctioning TPM. The `Get-Tpm` query independently returned `True` for presence, readiness, enabled and activated; TPM state does not establish Secure Boot state.
+
+**Limitations and safe next steps:** This command does not document firmware settings, signed boot components, storage partition layout, boot-loader compatibility, or why Secure Boot is disabled. **No firmware changes, BitLocker activation, or TPM changes were authorized or performed.** Before considering a separate change, verify actual BIOS mode via a read-only Windows query, record recovery/backup readiness, and evaluate firmware and Hyper-V compatibility. A manual firmware toggle without reviewing boot compatibility may cause boot or recovery problems.
+
+**Next:** Gather non-sensitive boot-mode evidence; do not change firmware or enable encryption without separate readiness and approval.
 
 ## Evidence integrity
 
