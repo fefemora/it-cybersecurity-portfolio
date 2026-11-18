@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
-| Security log retention | Ensure enough history for investigations | Fresh query: **33,959 records, max 20 MiB, Circular**; **prior lab** found ~2.03-day span | Measure fresh oldest/newest timestamps, choose target retention and assess feasibility before process auditing | **Current capacity and retention mode verified; current time span pending** |
+| Security log retention | Ensure enough history for investigations | **33,959 records, 20 MiB maximum, Circular**; later retained endpoint span **1.93 days**, prior separate run **2.03 days** | Choose target retention; verify disk capacity; plan a measured size adjustment before increasing audit volume | **Current configuration and 1.93-day span verified; no size change applied** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
@@ -171,7 +171,7 @@ LogMode            : Circular
 
 **Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
 
-### Step 6b — Refresh oldest/newest retained timestamps (planned)
+### Step 6b — Refresh oldest/newest retained timestamps (verified)
 
 ```powershell
 $oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
@@ -188,7 +188,19 @@ $newest = Get-WinEvent -LogName Security -MaxEvents 1
 
 **Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
 
-**Status:** Not executed in this hardening lab.
+**Verified console output:**
+
+```text
+OldestEvent        NewestEvent         RetainedDays
+-----------        -----------         ------------
+16-11-2026 0:52:07 17-11-2026 23:06:29         1,93
+```
+
+**Assessment:** The observed earliest-to-latest retained event timestamp span is **1.93 days** (November 16, 2026, 00:52:07 to November 17, 2026, 23:06:29, local console time). A separate earlier observation reported **2.03 days** (November 15, 2026, 20:02:39 to November 17, 2026, 20:40:43). The difference is **0.10 days (~2 hours 24 minutes)** between distinct measurements, not an observed data-loss rate, proof of a particular overwrite event, or a consistent daily trend. Current log capacity remains the separately observed **20 MiB maximum, Circular**.
+
+**Limitations:** This measures a span between retained endpoints, **not** disk space free, completeness of events over that interval, or guaranteed future retention. A size change remains proposed only.
+
+
 
 ## Classification rules
 
