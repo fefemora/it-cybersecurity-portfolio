@@ -1,5 +1,7 @@
 # IT Support & Cybersecurity Portfolio
 
+**[Versión en español / Spanish version](https://github.com/fefemora/it-portfolio-es)**
+
 **IT Support L1/L2 · Systems Administration · Information Security · Cybersecurity**
 
 Welcome! I am an IT professional with experience in troubleshooting, user support, and systems administration. I use this portfolio to demonstrate how I investigate problems, document technical decisions, and approach cybersecurity risk.
@@ -22,7 +24,7 @@ My work connects three areas: **hands-on IT support**, **security-aware operatio
 | **[Service Desk Incident Management — L2 Case Studies](IT-Support/Service-Desk-Incident-Management/README.md)** | Microsoft 365 authentication, DNS, VPN troubleshooting and escalation | **Three simulated incidents** | **Documented** |
 | **[Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, NIST CSF 2.0 / CIS IG1 mapping, treatment planning, executive reporting | **Fictional enterprise assessment** | **Documentation completed** |
 | **[Windows Security Event Analysis — Blue Team Lab](Cybersecurity/Windows-Security-Event-Analysis/README.md)** | Real Windows Security log triage, audit policy review, logon-ID event correlation and monitoring visibility assessment | **Real read-only workstation investigation**, sanitized console output | **Initial assessment completed** |
-| **[Windows Security Hardening — Baseline & Validation](Cybersecurity/Windows-Security-Hardening/README.md)** | Endpoint security baseline, firewall and Defender checks, change and rollback planning | **Planned checks; no new host evidence or changes yet** | **Lab guide prepared / baseline pending** |
+| **[Windows Security Hardening — Baseline & Validation](Cybersecurity/Windows-Security-Hardening/README.md)** | Endpoint security baseline, firewall and Defender checks, change and rollback planning | **Real read-only baseline; one narrowly approved log-size change** | **30-step assessment documented; deferred hardening pending** |
 
 ## Project Highlights
 
@@ -58,11 +60,11 @@ A real, read-only Windows Security log assessment investigated successful logons
 
 **[Explore the Blue Team case and executive report →](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
 
-### 05 — Windows Security Hardening: Baseline and Controlled Validation
+### 05 — Windows Security Hardening: Baseline, Controlled Change and Validation
 
-[![Planned Windows hardening lifecycle](Cybersecurity/Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Cybersecurity/Windows-Security-Hardening/README.md)
+[![Windows hardening lifecycle](Cybersecurity/Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Cybersecurity/Windows-Security-Hardening/README.md)
 
-A follow-on Blue Team lab begins with **read-only firewall, antivirus and audit-policy baselining**, then separates recommended settings from authorized implementation and independent validation. **No hardening actions have been applied or verified** in this new project.
+A follow-on Blue Team lab completed **28 evidence-based checks and two closure steps**, covering firewall, Microsoft Defender, PowerShell, logon auditing, BitLocker and boot security. **One narrowly authorized change (CHG-001)** increased the Security event log maximum from **20 MiB to 128 MiB** and its configuration was verified; the proposed seven-day retention outcome, BitLocker and Secure Boot changes remain pending.
 
 **[Open the baseline and validation lab →](Cybersecurity/Windows-Security-Hardening/README.md)**
 
