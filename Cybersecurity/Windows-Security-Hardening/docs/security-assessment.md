@@ -7,7 +7,7 @@
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
-| Antivirus | Review on-device malware protection status | None | Inspect selected `Get-MpComputerStatus` fields | **Pending evidence** |
+| Antivirus | Review on-device malware protection status | Service, antivirus, real-time protection: `True`; signatures age `0`, last updated `2026-11-17 09:41:14` | Consider read-only check of cloud-delivered and tamper protections; do not infer settings not queried | **Five indicators verified; no deficiency identified in checked fields** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
 | Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
@@ -39,6 +39,30 @@ Get-NetFirewallProfile -PolicyStore ActiveStore |
 | Public | True | Block | Allow |
 
 **Assessment:** The `ActiveStore` query resolves the ambiguous local property values: all three profiles have default **Block inbound / Allow outbound**. The inspected defaults do not identify a security weakness. This is not a rule-level inspection or a test of actual network traffic; exceptions and other controls may apply. **No firewall rules or settings have been changed.**
+
+## Verified Microsoft Defender Antivirus status — Step 2
+
+**Exact executed query:**
+
+```powershell
+Get-MpComputerStatus |
+    Select-Object AMServiceEnabled,
+                  AntivirusEnabled,
+                  RealTimeProtectionEnabled,
+                  AntivirusSignatureAge,
+                  AntivirusSignatureLastUpdated |
+    Format-List
+```
+
+| Property | Verified value |
+|---|---|
+| `AMServiceEnabled` | `True` |
+| `AntivirusEnabled` | `True` |
+| `RealTimeProtectionEnabled` | `True` |
+| `AntivirusSignatureAge` | `0` days |
+| `AntivirusSignatureLastUpdated` | `2026-11-17 09:41:14` (console local time) |
+
+**Assessment:** The selected Microsoft Defender Antivirus health indicators were positive at the time of observation. This is not an antivirus efficacy test, threat scan, policy compliance assessment, or assessment of features not queried. **No antivirus configuration or signatures were modified by this command.**
 
 ## Classification rules
 
