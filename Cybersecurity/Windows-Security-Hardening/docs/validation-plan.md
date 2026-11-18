@@ -170,7 +170,7 @@ RetainedDays   : 1,96
 
 **Preconditions:** Confirm Windows/TPM and boot compatibility, reliable backup, recovery-key creation/storage outside the public repo, safe access if recovery is triggered, and any management policy. Preserve the exact baseline and plan appropriate testing. Do not publish a key protector or recovery password.
 
-**TPM read-only check verified:** `TpmPresent=True`, `TpmReady=True`, `TpmEnabled=True`, `TpmActivated=True`. **Secure Boot separately verified:** `Confirm-SecureBootUEFI` returned `False`. TPM readiness is not full encryption readiness. **Firmware check verified:** `Get-ComputerInfo | Select-Object BiosFirmwareType | Format-List` returned `Uefi`. **Next planned checks:** system disk partition style plus backup/recovery preparation.
+**TPM read-only check verified:** `TpmPresent=True`, `TpmReady=True`, `TpmEnabled=True`, `TpmActivated=True`. **Secure Boot separately verified:** `Confirm-SecureBootUEFI` returned `False`. TPM readiness is not full encryption readiness. **Firmware check verified:** `Get-ComputerInfo | Select-Object BiosFirmwareType | Format-List` returned `Uefi`. **Disk check verified:** `Get-Partition -DriveLetter C | Get-Disk | Select-Object Number, PartitionStyle, IsBoot, IsSystem | Format-List` returned Disk 0, `GPT`, `IsBoot=True`, `IsSystem=True` (the latter flags are disk-level attributes). **Next prerequisite:** verify independent backups and recovery preparedness.
 
 **Status:** Finding verified; **no BitLocker change authorized or implemented**.
 
@@ -244,6 +244,32 @@ Get-Partition -DriveLetter C |
 ```
 
 **Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
+
+## Step 12 — Windows system disk partition style (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Actual sanitized output:**
+
+```text
+Number         : 0
+PartitionStyle : GPT
+IsBoot         : True
+IsSystem       : True
+```
+
+**Interpretation:** Windows reported the disk containing C: as **Disk 0, GPT**, with the returned disk object reporting `IsBoot=True` and `IsSystem=True`. This aligns with the separately verified UEFI boot mode. GPT and UEFI are favorable baseline conditions, but **do not establish that Secure Boot can be safely enabled**: `Confirm-SecureBootUEFI` previously returned `False`. The TPM status flags were all `True`; the system volume remained unencrypted at its last BitLocker query.
+
+**Limits:** `IsBoot` and `IsSystem` here are **disk-level properties returned by Get-Disk**, not a claim about the C: partition's special attributes. This query does not establish that EFI boot signatures, firmware key enrollment, recovery media, backup verification, or Windows recovery paths are ready. **No firmware, disk partition, TPM or BitLocker change was performed.**
+
+**Next step:** Confirm the user has a current independent backup and a usable recovery method before planning any Secure Boot or BitLocker change. Never collect or publish BitLocker recovery secrets.
 
 ## Evidence fields for every *future* approved change
 
