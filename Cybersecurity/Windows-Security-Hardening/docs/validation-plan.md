@@ -757,6 +757,46 @@ HKCU Transcription policy key: Not configured
 
 **Planned follow-up:** Draft a privacy-aware monitoring recommendations summary and prioritize any separate changes only after explicit owner approval. Secure Boot and BitLocker stay deferred until backup/recovery preparations.
 
+## Step 25 — Windows Logon audit policy (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+auditpol /get /subcategory:"{0cce9215-69ae-11d9-bed3-505054503030}"
+```
+
+**Actual observed localized output (policy rows):**
+
+```text
+Directiva de auditoría del sistema
+Categoría o subcategoría                  Configuración
+Inicio/cierre de sesión
+  Inicio de sesión                        Aciertos y errores
+```
+
+**Interpretation:** The Windows Advanced Audit Policy **Logon** subcategory is configured to audit **Success and Failure** (`Aciertos y errores`) on this machine. This supports collection of relevant sign-in activity such as Security event IDs **4624 (successful logon)** and **4625 (failed logon)** when the relevant events are generated and retained. This does not verify actual counts, the completeness of all authentication flows, forwarding, or any suspicious activity.
+
+**Retention and limitations:** The Security event log maximum was previously raised from 20 MiB to 128 MiB under the **only approved change, CHG-001**; long-term seven-day history has not yet been verified. Querying `auditpol` did not change any policies or expose user names, IP addresses or credentials.
+
+**Next proposed read-only check (counts only):** Quantify recent 4624/4625 records in the past 24 hours with an error-visible and privacy-safe query, without printing event messages or user details:
+
+```powershell
+try {
+    $events = Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4624,4625
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop
+    $events | Group-Object Id |
+        Select-Object Name, Count |
+        Format-Table -AutoSize
+} catch {
+    Write-Output ('Query status: ' + $_.Exception.Message)
+}
+```
+
+A missing event ID from grouped results is not proof that the audit subcategory is disabled or that no such event has ever occurred. Only aggregate counts should be shared.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
