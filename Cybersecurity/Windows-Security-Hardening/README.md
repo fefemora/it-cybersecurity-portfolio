@@ -536,7 +536,46 @@ $events = Get-WinEvent -FilterHashtable @{ LogName = $log; Id = 4104 } -ErrorAct
 
 For reduced output and effort, use an API-level count, not the script text or full event objects. This query is proposed, not yet executed; absence of retained 4104 would not prove that no event ever occurred.
 
-**Next:** Inspect counts of selected event IDs only, not their messages, to assess available PowerShell monitoring visibility. Secure Boot and BitLocker changes remain deferred.
+## Step 15 — Retained PowerShell event 4104 count (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$count = (Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4104
+} -ErrorAction SilentlyContinue | Measure-Object).Count
+
+[PSCustomObject]@{
+    EventId = 4104
+    Count = $count
+} | Format-List
+```
+
+**Actual console output:**
+
+```text
+EventId : 4104
+Count   : 438
+```
+
+**Interpretation:** The queried Windows PowerShell Operational channel currently retains **438 events with ID 4104**, consistent with some script-block-related event generation. The preceding channel-metadata query reported **808 total records** at a separate point in time. These are separate snapshots; counts can change in a circular log. `4104` records are **not necessarily unique scripts**, as multipart and other recording behaviors are possible. The **HKLM ScriptBlockLogging policy key was absent** at the queried path, so this result does **not** prove comprehensive Script Block Logging policy is enabled; other scopes and automatic logging behavior remain unassessed.
+
+**Security/privacy limits:** This check only counted event objects. It did **not** inspect any command text, scripts, user names, messages or file paths. The presence of 4104 events is **not evidence of malicious activity**. No policy or logging settings were modified.
+
+**Next planned read-only step:** Summarize event IDs in the Operational channel without reading or publishing event messages. A bounded local query can group **only metadata** from up to 1,000 retained events (the previous channel count was 808):
+
+```powershell
+Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 1000 |
+    Group-Object Id |
+    Sort-Object Count -Descending |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+Do not publish full event `Message` fields or script-block text.
+
+**Next:** Inventory PowerShell Operational event IDs using counts only; do not inspect script content. Secure Boot and BitLocker remain deferred.
 
 ## Evidence integrity
 
