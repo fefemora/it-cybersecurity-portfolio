@@ -9,7 +9,7 @@
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
-| Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
+| Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | None | Determine OS/build and device support before selecting checks | **Not assessed** |
@@ -121,6 +121,29 @@ DisableBlockAtFirstSeen : False
 **Limits:** Preference values do not independently establish end-to-end Block at First Sight operation, cloud connectivity, or malware detection effectiveness. No file was submitted, executed, scanned or quarantined in this exercise. **No settings were changed.**
 
 **Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
+
+## Step 5 — Verify Process Creation audit policy (verified)
+
+**Read-only command actually executed:**
+
+```powershell
+auditpol /get /subcategory:"{0cce922b-69ae-11d9-bed3-505054503030}"
+```
+
+**Actual console output (Spanish Windows locale):**
+
+```text
+Directiva de auditoría del sistema
+Categoría o subcategoría                  Configuración
+Seguimiento detallado
+  Creación del proceso                    Sin auditoría
+```
+
+**Interpretation:** The advanced audit subcategory **Process Creation** is currently configured as **No Auditing**. This independently confirms the same setting observed in the [prior Windows Security Event Analysis](../../Windows-Security-Event-Analysis/README.md). With this subcategory disabled, routine process creation auditing is not configured to provide continuous Security event 4688 coverage. The earlier retained 4688 records remain unexplained; they are not proof that audit policy changed or that malicious processes ran.
+
+**Security impact and limits:** This is a **monitoring visibility gap**, not proof of an attack or a compliance finding. The local Security log was previously observed at **20 MiB / Circular** with ~2.03 days between oldest/newest retained events; additional process events could accelerate log turnover if retention capacity is unchanged. Command-line inclusion in 4688 is a separate, potentially sensitive setting and was **not assessed or enabled**.
+
+**Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
 
 ## Classification rules
 
