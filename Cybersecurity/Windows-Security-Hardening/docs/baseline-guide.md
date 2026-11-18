@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status and 4104 event count verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 event count, and 11-ID distribution verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -562,7 +562,58 @@ Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 1000
 
 Do not publish full event `Message` fields or script-block text.
 
-## Step 16 — Evaluate additional controls (scoped, not executed)
+## Step 16 — PowerShell Operational event ID distribution (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 1000 |
+    Group-Object Id |
+    Sort-Object Count -Descending |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+**Actual observed output (ID and aggregate count only):**
+
+```text
+Name  Count
+----  -----
+4104    438
+53504    63
+12039    63
+8196     63
+40962    62
+40961    62
+8197     28
+8194      9
+8193      9
+8195      9
+4100      2
+```
+
+**Validation:** The eleven event ID groups total **808** records (438 + 63 + 63 + 63 + 62 + 62 + 28 + 9 + 9 + 9 + 2 = 808), matching the previously observed channel `RecordCount` at its earlier snapshot. **4104 accounts for 438/808 ≈ 54.2%** of the returned event records. This consistency supports the inventory, but the circular log may change between queries.
+
+**Security interpretation:** 4104 is associated with PowerShell script-block records; 4100 can be associated with PowerShell command execution errors. An ID count alone cannot establish an incident, full script-block coverage, root cause, or unique script executions. The meanings of **53504, 12039, 8196, 40962, 40961, 8197, 8194, 8193, 8195** have **not** been independently validated in this case and are intentionally recorded without speculative labels. The HKLM `ScriptBlockLogging` policy key was absent in Step 13, but operational 4104 events exist.
+
+**Privacy/limits:** No `Message`, event payload, script text, command line, usernames or private filenames were printed or recorded; no changes made.
+
+**Proposed next read-only check:** Inspect the current-user Windows PowerShell ScriptBlockLogging policy key without dumping unrelated registry values:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableScriptBlockLogging |
+        Format-List
+} else {
+    'HKCU policy registry key: Not configured'
+}
+```
+
+This checks **only** the specified HKCU location, not every possible logging policy or PowerShell edition.
+
+## Step 17 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
