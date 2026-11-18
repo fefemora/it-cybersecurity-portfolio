@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: baseline verified: fully decrypted, protection Off.** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM present, ready, enabled and activated.** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -22,7 +22,7 @@ This project separates **observation → assessment → proposed change → auth
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Process Creation **No Auditing** in the last read-only check; Security log **20 MiB → 128 MiB** under **CHG-001**, Circular; after-change **33,989** records | **Size change implemented/verified; 7-day retention not yet established** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
-| Update and platform security | BitLocker C: `FullyDecrypted`, `ProtectionStatus=Off`, `EncryptionPercentage=0`; other protections and updates not checked | **System-volume encryption gap verified; no encryption applied** |
+| Update and platform security | BitLocker C: `FullyDecrypted`, `ProtectionStatus=Off`, `EncryptionPercentage=0`; **TPM present/ready/enabled/activated = True**; other protections not checked | **TPM prerequisite verified; system-volume encryption remains off; no change applied** |
 | Recommendations and validation | CHG-001 Security log maximum-size adjustment; separate future process-auditing pilot | **CHG-001 configuration verified; follow-up retention pending** |
 
 ## Working sequence
@@ -365,7 +365,33 @@ Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-
 
 **Limitations:** TPM readiness alone does not validate BitLocker usability or backup/recovery safety. Consider management policy, Windows edition, firmware boot mode and a tested backup before any authorized implementation.
 
-**Next:** Verify TPM readiness using the read-only command; do not enable BitLocker until backups and recovery arrangements are checked.
+## Step 9 — TPM readiness (verified; read-only)
+
+**Actual executed command:**
+
+```powershell
+Get-Tpm |
+    Select-Object TpmPresent,
+                  TpmReady,
+                  TpmEnabled,
+                  TpmActivated |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+TpmPresent   : True
+TpmReady     : True
+TpmEnabled   : True
+TpmActivated : True
+```
+
+**Assessment:** A TPM is present, ready, enabled and activated according to the Windows `Get-Tpm` status fields. This resolves one platform prerequisite for a potential BitLocker deployment but does **not** validate the complete startup/recovery path, backup reliability, BitLocker policy configuration or availability of a recovery key. The C: system volume remains **fully decrypted and unprotected by BitLocker** in the most recent volume query. No TPM or BitLocker settings were modified.
+
+**Next read-only prerequisite:** Inspect boot mode and Secure Boot support using `Confirm-SecureBootUEFI` (a result of `False` needs context; errors can indicate an unsupported/non-UEFI environment). Do not publish recovery passwords or TPM key material. Verify recovery and backups before any separate authorization for encryption.
+
+**Next:** Verify Secure Boot state and recovery/backup preparations before considering any separate encryption change.
 
 ## Evidence integrity
 
