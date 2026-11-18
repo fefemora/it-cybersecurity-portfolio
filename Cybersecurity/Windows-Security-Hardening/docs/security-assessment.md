@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
-| Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
+| Security log retention | Ensure enough history for investigations | Fresh query: **33,959 records, max 20 MiB, Circular**; **prior lab** found ~2.03-day span | Measure fresh oldest/newest timestamps, choose target retention and assess feasibility before process auditing | **Current capacity and retention mode verified; current time span pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
@@ -144,6 +144,51 @@ Seguimiento detallado
 **Security impact and limits:** This is a **monitoring visibility gap**, not proof of an attack or a compliance finding. The local Security log was previously observed at **20 MiB / Circular** with ~2.03 days between oldest/newest retained events; additional process events could accelerate log turnover if retention capacity is unchanged. Command-line inclusion in 4688 is a separate, potentially sensitive setting and was **not assessed or enabled**.
 
 **Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
+
+## Step 6 — Verify Security log capacity (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+Get-WinEvent -ListLog Security |
+    Select-Object LogName,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Observed console result:**
+
+```text
+LogName            : Security
+RecordCount        : 33959
+MaximumSizeInBytes : 20971520
+LogMode            : Circular
+```
+
+**Assessment:** The Security log was configured with a **20 MiB maximum** and **Circular** retention, holding **33,959 records** at inspection time. A separate previous case recorded **33,898 records**, an apparent difference of **61**. These were taken at different moments and, with circular retention, **the difference is not a count of newly generated events**; older records may have been replaced.
+
+**Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
+
+### Step 6b — Refresh oldest/newest retained timestamps (planned)
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent  = $oldest.TimeCreated
+    NewestEvent  = $newest.TimeCreated
+    RetainedDays = [math]::Round(
+        ($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2
+    )
+}
+```
+
+**Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
+
+**Status:** Not executed in this hardening lab.
 
 ## Classification rules
 
