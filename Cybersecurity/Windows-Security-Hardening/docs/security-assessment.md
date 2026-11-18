@@ -12,7 +12,7 @@
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
-| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted, Off, 0% encrypted** | Read-only TPM readiness and recovery/backup prerequisites; no encryption changes | **System-volume encryption gap verified; improvement not implemented** |
+| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted, Off, 0%; TPM Present/Ready/Enabled/Activated all True** | Check Secure Boot compatibility and recovery/backup prerequisites; encryption requires separate approval | **TPM readiness verified; C: encryption gap remains, no change applied** |
 
 ## Verified firewall evidence — Initial query
 
@@ -330,6 +330,32 @@ Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-
 ```
 
 **Limitations:** TPM readiness alone does not validate BitLocker usability or backup/recovery safety. Consider management policy, Windows edition, firmware boot mode and a tested backup before any authorized implementation.
+
+## Step 9 — TPM readiness (verified; read-only)
+
+**Actual executed command:**
+
+```powershell
+Get-Tpm |
+    Select-Object TpmPresent,
+                  TpmReady,
+                  TpmEnabled,
+                  TpmActivated |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+TpmPresent   : True
+TpmReady     : True
+TpmEnabled   : True
+TpmActivated : True
+```
+
+**Assessment:** A TPM is present, ready, enabled and activated according to the Windows `Get-Tpm` status fields. This resolves one platform prerequisite for a potential BitLocker deployment but does **not** validate the complete startup/recovery path, backup reliability, BitLocker policy configuration or availability of a recovery key. The C: system volume remains **fully decrypted and unprotected by BitLocker** in the most recent volume query. No TPM or BitLocker settings were modified.
+
+**Next read-only prerequisite:** Inspect boot mode and Secure Boot support using `Confirm-SecureBootUEFI` (a result of `False` needs context; errors can indicate an unsupported/non-UEFI environment). Do not publish recovery passwords or TPM key material. Verify recovery and backups before any separate authorization for encryption.
 
 ## Classification rules
 
