@@ -7,7 +7,7 @@
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
-| Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced and safe sample submission `1` | Evaluate further preferences and platform/audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
+| Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
 | Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
@@ -97,6 +97,30 @@ SubmitSamplesConsent : 1
 **Limitations:** Preferences and status flags do not independently prove cloud connectivity, malware detection efficacy, or complete endpoint compliance. Advanced MAPS reporting may share more detailed threat-related information; any policy changes should account for privacy and business requirements. No changes or malware tests were performed.
 
 **Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
+
+## Step 4 — PUA Protection and Block at First Sight preferences (verified)
+
+**Exact read-only command executed:**
+
+```powershell
+Get-MpPreference |
+    Select-Object PUAProtection,
+                  DisableBlockAtFirstSeen |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+PUAProtection           : 1
+DisableBlockAtFirstSeen : False
+```
+
+**Interpretation:** `PUAProtection=1` is the **Block** configuration for potentially unwanted applications. `DisableBlockAtFirstSeen=False` means the Block at First Sight capability is **not disabled by this preference**. This is a favorable configuration in the reviewed fields.
+
+**Limits:** Preference values do not independently establish end-to-end Block at First Sight operation, cloud connectivity, or malware detection effectiveness. No file was submitted, executed, scanned or quarantined in this exercise. **No settings were changed.**
+
+**Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
 
 ## Classification rules
 
