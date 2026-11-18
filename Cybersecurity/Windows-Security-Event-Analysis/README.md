@@ -1,7 +1,7 @@
 # Windows Security Event Analysis Lab
 
 **Area:** Cybersecurity / Blue Team  
-**Status:** In progress — read-only event counts, retention, logon samples, audit policy, and bounded 4688/4672 metadata verified; investigation not yet completed  
+**Status:** In progress — read-only event counts, retention, logon samples, audit policy, bounded 4688/4672 metadata and three 4672 privilege lists verified; investigation not yet completed  
 **Environment:** Windows workstation, local Security event log, Windows PowerShell. No SIEM or additional virtual machines required.
 
 [Portfolio home](../../README.md) · [Lab guide](docs/lab-guide.md) · [Event analysis](docs/event-analysis.md)
@@ -21,13 +21,13 @@ Investigate native Windows Security events with read-only PowerShell commands, i
 7. Check five recent 4688 event timestamps (**completed: 2026-11-16 14:30:43**).
 8. Search for retained 4719 audit-policy-change events (**completed: no matching events returned**).
 9. Collect five recent 4672 timestamps and record IDs (**completed**).
-10. Inspect selected event fields with sensitive values redacted (**pending**).
-11. Evaluate explanations, limitations, and security significance (**pending**).
+10. Classify accounts and privilege names in three bounded 4672 records (**completed: 3 LocalSystem records with the same 12 privileges**).
+11. Correlate sessions and assess context (**pending**).
 12. Publish a concise, evidence-backed case report (**pending**).
 
 ## Initial findings
 
-The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. A separate, later sample of the 100 most recent 4624 events returned **100 service logons (Logon Type 5)**. This is a recent sample, **not** the distribution of all 638 earlier records. An additional, bounded five-event check classified all five as the built-in **LocalSystem** security principal (`S-1-5-18`); this does not establish the account category of all 100 earlier records. The current audit policy enables **success and failure logon auditing**, **success special-logon auditing**, and **success logoff auditing**, but **process creation auditing is disabled** at inspection time. Five recent 4688 records were dated **2026-11-16 14:30:43**, with consecutive record IDs **2266582–2266586**. The cause of their presence while process auditing is currently disabled is **not established**; a prior policy change is only a hypothesis. A subsequent query for event 4719 returned `NoMatchingEventsFound`; this does not rule out historical or unretained changes. Five recent event 4672 records were observed on **2026-11-17 between 20:44:56 and 21:00:46**; their specific account categories and privilege lists have **not** yet been examined. No malicious activity has been established.
+The first successful query returned **1,302 matching records** for four IDs: 4624 (638), 4634 (37), 4672 (614), and 4688 (13). The queried IDs 4625 and 1102 were not returned. These are **event records, not unique users or confirmed incidents**. A separate, later sample of the 100 most recent 4624 events returned **100 service logons (Logon Type 5)**. This is a recent sample, **not** the distribution of all 638 earlier records. An additional, bounded five-event check classified all five as the built-in **LocalSystem** security principal (`S-1-5-18`); this does not establish the account category of all 100 earlier records. The current audit policy enables **success and failure logon auditing**, **success special-logon auditing**, and **success logoff auditing**, but **process creation auditing is disabled** at inspection time. Five recent 4688 records were dated **2026-11-16 14:30:43**, with consecutive record IDs **2266582–2266586**. The cause of their presence while process auditing is currently disabled is **not established**; a prior policy change is only a hypothesis. A subsequent query for event 4719 returned `NoMatchingEventsFound`; this does not rule out historical or unretained changes. Five recent event 4672 records were observed on **2026-11-17 between 20:44:56 and 21:00:46**; a separate later sample of three 4672 records was classified as **LocalSystem** and each carried the same **12 named privileges**. The sample includes a newer event at **21:05:00**. Privilege assignment does not demonstrate privilege use. No malicious activity has been established.
 
 Read the [step-by-step guide](docs/lab-guide.md) and [initial event analysis](docs/event-analysis.md) for commands, observed output, caveats, and next steps.
 
