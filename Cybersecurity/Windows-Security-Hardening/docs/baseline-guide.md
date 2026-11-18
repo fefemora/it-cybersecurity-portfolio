@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, and 2 executed and verified; other baseline checks pending.  
+**Status:** Steps 1, 1b, 2 and 3 executed and verified; other baseline checks pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -85,7 +85,41 @@ AntivirusSignatureLastUpdated : 17-11-2026 9:41:14
 
 **Evidence status:** **Verified; no changes performed.**
 
-## Step 3 — Review relevant audit configuration (planned, read-only)
+## Step 3 — Verified Microsoft Defender advanced-protection configuration
+
+**Read-only commands executed:**
+
+```powershell
+Get-MpComputerStatus |
+    Select-Object IsTamperProtected,
+                  RealTimeProtectionEnabled,
+                  NISEnabled |
+    Format-List
+
+Get-MpPreference |
+    Select-Object MAPSReporting,
+                  SubmitSamplesConsent |
+    Format-List
+```
+
+**Real sanitized output:**
+
+```text
+IsTamperProtected         : True
+RealTimeProtectionEnabled : True
+NISEnabled                : True
+
+MAPSReporting        : 2
+SubmitSamplesConsent : 1
+```
+
+**Interpretation:** Tamper Protection, real-time protection, and Network Inspection System reported `True`. `MAPSReporting=2` corresponds to **Advanced** cloud protection membership; `SubmitSamplesConsent=1` corresponds to **automatic submission of safe samples** under Microsoft Defender preference definitions. These settings were read, not modified.
+
+**Limitations:** Preferences and status flags do not independently prove cloud connectivity, malware detection efficacy, or complete endpoint compliance. Advanced MAPS reporting may share more detailed threat-related information; any policy changes should account for privacy and business requirements. No changes or malware tests were performed.
+
+**Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
+
+## Step 4 — Review relevant audit configuration (planned, read-only)
 
 ```powershell
 auditpol /get /category:*
@@ -97,7 +131,7 @@ auditpol /get /category:*
 
 **Evidence status:** **Not executed for this new assessment.**
 
-## Step 4 — Evaluate additional controls (scoped, not executed)
+## Step 5 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
