@@ -9,7 +9,7 @@
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
-| Logon auditing | Confirm audit visibility for successful and failed sign-ins | **Logon = Aciertos y errores (Success and Failure)**; 24-hour query retrieved **235 event 4624** and **no 4625 group** | Group 4624 by logon type (aggregate only); verify retention separately | **Audit policy verified and successful events observed; no recent failure matches** |
+| Logon auditing | Confirm audit visibility for successful and failed sign-ins | **Logon = Aciertos y errores (Success and Failure)**; 24-hour query retrieved **235 event 4624**, **no 4625 group**; logon types **5:229, 11:4, 7:2** | Inspect aggregate 4672 volume; verify retention separately | **Audit policy verified; service logons predominate (97.4%); no failure matches** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | PowerShell Transcription policy | Check explicit machine- and current-user session transcription settings | **HKLM and HKCU Transcription policy keys absent at inspected paths** | Assess other mechanisms and privacy/retention before considering any separate change | **Both inspected policy keys absent; effective transcription remains unknown** |
 | PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging keys absent in queried HKLM and HKCU locations; 4103 count query returned 0** | Inspect Transcription policy and optionally verify zero-count query errors explicitly | **No retained 4103 evidence observed; effective module logging unknown** |
@@ -1007,6 +1007,55 @@ $types | Group-Object | Sort-Object Count -Descending |
 ```
 
 The aggregate type distributions are sampled later and may not sum to 235 because the query time window advances.
+
+## Step 27 — Successful logon type distribution (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+$from = (Get-Date).AddHours(-24)
+$types = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $from
+} -ErrorAction Stop | ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data | Where-Object Name -eq 'LogonType').'#text'
+}
+$types | Group-Object | Sort-Object Count -Descending |
+    Select-Object Name, Count | Format-Table -AutoSize
+```
+
+**Actual observed aggregate output:**
+
+```text
+Name Count
+---- -----
+5      229
+11       4
+7        2
+```
+
+**Finding:** The query returned **235 retained Security event 4624 records**, grouped as **LogonType 5 (Service): 229**, **LogonType 11 (CachedInteractive): 4**, and **LogonType 7 (Unlock): 2**. Totals reconcile exactly to the prior separate 24-hour 4624 count (235), although the two 24-hour windows were queried at different times and may evolve.
+
+**Interpretation:** **97.4%** of these records were **service-type logons**, **1.7%** cached interactive, and **0.9%** unlock events. These are **event records**, not unique users or proof of legitimacy. The distribution does not independently establish what accounts, services or circumstances generated the records; no anomalous activity was confirmed based on the aggregate metadata. Prior audit-policy query returned Logon: Success and Failure; the earlier 24-hour query returned no 4625 group.
+
+**Privacy/change control:** Source event XML was parsed **locally** only to extract the LogonType field. No usernames, IP addresses, session IDs or full records were transmitted or committed. No policy, logging, BitLocker or firmware changes were made.
+
+**Next proposed read-only assessment:** Inspect only the count of Security event **4672** (special privileges assigned to a new logon) over the preceding 24 hours, to compare privilege-related event volume without disclosing account names. This is a different event type and must not be equated with a confirmed administrator login or suspicious activity.
+
+```powershell
+try {
+    $count = (Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4672
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop | Measure-Object).Count
+    [PSCustomObject]@{ EventId = 4672; Count = $count } | Format-List
+} catch {
+    'Query status: ' + $_.Exception.Message
+}
+```
 
 ## Classification rules
 
