@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM and HKCU Module Logging policy keys absent at inspected paths. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM/HKCU Module Logging policy keys absent at inspected paths, and zero retained event 4103 records retrieved. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -817,7 +817,49 @@ $count = (Get-WinEvent -FilterHashtable @{
 
 A zero result would only show that no matching records were retrieved from the currently retained channel; with `-ErrorAction SilentlyContinue`, query errors must be considered separately.
 
-## Step 22 — Evaluate additional controls (scoped, not executed)
+## Step 22 — Retained PowerShell Module Logging event 4103 count (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$count = (Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4103
+} -ErrorAction SilentlyContinue | Measure-Object).Count
+
+[PSCustomObject]@{
+    EventId = 4103
+    Count = $count
+} | Format-List
+```
+
+**Actual output:**
+
+```text
+EventId : 4103
+Count   : 0
+```
+
+**Interpretation:** This query retrieved **zero retained event ID 4103 records** from `Microsoft-Windows-PowerShell/Operational`. The previous read-only ID distribution (11 different IDs, 808 total records at its snapshot) also did not list 4103. The HKLM and HKCU `ModuleLogging` policy registry keys were independently absent at their inspected paths in Steps 20–21. Together these results indicate **no 4103 visibility evidenced in the examined retained channel**, but do **not** establish that module logging was never enabled, that all policy scopes were assessed, or that a security incident occurred.
+
+**Methodological limitation:** `-ErrorAction SilentlyContinue` suppresses non-terminating query errors, so `Count=0` alone cannot distinguish no matches from certain query problems. A follow-up may perform an error-visible metadata-only query if verification is required. Log rotation may also discard historical records.
+
+**Privacy/change control:** No event messages, command lines, modules, scripts, paths or credentials were displayed; no settings modified. Secure Boot and BitLocker remain paused pending backup/recovery readiness.
+
+**Next read-only assessment:** Inspect the existence and enabled flag of the machine-level Windows PowerShell **Transcription** policy only, without accessing transcript output or paths:
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKLM Transcription policy key: Not configured'
+}
+```
+
+## Step 23 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
