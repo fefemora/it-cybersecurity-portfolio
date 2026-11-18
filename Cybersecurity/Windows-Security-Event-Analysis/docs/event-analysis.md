@@ -106,6 +106,20 @@ The read-only query `Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4719
 
 This supports only the statement that **no event 4719 record was returned from the currently retained log**. It does not prove that audit policy never changed, that a change took place, or why event 4688 records exist while Process Creation auditing is currently disabled. The log's circular retention and limited retained history constrain this finding.
 
+## Verified event 4672 metadata sample
+
+A bounded read-only query returned the five latest event 4672 records:
+
+| Local timestamp | Event ID | Record ID |
+|---|---|---:|
+| 2026-11-17 21:00:46 | 4672 | 2286080 |
+| 2026-11-17 20:57:13 | 4672 | 2286068 |
+| 2026-11-17 20:54:58 | 4672 | 2285921 |
+| 2026-11-17 20:53:51 | 4672 | 2285919 |
+| 2026-11-17 20:44:56 | 4672 | 2285681 |
+
+**Assessment:** This is evidence that five records for assignment of special privileges to new logons exist in the retained Security log. It does not show whether they belong to five different sessions or accounts, which privileges were assigned, or whether any activity was unauthorized. Further correlation or a privacy-safe field-level sample is needed to assess context.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -118,7 +132,7 @@ This supports only the statement that **no event 4719 record was returned from t
 
 1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
-3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
+3. Review a very small 4672 sample for built-in account categories and privilege names, keeping identities and logon IDs private.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
