@@ -516,6 +516,49 @@ $newest = Get-WinEvent -LogName $log -MaxEvents 1
 
 Channel-wide retention does not establish how long individual event IDs persist.
 
+## Step 19 — PowerShell Operational retained time span (verified; read-only)
+
+**Executed read-only command:**
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$oldest = Get-WinEvent -LogName $log -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName $log -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console output (local time; decimal comma as displayed):**
+
+```text
+OldestEvent  : 13-11-2026 1:11:52
+NewestEvent  : 18-11-2026 2:20:33
+RetainedDays : 5,05
+```
+
+**Finding:** At the time of this snapshot, the earliest and latest retained `Microsoft-Windows-PowerShell/Operational` events span **5.05 days**, from **2026-11-13 01:11:52** to **2026-11-18 02:20:33**, local time. The earlier configuration check found a **15 MiB Circular** log. This is an **observed event-history span**, **not a configured minimum retention time or SLA** and **not a proven minimum history for ID 4104**. A log's oldest event may reflect when recording began, inactivity, or overwritten records; the cause is not established by these timestamps.
+
+**Limitations:** No event messages, scripts, private identifiers or contents were accessed; no settings were changed. A separate Security log was increased from 20 to 128 MiB under CHG-001, but its seven-day objective remains independently unverified. Secure Boot and BitLocker modifications remain postponed until backup and recovery readiness.
+
+**Next proposed read-only check:** Verify a narrow overview of PowerShell module logging policy at the **HKLM** path only, without enumerating module names or event payloads:
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKLM ModuleLogging policy key: Not configured'
+}
+```
+
+This checks one Windows PowerShell policy path; it cannot alone establish effective logging across all scopes or PowerShell editions.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
