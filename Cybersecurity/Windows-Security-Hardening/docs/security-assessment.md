@@ -10,7 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
-| PowerShell Transcription machine policy | Check explicit machine-level session transcription settings | **HKLM Transcription policy key absent at inspected path** | Read-only check of HKCU counterpart and other relevant scopes if needed | **Machine policy absent at inspected path; effective transcription unknown** |
+| PowerShell Transcription policy | Check explicit machine- and current-user session transcription settings | **HKLM and HKCU Transcription policy keys absent at inspected paths** | Assess other mechanisms and privacy/retention before considering any separate change | **Both inspected policy keys absent; effective transcription remains unknown** |
 | PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging keys absent in queried HKLM and HKCU locations; 4103 count query returned 0** | Inspect Transcription policy and optionally verify zero-count query errors explicitly | **No retained 4103 evidence observed; effective module logging unknown** |
 | PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in earlier check, **439 Warning 4104 records** in later check, **11 IDs totaling 808 events** in earlier distribution; **Operational channel event-history span 5.05 days** (2026-11-13 to 2026-11-18) | Check Module Logging machine policy metadata; validate retention goals independently | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
@@ -879,6 +879,43 @@ if (Test-Path $path) {
     'HKCU Transcription policy key: Not configured'
 }
 ```
+
+## Step 24 — Windows PowerShell Transcription current-user policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKCU Transcription policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKCU Transcription policy key: Not configured
+```
+
+**Interpretation:** No `Transcription` policy key was found at the **current-user HKCU** path. Along with Step 23, **both examined Windows PowerShell Transcription policy paths (HKLM and HKCU) lacked an explicit key**. This does not rule out session-level transcripts, other policy stores, PowerShell editions or effective settings not tested. No transcript files or contents were inspected.
+
+### PowerShell logging assessment summary (read-only)
+
+| Feature | HKLM key at queried path | HKCU key at queried path | Observed telemetry / limits |
+|---|---|---|---|
+| Script Block Logging | Absent | Absent | 4104 events observed; 438 in one query, 439 Warning events in a later query; logging scope undetermined |
+| Module Logging | Absent | Absent | No 4103 events retrieved by the count query (errors suppressed); effective logging unverified |
+| Transcription | Absent | Absent | No transcript-file check performed; effective transcription unverified |
+| Operational event channel | Not a policy-key check | Not a policy-key check | Enabled; 808 records and 15 MiB Circular at earlier snapshot; 5.05-day observed history span |
+
+**Assessment:** A missing explicit registry policy at the inspected paths is **not equivalent to no telemetry or a proven vulnerability**. The existence of 4104 events demonstrates some retained script-block-related records, but not comprehensive recording or a security incident. This phase produced **verified configuration and event metadata only**. No logging, TPM, Secure Boot, BitLocker, firewall or audit policy settings were modified.
+
+**Planned follow-up:** Draft a privacy-aware monitoring recommendations summary and prioritize any separate changes only after explicit owner approval. Secure Boot and BitLocker stay deferred until backup/recovery preparations.
 
 ## Classification rules
 
