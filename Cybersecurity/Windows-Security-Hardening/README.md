@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and post-change configuration verified:** Security log maximum 20 → 128 MiB. Seven-day retention goal remains unverified; process-creation auditing remains unchanged in the last known baseline.  
+**Evidence status:** **CHG-001 implemented and validated for configuration and immediate retained-event accessibility:** Security log maximum 20 → 128 MiB; immediate observed span 1.96 days. Seven-day retention goal remains unverified; process-creation auditing remains a separate proposal.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -300,7 +300,38 @@ LogMode            : Circular
 
 **Change status:** **Implemented and post-change maximum-size configuration verified**. Long-term retention outcome **pending**; no rollback performed.
 
-**Next:** Independently measure the post-change retained endpoints and monitor whether the 7-day target becomes attainable; do not interpret an immediate post-change span as a seven-day result.
+### CHG-001 — Immediate post-change retention observation (verified)
+
+**Read-only query executed:**
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    OldestRecordId = $oldest.RecordId
+    NewestRecordId = $newest.RecordId
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console result:**
+
+```text
+OldestEvent    : 16-11-2026 0:52:21
+NewestEvent    : 18-11-2026 0:00:06
+OldestRecordId : 2256643
+NewestRecordId : 2291047
+RetainedDays   : 1,96
+```
+
+**Comparison:** Before CHG-001, the oldest observed timestamp was **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, and rounded observed span **1.93 days**. At immediate follow-up, the oldest observed timestamp was **2026-11-16 00:52:21** (14 seconds later) and newest **2026-11-18 00:00:06**, with a rounded observed span **1.96 days**. This shows that events with timestamps predating CHG-001 remained accessible after the setting change. It is **not** proof of uninterrupted event-by-event continuity or that the added capacity already extends retention to 7 days. Record IDs are metadata and were not checked for gaps or correlated to the pre-change IDs.
+
+**Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
+
+**Next:** Reassess retained endpoints after elapsed time without changing other audit controls; seven-day coverage cannot yet be established.
 
 ## Evidence integrity
 
