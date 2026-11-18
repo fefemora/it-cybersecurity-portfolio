@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Windows PowerShell ModuleLogging HKLM policy key absent at inspected path (Step 20).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **Windows PowerShell ModuleLogging HKLM and HKCU policy keys absent at inspected paths (Steps 20–21).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -791,7 +791,46 @@ if (Test-Path $path) {
 
 This check does not determine the full effective configuration by itself.
 
-**Next:** Inspect the HKCU Module Logging policy key without reading event contents; Secure Boot and BitLocker stay deferred.
+## Step 21 — Windows PowerShell Module Logging current-user policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKCU ModuleLogging policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKCU ModuleLogging policy key: Not configured
+```
+
+**Interpretation:** The ModuleLogging registry key was absent at the inspected **current-user HKCU** path. Step 20 independently verified absence of the corresponding inspected **HKLM** path. Neither result confirms that all effective module logging is disabled; alternative PowerShell editions, policy stores and runtime configuration were not fully assessed. Earlier **4104 events** relate to script-block reporting and are not proof of **4103** Module Logging records.
+
+**Privacy and change status:** Only policy-key presence was queried. No module names, event messages, command parameters, user data, registry values outside the narrow flag, or scripts were published. Nothing was modified. Secure Boot and BitLocker remain deferred until backup and recovery readiness.
+
+**Next read-only check proposed:** Count retained PowerShell **4103** events without reading event content. Use an event log filter and only show the count:
+
+```powershell
+$count = (Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4103
+} -ErrorAction SilentlyContinue | Measure-Object).Count
+
+[PSCustomObject]@{ EventId = 4103; Count = $count } | Format-List
+```
+
+A zero result would only show that no matching records were retrieved from the currently retained channel; with `-ErrorAction SilentlyContinue`, query errors must be considered separately.
+
+**Next:** Count retained Module Logging event 4103 records only; Secure Boot and BitLocker stay deferred.
 
 ## Evidence integrity
 
