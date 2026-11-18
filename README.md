@@ -10,7 +10,7 @@ My work connects three areas: **hands-on IT support**, **security-aware operatio
 
 ## Explore the Portfolio
 
-**[IT Support & Troubleshooting — Browse all four INC cases](IT-Support/README.md)** · [Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)
+**[IT Support & Troubleshooting — Browse all four INC cases](IT-Support/README.md)** · [Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md) · **[Cybersecurity — Real Windows Event Analysis](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
 
 [![Visual map of IT Support projects and incident IDs](IT-Support/it-support-navigation.svg)](IT-Support/README.md)
 
@@ -21,6 +21,7 @@ My work connects three areas: **hands-on IT support**, **security-aware operatio
 | **[INC-001 — Windows Update and Application Troubleshooting](IT-Support/Windows-Troubleshooting-Lab/README.md)** | PowerShell diagnostics, Event Viewer, storage analysis, functional validation | **Real troubleshooting case**, sanitized evidence | **Completed** |
 | **[Service Desk Incident Management — L2 Case Studies](IT-Support/Service-Desk-Incident-Management/README.md)** | Microsoft 365 authentication, DNS, VPN troubleshooting and escalation | **Three simulated incidents** | **Documented** |
 | **[Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, NIST CSF 2.0 / CIS IG1 mapping, treatment planning, executive reporting | **Fictional enterprise assessment** | **Documentation completed** |
+| **[Windows Security Event Analysis — Blue Team Lab](Cybersecurity/Windows-Security-Event-Analysis/README.md)** | Real Windows Security log triage, audit policy review, logon-ID event correlation and monitoring visibility assessment | **Real read-only workstation investigation**, sanitized console output | **Initial assessment completed** |
 
 ## Project Highlights
 
@@ -48,6 +49,14 @@ A fictional 50-person enterprise assessment identifies **eight illustrative risk
 
 **[Explore the complete risk assessment →](Information-Security/Enterprise-Risk-Assessment/README.md)**
 
+### 04 — Windows Security Event Analysis: Real Blue Team Investigation
+
+[![Visual summary of Windows Security event investigation](Cybersecurity/Windows-Security-Event-Analysis/diagrams/security-review-overview.svg)](Cybersecurity/Windows-Security-Event-Analysis/README.md)
+
+A real, read-only Windows Security log assessment investigated successful logons (4624), special privileges assigned to new logons (4672), process creation events (4688), and audit policy settings. **A session correlation was verified**; a **2.03-day retained event span** and disabled process-creation auditing were identified as monitoring limitations. **No compromise or unauthorized activity was confirmed.**
+
+**[Explore the Blue Team case and executive report →](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
+
 ## Technical Skills Demonstrated
 
 | Area | Portfolio evidence |
@@ -57,6 +66,7 @@ A fictional 50-person enterprise assessment identifies **eight illustrative risk
 | **Microsoft 365 & Identity** | Simulated Entra ID / MFA troubleshooting |
 | **Networking** | Simulated DNS and VPN troubleshooting workflows |
 | **Information Security / GRC** | Asset criticality, inherent risk scoring, control mapping and risk treatment |
+| **Cybersecurity / Blue Team** | Real Windows audit-policy review, bounded event log analysis, 4624/4672 Logon ID correlation, and monitoring improvement recommendations |
 | **Executive Communication** | Decision-oriented summaries, diagrams, risk visualization and evidence limitations |
 
 ## Next Projects — Planned
