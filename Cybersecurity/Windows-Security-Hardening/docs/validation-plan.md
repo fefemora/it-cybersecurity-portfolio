@@ -1,8 +1,8 @@
-# Change and Validation Plan — Not Yet Executed
+# Change and Validation Plan — CHG-001 Implemented, Monitoring Pending
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Baseline guide](baseline-guide.md)
 
-**State: Proposal only.** No configuration changes, rollback actions, or post-change validation have happened.
+**State:** **CHG-001 authorized, executed and maximum-size configuration verified**. Seven-day retention remains unverified. Separate Process Creation auditing change is still a proposal; no rollback reported.
 
 ## Change-control checklist
 
@@ -21,8 +21,8 @@
 |---|---|---|---|
 | Firewall posture review | Ensure intended profiles are protected | Actual enabled state plus connectivity testing appropriate to device role | Disruption of remote services or applications |
 | Defender health improvements | Detect unavailable protection or aging signatures | Fresh protection/status output | Third-party AV management and policy precedence |
-| Security log retention review | 33,959 records / 20 MiB Circular; retained span **1.93 days**, C: **56.81 GiB free** | Proposed initial **128 MiB maximum** with **7-day target**, then independently monitor retained span | Disk consumption, event churn, shorter-than-target retention, policy conflict |
-| Process creation auditing pilot | **Fresh query** confirms `No Auditing` | After approved enabling, verify Success audit policy and new benign 4688 records | Higher event volume, faster overwrite of 20 MiB circular log, sensitive fields, managed policy conflicts |
+| Security log retention review — **CHG-001** | Before: 33,959 records / 20 MiB Circular, 1.93-day span; after: **128 MiB, 33,989 records, Circular, enabled** | **Maximum-size configuration verified**; follow-up 7-day retention goal pending | Disk consumption, event churn, shorter-than-target retention, policy conflict |
+| Process creation auditing pilot | **Fresh query** confirms `No Auditing` | After approved enabling, verify Success audit policy and new benign 4688 records | Higher event volume, faster overwrite if generated volume outpaces the configured Security log capacity, sensitive fields, managed policy conflicts |
 
 ## Proposed controlled change: Process Creation auditing (not approved or executed)
 
@@ -74,9 +74,9 @@ Get-WinEvent -ListLog Security |
 
 **Observed:** Security; **33,959 records**; **20,971,520 bytes (20 MiB) maximum**; **Circular**. Compared with **33,898** records measured in the earlier event-analysis lab, the count differs by **61**, but this is *not* evidence that exactly 61 new events occurred because circular retention and the different collection times prevent that inference.
 
-**Follow-up verified:** Oldest retained event **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, elapsed **1.93 days**. Compared with the prior separate **2.03-day** observation, the difference is **0.10 days (~2h 24m)**. These snapshots are not evidence of a specific rollover event. **Next prerequisite completed:** C: free space was verified at **56.81 GiB**. **Proposed**, not approved: seven-day target with a 128 MiB maximum initial trial. No setting changes made.
+**Follow-up verified:** Oldest retained event **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, elapsed **1.93 days**. Compared with the prior separate **2.03-day** observation, the difference is **0.10 days (~2h 24m)**. These snapshots are not evidence of a specific rollover event. **Next prerequisite completed:** C: free space was verified at **56.81 GiB**. **Subsequently approved and implemented as CHG-001:** 128 MiB maximum was verified after the change; the seven-day target remains pending.
 
-## Proposed Security log capacity pilot — not executed
+## Security log capacity pilot — CHG-001 implemented and configuration verified
 
 **Evidence-based inputs:**
 
@@ -86,23 +86,63 @@ Get-WinEvent -ListLog Security |
 - **Design target:** 7 days retained (proposed, not verified).
 - **Initial pilot maximum:** **128 MiB** (134,217,728 bytes; a 108 MiB increase over the current maximum), not a promise of seven-day coverage.
 
-**Approval and sequencing:** First confirm device ownership/authorization and whether the setting is centrally managed. If approved, capture the fresh before-state, increase **only** Security log maximum size, verify it via `Get-WinEvent -ListLog Security`, and check oldest/newest timestamps over subsequent days. Do not modify log retention mode, clear the log, or enable process auditing at the same time. After observing real volume, revisit the target and size.
+**Execution:** The user confirmed ownership and explicitly authorized changing only the Security log maximum. The command `wevtutil sl Security /ms:134217728` was executed without printed error. A subsequent `Get-WinEvent -ListLog Security` check verified the new configured maximum and Circular mode. Future checks must measure retention span; do not claim that seven days are already retained. The process creation audit setting was not changed in this action.
 
 **Rollback consideration:** The previous maximum was 20 MiB; reducing capacity back to that value could truncate retained history depending on actual log usage. Decide whether restoration is necessary and safe *before* reducing it. Do not automatically run a rollback command.
 
-**Status:** Proposed; no authorization, implementation, or post-change validation reported.
+**Status:** Owner-authorized, implemented and size configuration verified; seven-day retention not yet assessed after elapsed time.
+
+## CHG-001 — Security event log maximum size increase (implemented and configuration verified)
+
+**Authorization:** Workstation owner expressly confirmed personal ownership and authorized changing **only** the Security log maximum size from 20 MiB to 128 MiB.
+
+**Pre-change evidence:** `LogName=Security`; `RecordCount=33959`; `MaximumSizeInBytes=20971520` (**20 MiB**); `LogMode=Circular`. The prior `IsEnabled` state was not captured in this particular pre-change query.
+
+**Executed command** (user PowerShell; no error printed):
+
+```powershell
+wevtutil sl Security /ms:134217728
+```
+
+**Executed post-change verification:**
+
+```powershell
+Get-WinEvent -ListLog Security |
+    Select-Object LogName,
+                  IsEnabled,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Actual output:**
+
+```text
+LogName            : Security
+IsEnabled          : True
+RecordCount        : 33989
+MaximumSizeInBytes : 134217728
+LogMode            : Circular
+```
+
+**Validated outcome:** The configured maximum grew from **20 MiB to 128 MiB** (6.4x, **+108 MiB**), Security is enabled in the post-change query, and the log remains **Circular**. The later record count is 33,989 versus 33,959 in the earlier separate check, **not evidence of precisely 30 new events** because circular overwrite may occur. No clear-log command was part of the recorded steps; individual event continuity was **not** independently verified.
+
+**Not yet validated:** The proposed **7-day retained-history target**. A capacity increase alone does not prove days retained, and the log needs a follow-up observation over time. The independently verified pre-change retained timestamp span was **1.93 days**, measured before this change. **Process Creation auditing remains a separate, unimplemented proposal**, last observed as `No Auditing` before CHG-001.
+
+**Change status:** **Implemented and post-change maximum-size configuration verified**. Long-term retention outcome **pending**; no rollback performed.
 
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
 |---|---|
-| Change ID | TBD |
-| Approval and scope | TBD |
-| Before snapshot | TBD |
-| Exact command or administrative action | TBD |
-| After snapshot | TBD |
-| Operational validation and rollback result | TBD |
-| Outcome | **Not performed** |
+| Change ID | **CHG-001** (Security log maximum size) |
+| Approval and scope | Owner confirmed personal device and explicitly approved 20 → 128 MiB only |
+| Before snapshot | Security, 33,959 records, 20 MiB, Circular |
+| Exact command or administrative action | `wevtutil sl Security /ms:134217728` |
+| After snapshot | Security, `IsEnabled=True`, 33,989 records, 128 MiB, Circular |
+| Operational validation and rollback result | Maximum-size configuration verified; retained-history objective pending; rollback not performed |
+| Outcome | **CHG-001 implemented and configuration verified; retention target pending** |
 
 ## References & Official Documentation
 
