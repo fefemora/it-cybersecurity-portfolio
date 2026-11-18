@@ -1,7 +1,8 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Logon audit policy Success and Failure verified (Step 25); 235 event 4624 records, no 4625 matches (Step 26), and a 4624 distribution of 229 service / 4 cached-interactive / 2 unlock logons (Step 27).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Project status:** **Read-only assessment completed through Step 28; Steps 29–30 documented closure and recommendations.**  
+**Evidence status:** **233 event 4672 records in a 24-hour query (Step 28).** **Logon audit policy Success and Failure verified (Step 25); 235 event 4624 records, no 4625 matches (Step 26), and a 4624 distribution of 229 service / 4 cached-interactive / 2 unlock logons (Step 27).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -1087,7 +1088,62 @@ try {
 }
 ```
 
-**Next:** Measure event 4672 volume without collecting account identifiers. Secure Boot and BitLocker remain deferred.
+## Step 28 — Special privileges assigned to new logons (verified; read-only)
+
+**Exact command:**
+```powershell
+try {
+    $count = (Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4672
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop | Measure-Object).Count
+    [PSCustomObject]@{ EventId = 4672; Count = $count } | Format-List
+} catch {
+    'Query status: ' + $_.Exception.Message
+}
+```
+
+**Actual user-provided output:**
+```text
+EventId : 4672
+Count   : 233
+```
+
+**Interpretation:** **233 event ID 4672 records** were retrieved from the preceding 24 hours. Event 4672 indicates special privileges were assigned to a new logon; it is common in routine system/service activity and **does not prove compromise, malicious elevation, 233 privileged people, or a direct correspondence to the previously observed 235 event 4624 records**. Those independent queries used moving 24-hour windows. Correlating particular sessions would require more sensitive event fields and was outside this privacy-preserving scope. No changes were made.
+
+## Step 29 — Consolidated assessment and risk priorities (analysis; no new command)
+
+| Priority | Finding supported by evidence | Assessment | Recommended action (not implemented) |
+|---|---|---|---|
+| High attention / recovery prerequisite | System volume C: decrypted with BitLocker Off; Secure Boot query returned False; TPM ready and UEFI/GPT observed | Potential device-loss and boot-chain exposure; actual threat and business risk depend on context | Prepare a verified backup and recovery media, protect recovery keys, check firmware compatibility and then separately authorize BitLocker/Secure Boot changes |
+| Medium / monitoring assurance | Security log grew from 20 to 128 MiB under approved CHG-001; immediate history **1.96 days**, seven-day goal not validated | Storage setting validated, monitoring time objective **pending** | Recheck oldest/newest records after sufficient elapsed time; tune event volumes and capacity based on measurements |
+| Medium / detection coverage | Process Creation audit subcategory observed as No Auditing; no change approved | Possible gap for process-execution investigations; business need and privacy impact must be assessed | Consider scoped process creation auditing and command-line capture only under separately approved change management |
+| Review / telemetry tuning | Script Block Logging policy keys absent at inspected HKLM/HKCU paths despite 4104 records; Module Logging keys absent with no retrieved 4103; Transcription keys absent | Effective coverage unclear; **not proof of missing all logging, a vulnerability, or an incident** | Determine effective policy sources, privacy limits, record retention and target use cases before enabling additional logging |
+| Monitor / no confirmed anomaly | Logon audit Success and Failure; 24h 4624 **235**, no matching 4625; 4624 types 5=229, 11=4, 7=2; 4672 **233** | Predominantly service logons and notable privilege event volume, but aggregate counts alone do not confirm benignness or malice | Baseline trends; investigate only with appropriate consent and controlled correlation when justified |
+| Existing protection | Firewall ActiveStore inbound Block/outbound Allow, checked Defender protection indicators enabled | Positive baseline observations limited to fields and snapshot tested | Periodically reconfirm health; avoid unnecessary changes |
+
+**Risk levels above are planning priorities, not measured CVSS scores or a certification/compliance attestation.** No live exploitation, attack simulation, malware claim or identity attribution was performed.
+
+## Step 30 — Project closure and validation summary
+
+**Project phase:** **Completed — read-only baseline and one narrowly authorized change**, with deferred hardening activities documented. 28 command-led checks were completed, followed by this consolidation (Step 29) and publication/closure (Step 30). The lab is **not** a claim of full system hardening, security certification or incident clearance.
+
+**Verified change:** **CHG-001 only** — Security event log maximum increased from **20 MiB to 128 MiB**; resulting configuration and immediate event access confirmed. The proposed seven-day retained-history outcome is **not yet validated**. No Process Creation auditing, Module Logging, Transcription, Script Block Logging, Defender, firewall, BitLocker or Secure Boot changes are claimed.
+
+**Validated capabilities demonstrated:** PowerShell-based, privacy-preserving endpoint baseline collection; audit-policy and event-channel interpretation; classification of Event IDs 4103/4104/4624/4625/4672; aggregation of logon types; measurement versus proof of retention; prioritization of pending controls; and evidence-based change management.
+
+**Deferred activities / exit notes:**
+1. Ensure backups, recovery media, BitLocker recovery-key custody, and firmware readiness **before** considering encryption or Secure Boot changes.
+2. Recheck Security log oldest/newest event timestamps after adequate elapsed time; distinguish observed span from guaranteed retention.
+3. Propose and separately approve any process creation or PowerShell logging changes only after privacy, performance, rollback and policy-precedence reviews.
+4. If investigating privilege/logon behavior later, use access-controlled correlation and do not publish raw account identifiers or logs to this repository.
+
+**Evidence handling:** All reported outputs came from user-run commands; only sanitized numeric aggregates, configuration flags, timestamps and command text are published. The final 4672 observation is a count of **233** in a moving 24-hour window, not a finding of malicious privilege elevation.
+
+**Final disposition:** **Assessment documented; no incident confirmed; one change validated for configuration only; remaining recommendations deferred or proposed.**
+
+
 
 ## Evidence integrity
 
