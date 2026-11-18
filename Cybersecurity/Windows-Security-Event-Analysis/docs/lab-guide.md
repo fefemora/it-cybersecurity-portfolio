@@ -257,9 +257,71 @@ TimeCreated           Id RecordId
 
 **Interpretation:** Five special-logon audit records were found on November 17, 2026, between 20:44:56 and 21:00:46. An event 4672 records assignment of special privileges to a new logon; it is not, by itself, evidence of unauthorized activity. No distinct-user count, associated account category, or exact privileges can be determined from these metadata alone.
 
-## Step 10 — Review a small, redacted privilege sample (planned)
+## Step 10 — Inspect privilege assignment in three recent 4672 records (verified)
 
-Limit processing to a few recent 4672 records. Extract only the well-known account SID category and assigned privilege identifiers; never publish raw usernames, logon identifiers, or complete event messages.
+```powershell
+$events = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4672
+} -MaxEvents 3
+
+$results = foreach ($event in $events) {
+    $xml = [xml]$event.ToXml()
+    $data = @{}
+
+    foreach ($item in $xml.Event.EventData.Data) {
+        $data[$item.Name] = $item.'#text'
+    }
+
+    $category = switch ($data['SubjectUserSid']) {
+        'S-1-5-18' { 'LocalSystem'; break }
+        'S-1-5-19' { 'LocalService'; break }
+        'S-1-5-20' { 'NetworkService'; break }
+        default { 'Other' }
+    }
+
+    [PSCustomObject]@{
+        TimeCreated = $event.TimeCreated
+        AccountCategory = $category
+        Privileges = $data['PrivilegeList']
+    }
+}
+
+$results | Format-List
+```
+
+**Purpose:** Check a very small recent sample of privileged logons, classifying only built-in account security identifiers and displaying the names of assigned privileges. Raw usernames and session identifiers are not included.
+
+**Observed results (user-provided console output):**
+
+| Local timestamp | Account category | Number of privilege names |
+|---|---|---:|
+| 2026-11-17 21:05:00 | LocalSystem | 12 |
+| 2026-11-17 21:00:46 | LocalSystem | 12 |
+| 2026-11-17 20:57:13 | LocalSystem | 12 |
+
+Each of these three events contained the same privilege list:
+
+- `SeAssignPrimaryTokenPrivilege`
+- `SeTcbPrivilege`
+- `SeSecurityPrivilege`
+- `SeTakeOwnershipPrivilege`
+- `SeLoadDriverPrivilege`
+- `SeBackupPrivilege`
+- `SeRestorePrivilege`
+- `SeDebugPrivilege`
+- `SeAuditPrivilege`
+- `SeSystemEnvironmentPrivilege`
+- `SeImpersonatePrivilege`
+- `SeDelegateSessionUserImpersonatePrivilege`
+
+**Interpretation:** These are expected-capability categories for highly privileged Windows system contexts. The events show privileges assigned **at logon**; they do not prove that the rights were exercised, that activity was malicious, or that three distinct accounts or services were involved.
+
+**Sampling limitations:** Only three recent records were inspected, and this is a separate snapshot from the prior five-event metadata query. The new event at 21:05:00 illustrates that the Security log continues to change. No process attribution or causal correlation has yet been established.
+
+## Step 11 — Correlation and contextual analysis (planned)
+
+Use narrow read-only queries to establish whether selected 4624 and 4672 events share the same logon identifier. Exclude actual identifiers and usernames from public outputs; do not infer correlation from similar timestamps alone.
 
 ## Documentation rules
 
