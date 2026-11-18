@@ -2,13 +2,13 @@
 
 [Project overview](../README.md) · [Baseline guide](baseline-guide.md) · [Validation plan](validation-plan.md)
 
-**Assessment phase:** Open. **No hardening configuration changes have been applied.**
+**Assessment phase:** Active. **CHG-001 Security log size change implemented and configuration verified; seven-day retention target not yet met or disproven.**
 
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
-| Security log retention | Ensure enough history for investigations | **33,959 records, 20 MiB maximum, Circular**; retained span **1.93 days**; C: **56.81 GiB free** | Proposed 7-day target and 128 MiB maximum trial; confirm authorization and measure subsequent span | **Disk and log baselines verified; size adjustment not applied** |
+| Security log retention | Ensure enough history for investigations | **CHG-001:** maximum 20 MiB → **128 MiB**, post-query `IsEnabled=True`, Circular, **33,989** records; pre-change retained span **1.93 days** | Recheck earliest/newest retained timestamps later; compare with proposed 7-day objective | **CHG-001 size change implemented and verified; retention objective pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
@@ -225,6 +225,46 @@ FreeGiB
 **Proposed sizing pilot (NOT applied):** Review a **128 MiB Security log maximum** (134,217,728 bytes), replacing the current **20 MiB** limit, for an initial measured trial. The increase to the maximum is **108 MiB**. A **7-day retention window** is a *proposed target*, **not a predicted or guaranteed result**, especially if Process Creation auditing is enabled later and event volume rises.
 
 **Change constraints:** Confirm device management/authority and collect a fresh pre-change snapshot. Enlarge only the Security log maximum; do not clear events, change the log mode, or enable 4688 auditing simultaneously. Independently verify the applied maximum and observe the retained time span on subsequent days. Recovery would restore the previous 20 MiB configuration only after checking whether a reduction risks record loss or conflicts with device management policies.
+
+## CHG-001 — Security event log maximum size increase (implemented and configuration verified)
+
+**Authorization:** Workstation owner expressly confirmed personal ownership and authorized changing **only** the Security log maximum size from 20 MiB to 128 MiB.
+
+**Pre-change evidence:** `LogName=Security`; `RecordCount=33959`; `MaximumSizeInBytes=20971520` (**20 MiB**); `LogMode=Circular`. The prior `IsEnabled` state was not captured in this particular pre-change query.
+
+**Executed command** (user PowerShell; no error printed):
+
+```powershell
+wevtutil sl Security /ms:134217728
+```
+
+**Executed post-change verification:**
+
+```powershell
+Get-WinEvent -ListLog Security |
+    Select-Object LogName,
+                  IsEnabled,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Actual output:**
+
+```text
+LogName            : Security
+IsEnabled          : True
+RecordCount        : 33989
+MaximumSizeInBytes : 134217728
+LogMode            : Circular
+```
+
+**Validated outcome:** The configured maximum grew from **20 MiB to 128 MiB** (6.4x, **+108 MiB**), Security is enabled in the post-change query, and the log remains **Circular**. The later record count is 33,989 versus 33,959 in the earlier separate check, **not evidence of precisely 30 new events** because circular overwrite may occur. No clear-log command was part of the recorded steps; individual event continuity was **not** independently verified.
+
+**Not yet validated:** The proposed **7-day retained-history target**. A capacity increase alone does not prove days retained, and the log needs a follow-up observation over time. The independently verified pre-change retained timestamp span was **1.93 days**, measured before this change. **Process Creation auditing remains a separate, unimplemented proposal**, last observed as `No Auditing` before CHG-001.
+
+**Change status:** **Implemented and post-change maximum-size configuration verified**. Long-term retention outcome **pending**; no rollback performed.
 
 ## Classification rules
 
