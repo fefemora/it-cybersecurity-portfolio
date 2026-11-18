@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Logon audit policy Success and Failure verified (Step 25); 235 event 4624 records and no event 4625 matches in a subsequent 24-hour query (Step 26).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **Logon audit policy Success and Failure verified (Step 25); 235 event 4624 records, no 4625 matches (Step 26), and a 4624 distribution of 229 service / 4 cached-interactive / 2 unlock logons (Step 27).** **Windows PowerShell Transcription HKLM/HKCU policy keys absent at inspected paths (Steps 23–24); three PowerShell logging policy mechanisms summarized.** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -1038,7 +1038,56 @@ $types | Group-Object | Sort-Object Count -Descending |
 
 The aggregate type distributions are sampled later and may not sum to 235 because the query time window advances.
 
-**Next:** Assess successful-logon event types using aggregate counts only; Secure Boot and BitLocker remain deferred.
+## Step 27 — Successful logon type distribution (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+$from = (Get-Date).AddHours(-24)
+$types = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $from
+} -ErrorAction Stop | ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data | Where-Object Name -eq 'LogonType').'#text'
+}
+$types | Group-Object | Sort-Object Count -Descending |
+    Select-Object Name, Count | Format-Table -AutoSize
+```
+
+**Actual observed aggregate output:**
+
+```text
+Name Count
+---- -----
+5      229
+11       4
+7        2
+```
+
+**Finding:** The query returned **235 retained Security event 4624 records**, grouped as **LogonType 5 (Service): 229**, **LogonType 11 (CachedInteractive): 4**, and **LogonType 7 (Unlock): 2**. Totals reconcile exactly to the prior separate 24-hour 4624 count (235), although the two 24-hour windows were queried at different times and may evolve.
+
+**Interpretation:** **97.4%** of these records were **service-type logons**, **1.7%** cached interactive, and **0.9%** unlock events. These are **event records**, not unique users or proof of legitimacy. The distribution does not independently establish what accounts, services or circumstances generated the records; no anomalous activity was confirmed based on the aggregate metadata. Prior audit-policy query returned Logon: Success and Failure; the earlier 24-hour query returned no 4625 group.
+
+**Privacy/change control:** Source event XML was parsed **locally** only to extract the LogonType field. No usernames, IP addresses, session IDs or full records were transmitted or committed. No policy, logging, BitLocker or firmware changes were made.
+
+**Next proposed read-only assessment:** Inspect only the count of Security event **4672** (special privileges assigned to a new logon) over the preceding 24 hours, to compare privilege-related event volume without disclosing account names. This is a different event type and must not be equated with a confirmed administrator login or suspicious activity.
+
+```powershell
+try {
+    $count = (Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4672
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop | Measure-Object).Count
+    [PSCustomObject]@{ EventId = 4672; Count = $count } | Format-List
+} catch {
+    'Query status: ' + $_.Exception.Message
+}
+```
+
+**Next:** Measure event 4672 volume without collecting account identifiers. Secure Boot and BitLocker remain deferred.
 
 ## Evidence integrity
 
