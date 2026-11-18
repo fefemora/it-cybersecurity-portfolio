@@ -170,7 +170,7 @@ RetainedDays   : 1,96
 
 **Preconditions:** Confirm Windows/TPM and boot compatibility, reliable backup, recovery-key creation/storage outside the public repo, safe access if recovery is triggered, and any management policy. Preserve the exact baseline and plan appropriate testing. Do not publish a key protector or recovery password.
 
-**TPM read-only check verified:** `TpmPresent=True`, `TpmReady=True`, `TpmEnabled=True`, `TpmActivated=True`. **Secure Boot separately verified:** `Confirm-SecureBootUEFI` returned `False`. TPM readiness is not full encryption readiness. **Next planned checks:** current firmware boot mode and independent backup/recovery preparation.
+**TPM read-only check verified:** `TpmPresent=True`, `TpmReady=True`, `TpmEnabled=True`, `TpmActivated=True`. **Secure Boot separately verified:** `Confirm-SecureBootUEFI` returned `False`. TPM readiness is not full encryption readiness. **Firmware check verified:** `Get-ComputerInfo | Select-Object BiosFirmwareType | Format-List` returned `Uefi`. **Next planned checks:** system disk partition style plus backup/recovery preparation.
 
 **Status:** Finding verified; **no BitLocker change authorized or implemented**.
 
@@ -213,6 +213,37 @@ False
 **Interpretation:** Windows reported **Secure Boot disabled**. This is a verified boot-integrity configuration gap, not evidence of compromise or a malfunctioning TPM. The `Get-Tpm` query independently returned `True` for presence, readiness, enabled and activated; TPM state does not establish Secure Boot state.
 
 **Limitations and safe next steps:** This command does not document firmware settings, signed boot components, storage partition layout, boot-loader compatibility, or why Secure Boot is disabled. **No firmware changes, BitLocker activation, or TPM changes were authorized or performed.** Before considering a separate change, verify actual BIOS mode via a read-only Windows query, record recovery/backup readiness, and evaluate firmware and Hyper-V compatibility. A manual firmware toggle without reviewing boot compatibility may cause boot or recovery problems.
+
+## Step 11 — Firmware boot mode (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-ComputerInfo |
+    Select-Object BiosFirmwareType |
+    Format-List
+```
+
+**Actual console output:**
+
+```text
+BiosFirmwareType : Uefi
+```
+
+**Interpretation:** Windows reports that the current boot firmware mode is **UEFI**. Combined with the separate verified `Confirm-SecureBootUEFI=False`, this supports the distinction between UEFI boot mode and **disabled Secure Boot**. The `Get-Tpm` flags are also all `True`, while C: BitLocker is `FullyDecrypted` / `ProtectionStatus=Off` / 0% encrypted at their respective observations.
+
+**Limits:** This single property does not establish whether Secure Boot can be safely enabled on this installation; boot-loader signatures, firmware keys, disk partition style, backup/recovery readiness, and hardware compatibility were not inspected. No firmware or encryption settings were changed.
+
+**Proposed next read-only check:** Inspect the disk containing C: without exposing partitions or file content:
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
 
 ## Evidence fields for every *future* approved change
 
