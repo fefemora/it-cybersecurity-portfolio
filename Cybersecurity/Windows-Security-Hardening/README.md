@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Firewall, Defender and Process Creation audit-policy baselines verified.** An audit visibility improvement is proposed but **not implemented**; no configuration changes were made.  
+**Evidence status:** **Firewall, Defender, Process Creation audit policy and Security log capacity baselines verified.** Changes remain proposed only; no configuration modifications performed.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -20,7 +20,7 @@ This project separates **observation → assessment → proposed change → auth
 |---|---|---|
 | Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signatures age `0`; MAPS `2`, sample consent `1`; PUA Block `1`, Block at First Sight not disabled (`False`) | **Selected protection statuses/preferences verified; operational effectiveness not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
-| Security auditing | Fresh read-only query: **Process Creation = No Auditing**; historical 20 MiB circular retention comes from the linked prior lab | **Verified visibility gap; remediation proposed, not implemented** |
+| Security auditing | Fresh read-only query: **Process Creation = No Auditing**; Security log **33,959 records, 20 MiB maximum, Circular** | **Both current settings verified; process-audit change proposed only** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
 | Recommendations and validation | Prioritized, evidence-based change candidates | **Not implemented** |
@@ -181,7 +181,52 @@ Seguimiento detallado
 
 **Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
 
-**Next:** Review [change and validation plan](docs/validation-plan.md) before any optional configuration modification.
+## Step 6 — Verify Security log capacity (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+Get-WinEvent -ListLog Security |
+    Select-Object LogName,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Observed console result:**
+
+```text
+LogName            : Security
+RecordCount        : 33959
+MaximumSizeInBytes : 20971520
+LogMode            : Circular
+```
+
+**Assessment:** The Security log was configured with a **20 MiB maximum** and **Circular** retention, holding **33,959 records** at inspection time. A separate previous case recorded **33,898 records**, an apparent difference of **61**. These were taken at different moments and, with circular retention, **the difference is not a count of newly generated events**; older records may have been replaced.
+
+**Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
+
+### Step 6b — Refresh oldest/newest retained timestamps (planned)
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent  = $oldest.TimeCreated
+    NewestEvent  = $newest.TimeCreated
+    RetainedDays = [math]::Round(
+        ($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2
+    )
+}
+```
+
+**Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
+
+**Status:** Not executed in this hardening lab.
+
+**Next:** Refresh retained log time span, then review the [change and validation plan](docs/validation-plan.md) before any optional configuration modification.
 
 ## Evidence integrity
 
