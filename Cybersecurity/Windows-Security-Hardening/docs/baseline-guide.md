@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, 2, 3, 4, 5, 6 and 6b verified; no remediation implemented.  
+**Status:** Steps 1, 1b, 2, 3, 4, 5, 6, 6b and 7 verified; no remediation implemented.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -223,7 +223,31 @@ OldestEvent        NewestEvent         RetainedDays
 
 
 
-## Step 7 — Evaluate additional controls (scoped, not executed)
+## Step 7 — Check free space on system volume (verified)
+
+**Read-only command executed:**
+
+```powershell
+[PSCustomObject]@{
+    FreeGiB = [math]::Round((Get-PSDrive -Name C).Free / 1GB, 2)
+}
+```
+
+**Observed result (locale decimal comma):**
+
+```text
+FreeGiB
+-------
+  56,81
+```
+
+**Finding:** The system volume **C:** had **56.81 GiB free** at query time. This is a disk-capacity snapshot, not Security log free capacity or a guarantee of available storage at a future date.
+
+**Proposed sizing pilot (NOT applied):** Review a **128 MiB Security log maximum** (134,217,728 bytes), replacing the current **20 MiB** limit, for an initial measured trial. The increase to the maximum is **108 MiB**. A **7-day retention window** is a *proposed target*, **not a predicted or guaranteed result**, especially if Process Creation auditing is enabled later and event volume rises.
+
+**Change constraints:** Confirm device management/authority and collect a fresh pre-change snapshot. Enlarge only the Security log maximum; do not clear events, change the log mode, or enable 4688 auditing simultaneously. Independently verify the applied maximum and observe the retained time span on subsequent days. Recovery would restore the previous 20 MiB configuration only after checking whether a reduction risks record loss or conflicts with device management policies.
+
+## Step 8 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
