@@ -12,7 +12,7 @@
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
-| Platform protections | Review relevant built-in security features | None | Determine OS/build and device support before selecting checks | **Not assessed** |
+| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted, Off, 0% encrypted** | Read-only TPM readiness and recovery/backup prerequisites; no encryption changes | **System-volume encryption gap verified; improvement not implemented** |
 
 ## Verified firewall evidence — Initial query
 
@@ -296,6 +296,40 @@ RetainedDays   : 1,96
 **Comparison:** Before CHG-001, the oldest observed timestamp was **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, and rounded observed span **1.93 days**. At immediate follow-up, the oldest observed timestamp was **2026-11-16 00:52:21** (14 seconds later) and newest **2026-11-18 00:00:06**, with a rounded observed span **1.96 days**. This shows that events with timestamps predating CHG-001 remained accessible after the setting change. It is **not** proof of uninterrupted event-by-event continuity or that the added capacity already extends retention to 7 days. Record IDs are metadata and were not checked for gaps or correlated to the pre-change IDs.
 
 **Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
+
+## Step 8 — BitLocker system-volume encryption baseline (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-BitLockerVolume -MountPoint C: |
+    Select-Object MountPoint,
+                  VolumeStatus,
+                  ProtectionStatus,
+                  EncryptionPercentage |
+    Format-List
+```
+
+**Actual sanitized console output:**
+
+```text
+MountPoint           : C:
+VolumeStatus         : FullyDecrypted
+ProtectionStatus     : Off
+EncryptionPercentage : 0
+```
+
+**Finding:** The C: system volume was **fully decrypted (0% encrypted)** and its **BitLocker protection was Off** when queried. This is a verified **data-at-rest confidentiality exposure** if an attacker gains physical possession of the device/storage. It does not prove compromise or that every file or removable volume is unprotected. The command does not assess other volumes or other encryption solutions.
+
+**Change status:** **No encryption change performed or authorized.** Encryption should not be enabled without confirming recovery readiness, TPM and Windows compatibility, storage and backup condition, and a safe offline recovery-key handling process. Recovery passwords and key-protector details must never be committed to this public portfolio.
+
+**Next suggested read-only prerequisite:**
+
+```powershell
+Get-Tpm | Select-Object TpmPresent, TpmReady, TpmEnabled, TpmActivated | Format-List
+```
+
+**Limitations:** TPM readiness alone does not validate BitLocker usability or backup/recovery safety. Consider management policy, Windows edition, firmware boot mode and a tested backup before any authorized implementation.
 
 ## Classification rules
 
