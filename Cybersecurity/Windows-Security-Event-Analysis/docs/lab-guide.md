@@ -231,9 +231,35 @@ Select-Object TimeCreated, Id, RecordId
 
 **Interpretation:** This is a valid negative finding, not a malfunction of the event log. It **does not establish that audit policy has never changed**, particularly because the log uses circular retention with a previously observed span of approximately 2.03 days. The reason for the earlier 4688 records alongside the currently disabled Process Creation policy remains **unresolved**.
 
-## Step 9 — Further investigation (planned)
+## Step 9 — Inspect recent special-logon event metadata (verified)
 
-If additional investigation is warranted, review a bounded set of event 4688 metadata and the relevant audit-policy context. Keep the working hypothesis separate from confirmed observations; do not modify audit policy in the current read-only phase.
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4672
+} -MaxEvents 5 |
+Select-Object TimeCreated, Id, RecordId
+```
+
+**Purpose:** Obtain a bounded set of event 4672 metadata without displaying accounts, IP addresses, or privilege assignments.
+
+**Observed output:**
+
+```text
+TimeCreated           Id RecordId
+-----------           -- --------
+17-11-2026 21:00:46 4672  2286080
+17-11-2026 20:57:13 4672  2286068
+17-11-2026 20:54:58 4672  2285921
+17-11-2026 20:53:51 4672  2285919
+17-11-2026 20:44:56 4672  2285681
+```
+
+**Interpretation:** Five special-logon audit records were found on November 17, 2026, between 20:44:56 and 21:00:46. An event 4672 records assignment of special privileges to a new logon; it is not, by itself, evidence of unauthorized activity. No distinct-user count, associated account category, or exact privileges can be determined from these metadata alone.
+
+## Step 10 — Review a small, redacted privilege sample (planned)
+
+Limit processing to a few recent 4672 records. Extract only the well-known account SID category and assigned privilege identifiers; never publish raw usernames, logon identifiers, or complete event messages.
 
 ## Documentation rules
 
