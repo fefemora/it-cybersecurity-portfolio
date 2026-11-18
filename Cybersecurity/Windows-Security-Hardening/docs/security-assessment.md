@@ -10,7 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
-| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM ScriptBlockLogging policy key absent**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in later snapshot | Inventory event ID counts only; verify scope before considering logging improvements | **4104 observed; comprehensive Script Block Logging policy not established** |
+| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM ScriptBlockLogging policy key absent**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records**, and **11 IDs totaling 808 events** in distribution | Check HKCU ScriptBlockLogging policy, then assess scope without reading event contents | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; system disk 0 GPT (`IsBoot`/`IsSystem=True` on disk); Secure Boot False** | Check independent backup and recovery prerequisites before separate approval | **UEFI/GPT/TPM verified; Secure Boot and disk encryption remain off; no changes** |
@@ -541,6 +541,57 @@ Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 1000
 ```
 
 Do not publish full event `Message` fields or script-block text.
+
+## Step 16 — PowerShell Operational event ID distribution (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-WinEvent -LogName 'Microsoft-Windows-PowerShell/Operational' -MaxEvents 1000 |
+    Group-Object Id |
+    Sort-Object Count -Descending |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+**Actual observed output (ID and aggregate count only):**
+
+```text
+Name  Count
+----  -----
+4104    438
+53504    63
+12039    63
+8196     63
+40962    62
+40961    62
+8197     28
+8194      9
+8193      9
+8195      9
+4100      2
+```
+
+**Validation:** The eleven event ID groups total **808** records (438 + 63 + 63 + 63 + 62 + 62 + 28 + 9 + 9 + 9 + 2 = 808), matching the previously observed channel `RecordCount` at its earlier snapshot. **4104 accounts for 438/808 ≈ 54.2%** of the returned event records. This consistency supports the inventory, but the circular log may change between queries.
+
+**Security interpretation:** 4104 is associated with PowerShell script-block records; 4100 can be associated with PowerShell command execution errors. An ID count alone cannot establish an incident, full script-block coverage, root cause, or unique script executions. The meanings of **53504, 12039, 8196, 40962, 40961, 8197, 8194, 8193, 8195** have **not** been independently validated in this case and are intentionally recorded without speculative labels. The HKLM `ScriptBlockLogging` policy key was absent in Step 13, but operational 4104 events exist.
+
+**Privacy/limits:** No `Message`, event payload, script text, command line, usernames or private filenames were printed or recorded; no changes made.
+
+**Proposed next read-only check:** Inspect the current-user Windows PowerShell ScriptBlockLogging policy key without dumping unrelated registry values:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableScriptBlockLogging |
+        Format-List
+} else {
+    'HKCU policy registry key: Not configured'
+}
+```
+
+This checks **only** the specified HKCU location, not every possible logging policy or PowerShell edition.
 
 ## Classification rules
 
