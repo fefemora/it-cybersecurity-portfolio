@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **Windows PowerShell Transcription HKLM policy key absent at the inspected path (Step 23).** **Windows PowerShell ModuleLogging HKLM/HKCU keys absent at inspected paths; 4103 event count returned zero (Step 22).** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode and GPT system disk verified; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -872,7 +872,46 @@ if (Test-Path $path) {
 }
 ```
 
-**Next:** Inspect Transcription policy state at one machine-level path; Secure Boot and BitLocker remain deferred.
+## Step 23 — Windows PowerShell Transcription machine policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKLM Transcription policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKLM Transcription policy key: Not configured
+```
+
+**Interpretation:** The Windows PowerShell `Transcription` machine-policy key was absent at the inspected HKLM path. This establishes **no explicit machine Transcription policy at this location at the time of inspection**, not that transcription has been disabled in every scope or that no transcript files exist. Other policy stores, current-user configuration, editions, and session-level transcription were not examined.
+
+**Privacy and change control:** The query checked only a specific registry-key location and flag; no transcript content, output destination, session text or personal data was retrieved. No policies or endpoint settings were changed. Secure Boot and BitLocker remain deferred pending backups and recovery readiness.
+
+**Next proposed read-only check:** Inspect the current-user `Transcription` policy path without displaying transcript output settings or transcript files:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKCU Transcription policy key: Not configured'
+}
+```
+
+**Next:** Check the current-user Transcription policy at HKCU, read-only. Secure Boot and BitLocker remain deferred.
 
 ## Evidence integrity
 
