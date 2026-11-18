@@ -475,6 +475,47 @@ Get-WinEvent -FilterHashtable @{
 
 An event's severity alone is not evidence of malicious execution. The script contents and full messages must remain private.
 
+## Step 18 — PowerShell event 4104 severity distribution (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4104
+} |
+    Group-Object LevelDisplayName |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+**Actual console output (localized):**
+
+```text
+Name        Count
+----        -----
+Advertencia   439
+```
+
+**Assessment:** At this later snapshot, the query returned **439 retained event ID 4104 records** and classified all of them as **Warning** (`Advertencia`) by their displayed severity. The preceding count-only check returned **438**, so **the snapshots differ by one record**; ongoing logging between queries is a plausible explanation, **not independently confirmed**. A warning-level 4104 is not by itself evidence of malicious PowerShell activity, a unique executed script, or a confirmed incident. Missing HKLM and HKCU policy keys at their inspected locations likewise do not establish the effective source of these events or comprehensive script-block logging coverage.
+
+**Privacy/change control:** No script text, event messages, usernames, paths, or commands were extracted. No policy or firmware settings changed. Secure Boot and BitLocker work remains deferred pending backup and recovery planning.
+
+**Next proposed check (read-only; timestamps only):** Compare the oldest and newest retained PowerShell Operational events to assess the channel's currently observed time span, without displaying event messages:
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$oldest = Get-WinEvent -LogName $log -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName $log -MaxEvents 1
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+Channel-wide retention does not establish how long individual event IDs persist.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
