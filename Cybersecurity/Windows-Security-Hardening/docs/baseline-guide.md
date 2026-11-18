@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Step 1 executed and verified; further baseline checks pending.  
+**Status:** Steps 1 and 1b executed and verified; Defender and other baseline checks pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -29,7 +29,7 @@ Public     True        NotConfigured         NotConfigured
 
 **Limits:** A profile may be enabled without necessarily being the currently active network profile. Individual firewall rules, source-policy precedence, packet behavior, and profile selection were not assessed. No changes were performed.
 
-### Step 1b — Inspect active policy store (planned; read-only)
+### Step 1b — Inspect active policy store (verified; read-only)
 
 ```powershell
 Get-NetFirewallProfile -PolicyStore ActiveStore |
@@ -37,9 +37,21 @@ Get-NetFirewallProfile -PolicyStore ActiveStore |
     Format-Table -AutoSize
 ```
 
-**Purpose:** Check the resultant policy store for the same four fields. If `NotConfigured` persists, it remains important not to infer effective traffic behavior from those fields alone; additional supported observations may be needed.
+**Purpose:** Examine the resultant applied profile configuration for the same four properties.
 
-**Evidence status:** Not executed.
+**Observed PowerShell output:**
+
+```text
+Name    Enabled DefaultInboundAction DefaultOutboundAction
+----    ------- -------------------- ---------------------
+Domain     True                Block                 Allow
+Private    True                Block                 Allow
+Public     True                Block                 Allow
+```
+
+**Interpretation:** The three profiles remain `Enabled=True`, with **default inbound action `Block` and default outbound action `Allow`** in the active policy store. This resolves the initial `NotConfigured` ambiguity for the effective default actions. It is consistent with a typical workstation firewall posture; no deficiency is established in the profile defaults reviewed.
+
+**Limits:** Specific allow/block rules, the active interface's profile, filtering precedence, and live packet behavior have not been tested. `Block` is a default action subject to policy/rule processing, not proof that every inbound connection is denied. No changes were made.
 
 ## Step 2 — Review Microsoft Defender Antivirus status (planned, read-only)
 
