@@ -10,6 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
+| PowerShell Transcription machine policy | Check explicit machine-level session transcription settings | **HKLM Transcription policy key absent at inspected path** | Read-only check of HKCU counterpart and other relevant scopes if needed | **Machine policy absent at inspected path; effective transcription unknown** |
 | PowerShell Module Logging machine policy | Identify explicit Windows PowerShell Module Logging policy at HKLM path | **ModuleLogging keys absent in queried HKLM and HKCU locations; 4103 count query returned 0** | Inspect Transcription policy and optionally verify zero-count query errors explicitly | **No retained 4103 evidence observed; effective module logging unknown** |
 | PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM and HKCU ScriptBlockLogging policy keys absent at queried paths**; Operational **Enabled=True**, **808 records**, **15 MiB Circular**; **438 retained 4104 records** in earlier check, **439 Warning 4104 records** in later check, **11 IDs totaling 808 events** in earlier distribution; **Operational channel event-history span 5.05 days** (2026-11-13 to 2026-11-18) | Check Module Logging machine policy metadata; validate retention goals independently | **4104 observed; comprehensive Script Block Logging policy not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
@@ -837,6 +838,45 @@ if (Test-Path $path) {
         Format-List
 } else {
     'HKLM Transcription policy key: Not configured'
+}
+```
+
+## Step 23 — Windows PowerShell Transcription machine policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKLM Transcription policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKLM Transcription policy key: Not configured
+```
+
+**Interpretation:** The Windows PowerShell `Transcription` machine-policy key was absent at the inspected HKLM path. This establishes **no explicit machine Transcription policy at this location at the time of inspection**, not that transcription has been disabled in every scope or that no transcript files exist. Other policy stores, current-user configuration, editions, and session-level transcription were not examined.
+
+**Privacy and change control:** The query checked only a specific registry-key location and flag; no transcript content, output destination, session text or personal data was retrieved. No policies or endpoint settings were changed. Secure Boot and BitLocker remain deferred pending backups and recovery readiness.
+
+**Next proposed read-only check:** Inspect the current-user `Transcription` policy path without displaying transcript output settings or transcript files:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKCU Transcription policy key: Not configured'
 }
 ```
 
