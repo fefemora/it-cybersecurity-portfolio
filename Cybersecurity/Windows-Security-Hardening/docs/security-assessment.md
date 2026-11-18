@@ -12,7 +12,7 @@
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
-| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted, Off, 0%; TPM Present/Ready/Enabled/Activated all True** | Check Secure Boot compatibility and recovery/backup prerequisites; encryption requires separate approval | **TPM readiness verified; C: encryption gap remains, no change applied** |
+| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM present/ready/enabled/activated all True; Secure Boot False** | Read-only boot-mode and backup/recovery checks; firmware and BitLocker require separate review and approval | **TPM ready; Secure Boot and disk encryption gaps verified; no changes applied** |
 
 ## Verified firewall evidence — Initial query
 
@@ -356,6 +356,20 @@ TpmActivated : True
 **Assessment:** A TPM is present, ready, enabled and activated according to the Windows `Get-Tpm` status fields. This resolves one platform prerequisite for a potential BitLocker deployment but does **not** validate the complete startup/recovery path, backup reliability, BitLocker policy configuration or availability of a recovery key. The C: system volume remains **fully decrypted and unprotected by BitLocker** in the most recent volume query. No TPM or BitLocker settings were modified.
 
 **Next read-only prerequisite:** Inspect boot mode and Secure Boot support using `Confirm-SecureBootUEFI` (a result of `False` needs context; errors can indicate an unsupported/non-UEFI environment). Do not publish recovery passwords or TPM key material. Verify recovery and backups before any separate authorization for encryption.
+
+## Step 10 — Secure Boot status (verified; read-only)
+
+**Command executed:** `Confirm-SecureBootUEFI`
+
+**Actual result (user confirmed):**
+
+```text
+False
+```
+
+**Interpretation:** Windows reported **Secure Boot disabled**. This is a verified boot-integrity configuration gap, not evidence of compromise or a malfunctioning TPM. The `Get-Tpm` query independently returned `True` for presence, readiness, enabled and activated; TPM state does not establish Secure Boot state.
+
+**Limitations and safe next steps:** This command does not document firmware settings, signed boot components, storage partition layout, boot-loader compatibility, or why Secure Boot is disabled. **No firmware changes, BitLocker activation, or TPM changes were authorized or performed.** Before considering a separate change, verify actual BIOS mode via a read-only Windows query, record recovery/backup readiness, and evaluate firmware and Hyper-V compatibility. A manual firmware toggle without reviewing boot compatibility may cause boot or recovery problems.
 
 ## Classification rules
 
