@@ -22,6 +22,7 @@ My work connects three areas: **hands-on IT support**, **security-aware operatio
 | **[Service Desk Incident Management — L2 Case Studies](IT-Support/Service-Desk-Incident-Management/README.md)** | Microsoft 365 authentication, DNS, VPN troubleshooting and escalation | **Three simulated incidents** | **Documented** |
 | **[Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, NIST CSF 2.0 / CIS IG1 mapping, treatment planning, executive reporting | **Fictional enterprise assessment** | **Documentation completed** |
 | **[Windows Security Event Analysis — Blue Team Lab](Cybersecurity/Windows-Security-Event-Analysis/README.md)** | Real Windows Security log triage, audit policy review, logon-ID event correlation and monitoring visibility assessment | **Real read-only workstation investigation**, sanitized console output | **Initial assessment completed** |
+| **[Windows Security Hardening — Baseline & Validation](Cybersecurity/Windows-Security-Hardening/README.md)** | Endpoint security baseline, firewall and Defender checks, change and rollback planning | **Planned checks; no new host evidence or changes yet** | **Lab guide prepared / baseline pending** |
 
 ## Project Highlights
 
@@ -57,6 +58,14 @@ A real, read-only Windows Security log assessment investigated successful logons
 
 **[Explore the Blue Team case and executive report →](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
 
+### 05 — Windows Security Hardening: Baseline and Controlled Validation
+
+[![Planned Windows hardening lifecycle](Cybersecurity/Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Cybersecurity/Windows-Security-Hardening/README.md)
+
+A follow-on Blue Team lab begins with **read-only firewall, antivirus and audit-policy baselining**, then separates recommended settings from authorized implementation and independent validation. **No hardening actions have been applied or verified** in this new project.
+
+**[Open the baseline and validation lab →](Cybersecurity/Windows-Security-Hardening/README.md)**
+
 ## Technical Skills Demonstrated
 
 | Area | Portfolio evidence |
@@ -78,7 +87,6 @@ These are future work, **not completed deliverables**.
 | Systems Administration | Active Directory & Identity Management Lab |
 | Networking | Network Troubleshooting Lab |
 | Cybersecurity | Wazuh SIEM Home Lab |
-| Cybersecurity | Windows Security Hardening |
 | Cloud | Cloud Networking & Security Lab |
 
 ## Documentation Standards
