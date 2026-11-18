@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, 2 and 3 executed and verified; other baseline checks pending.  
+**Status:** Steps 1, 1b, 2, 3 and 4 executed and verified; other baseline checks pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -119,7 +119,31 @@ SubmitSamplesConsent : 1
 
 **Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
 
-## Step 4 — Review relevant audit configuration (planned, read-only)
+## Step 4 — PUA Protection and Block at First Sight preferences (verified)
+
+**Exact read-only command executed:**
+
+```powershell
+Get-MpPreference |
+    Select-Object PUAProtection,
+                  DisableBlockAtFirstSeen |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+PUAProtection           : 1
+DisableBlockAtFirstSeen : False
+```
+
+**Interpretation:** `PUAProtection=1` is the **Block** configuration for potentially unwanted applications. `DisableBlockAtFirstSeen=False` means the Block at First Sight capability is **not disabled by this preference**. This is a favorable configuration in the reviewed fields.
+
+**Limits:** Preference values do not independently establish end-to-end Block at First Sight operation, cloud connectivity, or malware detection effectiveness. No file was submitted, executed, scanned or quarantined in this exercise. **No settings were changed.**
+
+**Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
+
+## Step 5 — Review relevant audit configuration (planned, read-only)
 
 ```powershell
 auditpol /get /category:*
@@ -131,7 +155,7 @@ auditpol /get /category:*
 
 **Evidence status:** **Not executed for this new assessment.**
 
-## Step 5 — Evaluate additional controls (scoped, not executed)
+## Step 6 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
