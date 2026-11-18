@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Read-only firewall and Microsoft Defender baseline verified, including PUA and Block at First Sight preferences.** Other controls remain pending; no configuration changes were made.  
+**Evidence status:** **Firewall, Defender and Process Creation audit-policy baselines verified.** An audit visibility improvement is proposed but **not implemented**; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -20,7 +20,7 @@ This project separates **observation → assessment → proposed change → auth
 |---|---|---|
 | Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signatures age `0`; MAPS `2`, sample consent `1`; PUA Block `1`, Block at First Sight not disabled (`False`) | **Selected protection statuses/preferences verified; operational effectiveness not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
-| Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
+| Security auditing | Fresh read-only query: **Process Creation = No Auditing**; historical 20 MiB circular retention comes from the linked prior lab | **Verified visibility gap; remediation proposed, not implemented** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
 | Recommendations and validation | Prioritized, evidence-based change candidates | **Not implemented** |
@@ -158,7 +158,30 @@ DisableBlockAtFirstSeen : False
 
 **Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
 
-**Next proposed read-only step:** Reassess current advanced audit policy (separate from earlier event-analysis lab) and compare with the earlier observed visibility gaps.
+## Step 5 — Verify Process Creation audit policy (verified)
+
+**Read-only command actually executed:**
+
+```powershell
+auditpol /get /subcategory:"{0cce922b-69ae-11d9-bed3-505054503030}"
+```
+
+**Actual console output (Spanish Windows locale):**
+
+```text
+Directiva de auditoría del sistema
+Categoría o subcategoría                  Configuración
+Seguimiento detallado
+  Creación del proceso                    Sin auditoría
+```
+
+**Interpretation:** The advanced audit subcategory **Process Creation** is currently configured as **No Auditing**. This independently confirms the same setting observed in the [prior Windows Security Event Analysis](../../Windows-Security-Event-Analysis/README.md). With this subcategory disabled, routine process creation auditing is not configured to provide continuous Security event 4688 coverage. The earlier retained 4688 records remain unexplained; they are not proof that audit policy changed or that malicious processes ran.
+
+**Security impact and limits:** This is a **monitoring visibility gap**, not proof of an attack or a compliance finding. The local Security log was previously observed at **20 MiB / Circular** with ~2.03 days between oldest/newest retained events; additional process events could accelerate log turnover if retention capacity is unchanged. Command-line inclusion in 4688 is a separate, potentially sensitive setting and was **not assessed or enabled**.
+
+**Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
+
+**Next:** Review [change and validation plan](docs/validation-plan.md) before any optional configuration modification.
 
 ## Evidence integrity
 
