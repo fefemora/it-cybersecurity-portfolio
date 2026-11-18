@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -694,7 +694,50 @@ $newest = Get-WinEvent -LogName $log -MaxEvents 1
 
 Channel-wide retention does not establish how long individual event IDs persist.
 
-## Step 19 — Evaluate additional controls (scoped, not executed)
+## Step 19 — PowerShell Operational retained time span (verified; read-only)
+
+**Executed read-only command:**
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$oldest = Get-WinEvent -LogName $log -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName $log -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console output (local time; decimal comma as displayed):**
+
+```text
+OldestEvent  : 13-11-2026 1:11:52
+NewestEvent  : 18-11-2026 2:20:33
+RetainedDays : 5,05
+```
+
+**Finding:** At the time of this snapshot, the earliest and latest retained `Microsoft-Windows-PowerShell/Operational` events span **5.05 days**, from **2026-11-13 01:11:52** to **2026-11-18 02:20:33**, local time. The earlier configuration check found a **15 MiB Circular** log. This is an **observed event-history span**, **not a configured minimum retention time or SLA** and **not a proven minimum history for ID 4104**. A log's oldest event may reflect when recording began, inactivity, or overwritten records; the cause is not established by these timestamps.
+
+**Limitations:** No event messages, scripts, private identifiers or contents were accessed; no settings were changed. A separate Security log was increased from 20 to 128 MiB under CHG-001, but its seven-day objective remains independently unverified. Secure Boot and BitLocker modifications remain postponed until backup and recovery readiness.
+
+**Next proposed read-only check:** Verify a narrow overview of PowerShell module logging policy at the **HKLM** path only, without enumerating module names or event payloads:
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKLM ModuleLogging policy key: Not configured'
+}
+```
+
+This checks one Windows PowerShell policy path; it cannot alone establish effective logging across all scopes or PowerShell editions.
+
+## Step 20 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
