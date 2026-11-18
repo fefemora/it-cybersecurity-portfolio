@@ -215,9 +215,25 @@ TimeCreated           Id RecordId
 
 **Unresolved:** The subsequent audit policy check showed `Process Creation: No Auditing`. These observations were made at different times. A previous policy change is one possible explanation, **not a verified cause**.
 
-## Step 8 — Check for audit policy change events (planned)
+## Step 8 — Search for system audit policy changes (verified: no matches)
 
-A lightweight, read-only query for recent **event 4719** timestamps will help determine whether retained Security logs show changes to system auditing policy. Record only event IDs, timestamps and record IDs initially; do not assume a matching event proves the Process Creation subcategory was changed.
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4719
+} -MaxEvents 5 |
+Select-Object TimeCreated, Id, RecordId
+```
+
+**Purpose:** Look for at most five retained events indicating a change to system audit policy.
+
+**Observed result:** No rows were returned. PowerShell reported `NoMatchingEventsFound` (`ObjectNotFound`), meaning **no currently retained Security events matched ID 4719** in this query.
+
+**Interpretation:** This is a valid negative finding, not a malfunction of the event log. It **does not establish that audit policy has never changed**, particularly because the log uses circular retention with a previously observed span of approximately 2.03 days. The reason for the earlier 4688 records alongside the currently disabled Process Creation policy remains **unresolved**.
+
+## Step 9 — Further investigation (planned)
+
+If additional investigation is warranted, review a bounded set of event 4688 metadata and the relevant audit-policy context. Keep the working hypothesis separate from confirmed observations; do not modify audit policy in the current read-only phase.
 
 ## Documentation rules
 
