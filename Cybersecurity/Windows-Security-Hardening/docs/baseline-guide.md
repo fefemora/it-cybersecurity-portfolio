@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, and queried HKCU policy-key absence verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -653,7 +653,48 @@ Get-WinEvent -FilterHashtable @{
 
 An event's severity alone is not evidence of malicious execution. The script contents and full messages must remain private.
 
-## Step 18 — Evaluate additional controls (scoped, not executed)
+## Step 18 — PowerShell event 4104 severity distribution (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-WinEvent -FilterHashtable @{
+    LogName = 'Microsoft-Windows-PowerShell/Operational'
+    Id = 4104
+} |
+    Group-Object LevelDisplayName |
+    Select-Object Name, Count |
+    Format-Table -AutoSize
+```
+
+**Actual console output (localized):**
+
+```text
+Name        Count
+----        -----
+Advertencia   439
+```
+
+**Assessment:** At this later snapshot, the query returned **439 retained event ID 4104 records** and classified all of them as **Warning** (`Advertencia`) by their displayed severity. The preceding count-only check returned **438**, so **the snapshots differ by one record**; ongoing logging between queries is a plausible explanation, **not independently confirmed**. A warning-level 4104 is not by itself evidence of malicious PowerShell activity, a unique executed script, or a confirmed incident. Missing HKLM and HKCU policy keys at their inspected locations likewise do not establish the effective source of these events or comprehensive script-block logging coverage.
+
+**Privacy/change control:** No script text, event messages, usernames, paths, or commands were extracted. No policy or firmware settings changed. Secure Boot and BitLocker work remains deferred pending backup and recovery planning.
+
+**Next proposed check (read-only; timestamps only):** Compare the oldest and newest retained PowerShell Operational events to assess the channel's currently observed time span, without displaying event messages:
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$oldest = Get-WinEvent -LogName $log -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName $log -MaxEvents 1
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+Channel-wide retention does not establish how long individual event IDs persist.
+
+## Step 19 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
