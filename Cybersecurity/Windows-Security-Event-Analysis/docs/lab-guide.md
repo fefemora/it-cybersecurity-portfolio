@@ -1,6 +1,6 @@
 # How-To: Investigating Windows Security Events with PowerShell
 
-[Project overview](../README.md) · [Event analysis](event-analysis.md) · [Portfolio home](../../../README.md)
+[Project overview](../README.md) · [Executive summary](executive-summary.md) · [Event analysis](event-analysis.md) · [Recommendations](monitoring-recommendations.md) · [Portfolio home](../../../README.md)
 
 **Status:** Partially executed and verified against the user's console output.  
 **Approach:** Read-only queries. No policy changes, event deletion, or simulated attacks.
@@ -438,9 +438,9 @@ MatchFound LogonType AccountCategory
 
 **Scope:** This run selected the **latest 4672 at execution time**, not an event pinned to a specific record ID. The output did not include the selected timestamp, so the matched session cannot be asserted to be the same 4672 previously observed at 21:08:51. The result does not establish privilege use or malicious activity.
 
-## Next: Evidence-based case summary (planned)
+## Case reporting (completed)
 
-Summarize verified observations, unresolved questions (including 4688 versus current audit policy), retention limitations, and proposed monitoring improvements. Do not present unconfirmed causes as findings.
+The [executive summary](executive-summary.md) consolidates verified observations, the still-unresolved 4688/audit-policy discrepancy, and the known retention and sampling limitations. The [monitoring recommendations](monitoring-recommendations.md) describe proposed actions only. No system configuration was changed.
 
 ## Documentation rules
 
