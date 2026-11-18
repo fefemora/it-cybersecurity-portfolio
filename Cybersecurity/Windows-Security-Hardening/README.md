@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
+**Evidence status:** **CHG-001 implemented and verified:** Security log maximum 20 → 128 MiB; immediate retained span 1.96 days. **BitLocker C: fully decrypted, protection Off; TPM ready; UEFI boot mode; Secure Boot disabled (`False`).** Encryption and process-audit changes are proposals only; seven-day retention remains unverified.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -22,7 +22,7 @@ This project separates **observation → assessment → proposed change → auth
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Process Creation **No Auditing** in the last read-only check; Security log **20 MiB → 128 MiB** under **CHG-001**, Circular; after-change **33,989** records | **Size change implemented/verified; 7-day retention not yet established** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
-| Update and platform security | BitLocker C: 0% / Off; TPM present/ready/enabled/activated = `True`; **Secure Boot = `False`** | **Two distinct gaps verified (disk encryption and Secure Boot); changes not implemented** |
+| Update and platform security | BitLocker C: 0% / Off; TPM flags `True`; firmware mode **UEFI**; Secure Boot `False` | **UEFI verified; separate Secure Boot and encryption gaps, no changes** |
 | Recommendations and validation | CHG-001 Security log maximum-size adjustment; separate future process-auditing pilot | **CHG-001 configuration verified; follow-up retention pending** |
 
 ## Working sequence
@@ -405,7 +405,38 @@ False
 
 **Limitations and safe next steps:** This command does not document firmware settings, signed boot components, storage partition layout, boot-loader compatibility, or why Secure Boot is disabled. **No firmware changes, BitLocker activation, or TPM changes were authorized or performed.** Before considering a separate change, verify actual BIOS mode via a read-only Windows query, record recovery/backup readiness, and evaluate firmware and Hyper-V compatibility. A manual firmware toggle without reviewing boot compatibility may cause boot or recovery problems.
 
-**Next:** Gather non-sensitive boot-mode evidence; do not change firmware or enable encryption without separate readiness and approval.
+## Step 11 — Firmware boot mode (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-ComputerInfo |
+    Select-Object BiosFirmwareType |
+    Format-List
+```
+
+**Actual console output:**
+
+```text
+BiosFirmwareType : Uefi
+```
+
+**Interpretation:** Windows reports that the current boot firmware mode is **UEFI**. Combined with the separate verified `Confirm-SecureBootUEFI=False`, this supports the distinction between UEFI boot mode and **disabled Secure Boot**. The `Get-Tpm` flags are also all `True`, while C: BitLocker is `FullyDecrypted` / `ProtectionStatus=Off` / 0% encrypted at their respective observations.
+
+**Limits:** This single property does not establish whether Secure Boot can be safely enabled on this installation; boot-loader signatures, firmware keys, disk partition style, backup/recovery readiness, and hardware compatibility were not inspected. No firmware or encryption settings were changed.
+
+**Proposed next read-only check:** Inspect the disk containing C: without exposing partitions or file content:
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
+
+**Next:** Review system disk partition style and confirm backup/recovery readiness before any proposed firmware or encryption change.
 
 ## Evidence integrity
 
