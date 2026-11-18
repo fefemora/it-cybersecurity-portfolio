@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Planned / not yet executed on this workstation.** Read-only baseline collection is next.  
+**Evidence status:** **Read-only firewall profile baseline verified.** Further effective-policy checks are pending; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -19,7 +19,7 @@ This project separates **observation → assessment → proposed change → auth
 | Workstream | Initial read-only observation | Current evidence state |
 |---|---|---|
 | Windows Defender Antivirus | Antivirus, real-time protection, signature state | **Not collected** |
-| Windows Firewall | Domain, Private and Public profile settings | **Not collected — first check** |
+| Windows Firewall | Domain, Private, Public all `Enabled=True`; both action fields `NotConfigured` | **Verified local profile query; effective actions pending** |
 | Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
@@ -34,7 +34,7 @@ This project separates **observation → assessment → proposed change → auth
 5. **Validate:** Check configuration, expected behavior and unexpected side effects; mark verified only with real results.
 6. **Report:** Produce a concise hardening case study with before/after evidence if implementation occurs.
 
-## First exercise — Windows Firewall profile baseline
+## Step 1 — Verified Windows Firewall profile baseline
 
 Run this **read-only** command on the Windows workstation in PowerShell:
 
@@ -44,7 +44,17 @@ Get-NetFirewallProfile |
     Format-Table -AutoSize
 ```
 
-**Share only the four displayed columns.** Do not paste exported firewall rules, IP addresses, computer names, domains or customer-specific configuration. The result determines the next step; no firewall changes are proposed until it is reviewed.
+**Actual observed output:**
+
+```text
+Name    Enabled DefaultInboundAction DefaultOutboundAction
+----    ------- -------------------- ---------------------
+Domain     True        NotConfigured         NotConfigured
+Private    True        NotConfigured         NotConfigured
+Public     True        NotConfigured         NotConfigured
+```
+
+**Assessment:** All three profiles are enabled. `NotConfigured` is not proof that the effective inbound/outbound behavior is unrestricted; the effective policy still requires verification. **No configuration changes performed.** The next check will query the active policy store, displaying only the same four fields.
 
 ## Evidence integrity
 
