@@ -84,6 +84,22 @@ The read-only `auditpol /get /category:*` output was collected from the Windows 
 
 **Privacy/performance:** No audit-policy modifications were made. The next check should be a bounded, metadata-only query to avoid exposing process paths or command-line arguments.
 
+## Verified event 4688 timestamp sample
+
+A read-only query extracted metadata from the **five most recent retained** event 4688 records.
+
+| Local timestamp | Event ID | Record ID |
+|---|---|---|
+| 2026-11-16 14:30:43 | 4688 | 2266586 |
+| 2026-11-16 14:30:43 | 4688 | 2266585 |
+| 2026-11-16 14:30:43 | 4688 | 2266584 |
+| 2026-11-16 14:30:43 | 4688 | 2266583 |
+| 2026-11-16 14:30:43 | 4688 | 2266582 |
+
+**Finding:** All five share a one-second timestamp and consecutive record IDs. They are compatible with a burst of logged process creations. The current Process Creation subcategory was subsequently observed as `No Auditing`, but the audit policy at the exact earlier event time is not established. No change event, specific process, security incident, or root cause is confirmed.
+
+**Next verification:** Query a bounded set of event 4719 metadata to look for retained audit-policy-change records. Do not infer the precise subcategory modified without examining the relevant event's fields.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -94,7 +110,7 @@ The read-only `auditpol /get /category:*` output was collected from the Windows 
 
 ## Next investigation steps
 
-1. Check timestamps for at most five retained events 4688 without retrieving their process details.
+1. Check for retained audit-policy-change events 4719 using a bounded metadata-only query.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
 3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
 4. Document hypotheses and supporting or contradictory evidence.
@@ -106,6 +122,7 @@ The read-only `auditpol /get /category:*` output was collected from the Windows 
 - [Microsoft Learn — Event 4624](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4624)
 - [Microsoft Learn — Well-known security identifiers](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
 - [Microsoft Learn — Event 4672](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672)
+- [Microsoft Learn — Event 4719: System audit policy was changed](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4719)
 - [Microsoft Learn — Event 4688](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688)
 - [Microsoft Learn — Get-WinEvent](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.diagnostics/get-winevent)
 
