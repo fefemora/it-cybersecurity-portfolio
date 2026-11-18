@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Read-only firewall, Microsoft Defender antivirus and advanced-protection settings verified.** Other controls remain pending; no configuration changes were made.  
+**Evidence status:** **Read-only firewall and Microsoft Defender baseline verified, including PUA and Block at First Sight preferences.** Other controls remain pending; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -18,7 +18,7 @@ This project separates **observation → assessment → proposed change → auth
 
 | Workstream | Initial read-only observation | Current evidence state |
 |---|---|---|
-| Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signature age `0`; MAPS Advanced (`2`), safe sample submission (`1`) | **Selected health and advanced preferences verified; effectiveness and connectivity not tested** |
+| Windows Defender Antivirus | Service, antivirus, real-time, tamper and NIS protection reported `True`; signatures age `0`; MAPS `2`, sample consent `1`; PUA Block `1`, Block at First Sight not disabled (`False`) | **Selected protection statuses/preferences verified; operational effectiveness not tested** |
 | Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
@@ -134,7 +134,31 @@ SubmitSamplesConsent : 1
 
 **Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
 
-**Next proposed read-only step:** Check additional Defender preferences such as Block at First Sight and PUA protection, or revisit audit policy in a fresh read-only measurement.
+## Step 4 — PUA Protection and Block at First Sight preferences (verified)
+
+**Exact read-only command executed:**
+
+```powershell
+Get-MpPreference |
+    Select-Object PUAProtection,
+                  DisableBlockAtFirstSeen |
+    Format-List
+```
+
+**Observed console output:**
+
+```text
+PUAProtection           : 1
+DisableBlockAtFirstSeen : False
+```
+
+**Interpretation:** `PUAProtection=1` is the **Block** configuration for potentially unwanted applications. `DisableBlockAtFirstSeen=False` means the Block at First Sight capability is **not disabled by this preference**. This is a favorable configuration in the reviewed fields.
+
+**Limits:** Preference values do not independently establish end-to-end Block at First Sight operation, cloud connectivity, or malware detection effectiveness. No file was submitted, executed, scanned or quarantined in this exercise. **No settings were changed.**
+
+**Microsoft references:** [Configure PUA protection](https://learn.microsoft.com/en-us/defender-endpoint/detect-block-potentially-unwanted-apps-microsoft-defender-antivirus) · [Configure Block at First Sight](https://learn.microsoft.com/en-us/defender-endpoint/configure-block-at-first-sight-microsoft-defender-antivirus).
+
+**Next proposed read-only step:** Reassess current advanced audit policy (separate from earlier event-analysis lab) and compare with the earlier observed visibility gaps.
 
 ## Evidence integrity
 
