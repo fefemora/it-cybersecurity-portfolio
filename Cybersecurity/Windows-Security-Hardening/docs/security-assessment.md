@@ -7,7 +7,7 @@
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
 | Firewall | Confirm native protection across network profiles | Initial local query: all three `Enabled=True`, action fields `NotConfigured`; `ActiveStore`: all three `Enabled=True`, default inbound `Block`, outbound `Allow` | If required, examine scoped rule exceptions and active network profile without exposing addresses | **Profile defaults verified; no issue identified in checked fields** |
-| Antivirus | Review on-device malware protection status | Service, antivirus, real-time protection: `True`; signatures age `0`, last updated `2026-11-17 09:41:14` | Consider read-only check of cloud-delivered and tamper protections; do not infer settings not queried | **Five indicators verified; no deficiency identified in checked fields** |
+| Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced and safe sample submission `1` | Evaluate further preferences and platform/audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
 | Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
@@ -63,6 +63,40 @@ Get-MpComputerStatus |
 | `AntivirusSignatureLastUpdated` | `2026-11-17 09:41:14` (console local time) |
 
 **Assessment:** The selected Microsoft Defender Antivirus health indicators were positive at the time of observation. This is not an antivirus efficacy test, threat scan, policy compliance assessment, or assessment of features not queried. **No antivirus configuration or signatures were modified by this command.**
+
+## Step 3 — Verified Microsoft Defender advanced-protection configuration
+
+**Read-only commands executed:**
+
+```powershell
+Get-MpComputerStatus |
+    Select-Object IsTamperProtected,
+                  RealTimeProtectionEnabled,
+                  NISEnabled |
+    Format-List
+
+Get-MpPreference |
+    Select-Object MAPSReporting,
+                  SubmitSamplesConsent |
+    Format-List
+```
+
+**Real sanitized output:**
+
+```text
+IsTamperProtected         : True
+RealTimeProtectionEnabled : True
+NISEnabled                : True
+
+MAPSReporting        : 2
+SubmitSamplesConsent : 1
+```
+
+**Interpretation:** Tamper Protection, real-time protection, and Network Inspection System reported `True`. `MAPSReporting=2` corresponds to **Advanced** cloud protection membership; `SubmitSamplesConsent=1` corresponds to **automatic submission of safe samples** under Microsoft Defender preference definitions. These settings were read, not modified.
+
+**Limitations:** Preferences and status flags do not independently prove cloud connectivity, malware detection efficacy, or complete endpoint compliance. Advanced MAPS reporting may share more detailed threat-related information; any policy changes should account for privacy and business requirements. No changes or malware tests were performed.
+
+**Microsoft reference:** [Configure cloud protection](https://learn.microsoft.com/en-us/defender-endpoint/cloud-protection-configure) · [Set-MpPreference parameter values](https://learn.microsoft.com/en-us/powershell/module/defender/set-mppreference).
 
 ## Classification rules
 
