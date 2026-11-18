@@ -1,7 +1,7 @@
 # Windows Security Hardening — Baseline, Improvement Plan & Validation
 
 **Area:** Cybersecurity / Blue Team · Endpoint security  
-**Evidence status:** **Read-only firewall profile baseline verified.** Further effective-policy checks are pending; no configuration changes were made.  
+**Evidence status:** **Read-only firewall local and ActiveStore profile baselines verified.** Defender and other control checks remain pending; no configuration changes were made.  
 **Environment:** Windows workstation, Windows PowerShell, built-in security controls. No new VM or commercial tools required.
 
 [Portfolio home](../../README.md) · [Baseline guide](docs/baseline-guide.md) · [Assessment matrix](docs/security-assessment.md) · [Validation plan](docs/validation-plan.md) · [Related real event-analysis case](../Windows-Security-Event-Analysis/README.md)
@@ -19,7 +19,7 @@ This project separates **observation → assessment → proposed change → auth
 | Workstream | Initial read-only observation | Current evidence state |
 |---|---|---|
 | Windows Defender Antivirus | Antivirus, real-time protection, signature state | **Not collected** |
-| Windows Firewall | Domain, Private, Public all `Enabled=True`; both action fields `NotConfigured` | **Verified local profile query; effective actions pending** |
+| Windows Firewall | Local query: three profiles enabled, action fields `NotConfigured`; **ActiveStore: enabled, inbound `Block`, outbound `Allow` for all three** | **Verified profile default actions; rule-level traffic behavior not tested** |
 | Security auditing | Relevant advanced audit subcategories and retention | **Prior case evidence only; fresh baseline pending** |
 | Local accounts and permissions | Limited, anonymized policy/role review | **Not collected** |
 | Update and platform security | Update posture and selected native protections | **Not collected** |
@@ -54,7 +54,27 @@ Private    True        NotConfigured         NotConfigured
 Public     True        NotConfigured         NotConfigured
 ```
 
-**Assessment:** All three profiles are enabled. `NotConfigured` is not proof that the effective inbound/outbound behavior is unrestricted; the effective policy still requires verification. **No configuration changes performed.** The next check will query the active policy store, displaying only the same four fields.
+**Assessment:** All three profiles are enabled. The initial `NotConfigured` output did not establish traffic behavior, so the effective ActiveStore was queried separately. **No configuration changes performed.**
+
+**Step 1b — Verified ActiveStore query:**
+
+```powershell
+Get-NetFirewallProfile -PolicyStore ActiveStore |
+    Select-Object Name, Enabled, DefaultInboundAction, DefaultOutboundAction |
+    Format-Table -AutoSize
+```
+
+**Observed output:**
+
+```text
+Name    Enabled DefaultInboundAction DefaultOutboundAction
+----    ------- -------------------- ---------------------
+Domain     True                Block                 Allow
+Private    True                Block                 Allow
+Public     True                Block                 Allow
+```
+
+**Finding:** All three profile defaults are **inbound Block / outbound Allow** in ActiveStore. Specific allow rules, active network profile, and actual packet behavior were **not** examined. **Next:** read-only Microsoft Defender Antivirus health check.
 
 ## Evidence integrity
 
