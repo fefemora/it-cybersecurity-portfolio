@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM and Secure Boot verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot and UEFI firmware mode verified. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -392,7 +392,38 @@ False
 
 **Limitations and safe next steps:** This command does not document firmware settings, signed boot components, storage partition layout, boot-loader compatibility, or why Secure Boot is disabled. **No firmware changes, BitLocker activation, or TPM changes were authorized or performed.** Before considering a separate change, verify actual BIOS mode via a read-only Windows query, record recovery/backup readiness, and evaluate firmware and Hyper-V compatibility. A manual firmware toggle without reviewing boot compatibility may cause boot or recovery problems.
 
-## Step 11 — Evaluate additional controls (scoped, not executed)
+## Step 11 — Firmware boot mode (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-ComputerInfo |
+    Select-Object BiosFirmwareType |
+    Format-List
+```
+
+**Actual console output:**
+
+```text
+BiosFirmwareType : Uefi
+```
+
+**Interpretation:** Windows reports that the current boot firmware mode is **UEFI**. Combined with the separate verified `Confirm-SecureBootUEFI=False`, this supports the distinction between UEFI boot mode and **disabled Secure Boot**. The `Get-Tpm` flags are also all `True`, while C: BitLocker is `FullyDecrypted` / `ProtectionStatus=Off` / 0% encrypted at their respective observations.
+
+**Limits:** This single property does not establish whether Secure Boot can be safely enabled on this installation; boot-loader signatures, firmware keys, disk partition style, backup/recovery readiness, and hardware compatibility were not inspected. No firmware or encryption settings were changed.
+
+**Proposed next read-only check:** Inspect the disk containing C: without exposing partitions or file content:
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
+
+## Step 12 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
