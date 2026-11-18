@@ -559,6 +559,47 @@ if (Test-Path $path) {
 
 This checks one Windows PowerShell policy path; it cannot alone establish effective logging across all scopes or PowerShell editions.
 
+## Step 20 — Windows PowerShell Module Logging machine policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKLM ModuleLogging policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKLM ModuleLogging policy key: Not configured
+```
+
+**Interpretation:** The **Windows PowerShell ModuleLogging machine policy key** was absent in the specific inspected HKLM location. This is evidence of no explicit machine-policy setting at this path, **not proof that all PowerShell module logging is inactive**. Other scopes, edition-specific settings, and actual event 4103 availability have not been evaluated in this step. The previously observed event 4104 counts relate to Script Block Logging and **do not validate Module Logging**.
+
+**Privacy and change-control:** No policy changes, log payloads, module names, command arguments or secrets were accessed. Secure Boot and BitLocker work remains postponed pending backups and recovery planning.
+
+**Next proposed read-only check:** Inspect the current-user counterpart of Module Logging policy, reporting only the flag or whether the exact key is absent:
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ModuleLogging'
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableModuleLogging |
+        Format-List
+} else {
+    'HKCU ModuleLogging policy key: Not configured'
+}
+```
+
+This check does not determine the full effective configuration by itself.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
