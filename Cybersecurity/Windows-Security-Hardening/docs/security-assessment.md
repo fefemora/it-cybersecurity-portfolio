@@ -10,7 +10,7 @@
 | Antivirus | Review on-device malware protection status | Service, antivirus, real-time, Tamper Protection, NIS: `True`; signatures age `0`, updated `2026-11-17 09:41:14`; MAPS `2` Advanced, safe sample submission `1`, PUA Block `1`, Block at First Sight not disabled (`False`) | Evaluate current audit policy using read-only commands; consider privacy of cloud reporting | **Verified selected health and advanced-protection indicators; no deficiency identified in fields checked** |
 | Security log retention | Ensure enough history for investigations | **CHG-001:** 20 MiB → **128 MiB**, enabled and Circular; post-query **33,989** records; immediate observed span **1.96 days** (pre-change **1.93 days**) | Recheck endpoints after meaningful elapsed time; compare against proposed 7-day target | **CHG-001 configuration and immediate access verified; long-term target pending** |
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
-| PowerShell logging policy | Determine Script Block Logging policy configuration | **HKLM Windows PowerShell ScriptBlockLogging registry key absent** at queried path | Inspect operational channel metadata and, if needed, other policy scopes separately | **Machine policy key absence verified; effective logging unknown** |
+| PowerShell logging policy and event channel | Determine Script Block Logging policy and event-channel state | **HKLM ScriptBlockLogging policy key absent** at queried path; **Operational channel Enabled=True, 808 records, 15 MiB Circular** | Examine bounded event ID counts and other policy scopes if needed; do not read scripts | **Channel available; comprehensive Script Block Logging not established** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; system disk 0 GPT (`IsBoot`/`IsSystem=True` on disk); Secure Boot False** | Check independent backup and recovery prerequisites before separate approval | **UEFI/GPT/TPM verified; Secure Boot and disk encryption remain off; no changes** |
@@ -464,6 +464,44 @@ Get-WinEvent -ListLog 'Microsoft-Windows-PowerShell/Operational' |
 ```
 
 This tests the channel's availability and status only, not whether full Script Block Logging policy is enabled.
+
+## Step 14 — Windows PowerShell Operational channel metadata (verified; read-only)
+
+**Executed command:**
+
+```powershell
+Get-WinEvent -ListLog 'Microsoft-Windows-PowerShell/Operational' |
+    Select-Object LogName,
+                  IsEnabled,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Actual observed output:**
+
+```text
+LogName            : Microsoft-Windows-PowerShell/Operational
+IsEnabled          : True
+RecordCount        : 808
+MaximumSizeInBytes : 15728640
+LogMode            : Circular
+```
+
+**Assessment:** The Windows PowerShell Operational event channel is **enabled**, holds **808 records**, and is configured with a **15 MiB maximum (15,728,640 bytes)** and **Circular** retention. This confirms channel availability and the presence of some operational events, **not** that all 808 records represent script executions, or that detailed Script Block Logging is enabled. Step 13 independently found no HKLM Windows PowerShell ScriptBlockLogging policy key at the queried location. Other scopes and PowerShell editions were not assessed.
+
+**Privacy/limits:** No event content, command lines, usernames or script-block text was read. A current event-channel snapshot cannot establish whether event ID 4104 exists or comprehensive logging is active.
+
+**Next proposed read-only check — 4104 count only:**
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$events = Get-WinEvent -FilterHashtable @{ LogName = $log; Id = 4104 } -ErrorAction SilentlyContinue
+[PSCustomObject]@{ EventId = 4104; Count = @($events).Count } | Format-List
+```
+
+For reduced output and effort, use an API-level count, not the script text or full event objects. This query is proposed, not yet executed; absence of retained 4104 would not prove that no event ever occurred.
 
 ## Classification rules
 
