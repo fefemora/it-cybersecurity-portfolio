@@ -498,7 +498,45 @@ Get-WinEvent -ListLog 'Microsoft-Windows-PowerShell/Operational' |
 
 This tests the channel's availability and status only, not whether full Script Block Logging policy is enabled.
 
-**Next:** Confirm the Windows PowerShell Operational event channel status, without reading logged script content. BitLocker and Secure Boot changes remain deferred until recovery readiness.
+## Step 14 — Windows PowerShell Operational channel metadata (verified; read-only)
+
+**Executed command:**
+
+```powershell
+Get-WinEvent -ListLog 'Microsoft-Windows-PowerShell/Operational' |
+    Select-Object LogName,
+                  IsEnabled,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Actual observed output:**
+
+```text
+LogName            : Microsoft-Windows-PowerShell/Operational
+IsEnabled          : True
+RecordCount        : 808
+MaximumSizeInBytes : 15728640
+LogMode            : Circular
+```
+
+**Assessment:** The Windows PowerShell Operational event channel is **enabled**, holds **808 records**, and is configured with a **15 MiB maximum (15,728,640 bytes)** and **Circular** retention. This confirms channel availability and the presence of some operational events, **not** that all 808 records represent script executions, or that detailed Script Block Logging is enabled. Step 13 independently found no HKLM Windows PowerShell ScriptBlockLogging policy key at the queried location. Other scopes and PowerShell editions were not assessed.
+
+**Privacy/limits:** No event content, command lines, usernames or script-block text was read. A current event-channel snapshot cannot establish whether event ID 4104 exists or comprehensive logging is active.
+
+**Next proposed read-only check — 4104 count only:**
+
+```powershell
+$log = 'Microsoft-Windows-PowerShell/Operational'
+$events = Get-WinEvent -FilterHashtable @{ LogName = $log; Id = 4104 } -ErrorAction SilentlyContinue
+[PSCustomObject]@{ EventId = 4104; Count = @($events).Count } | Format-List
+```
+
+For reduced output and effort, use an API-level count, not the script text or full event objects. This query is proposed, not yet executed; absence of retained 4104 would not prove that no event ever occurred.
+
+**Next:** Inspect counts of selected event IDs only, not their messages, to assess available PowerShell monitoring visibility. Secure Boot and BitLocker changes remain deferred.
 
 ## Evidence integrity
 
