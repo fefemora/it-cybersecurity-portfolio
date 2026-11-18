@@ -12,7 +12,7 @@
 | Process creation auditing | Improve process activity visibility if justified | **Fresh local `auditpol` check: `Sin auditoría` / No Auditing**; same setting in prior lab | Review a controlled, success-only auditing pilot with retention, privacy, policy management and rollback considerations | **Current gap verified; change not implemented** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
-| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; Secure Boot False** | Check disk partition style and backup/recovery prerequisites before separate approvals | **UEFI and TPM verified; Secure Boot and C: encryption gaps remain; no changes** |
+| Platform protections | Review relevant built-in security features | **BitLocker C: FullyDecrypted/Off/0%; TPM flags all True; firmware UEFI; system disk 0 GPT (`IsBoot`/`IsSystem=True` on disk); Secure Boot False** | Check independent backup and recovery prerequisites before separate approval | **UEFI/GPT/TPM verified; Secure Boot and disk encryption remain off; no changes** |
 
 ## Verified firewall evidence — Initial query
 
@@ -401,6 +401,32 @@ Get-Partition -DriveLetter C |
 ```
 
 **Caution:** Disk-layout inspection is not permission to alter partitions, firmware, or BitLocker. Complete backups and recovery planning before proposing any change.
+
+## Step 12 — Windows system disk partition style (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+Get-Partition -DriveLetter C |
+    Get-Disk |
+    Select-Object Number, PartitionStyle, IsBoot, IsSystem |
+    Format-List
+```
+
+**Actual sanitized output:**
+
+```text
+Number         : 0
+PartitionStyle : GPT
+IsBoot         : True
+IsSystem       : True
+```
+
+**Interpretation:** Windows reported the disk containing C: as **Disk 0, GPT**, with the returned disk object reporting `IsBoot=True` and `IsSystem=True`. This aligns with the separately verified UEFI boot mode. GPT and UEFI are favorable baseline conditions, but **do not establish that Secure Boot can be safely enabled**: `Confirm-SecureBootUEFI` previously returned `False`. The TPM status flags were all `True`; the system volume remained unencrypted at its last BitLocker query.
+
+**Limits:** `IsBoot` and `IsSystem` here are **disk-level properties returned by Get-Disk**, not a claim about the C: partition's special attributes. This query does not establish that EFI boot signatures, firmware key enrollment, recovery media, backup verification, or Windows recovery paths are ready. **No firmware, disk partition, TPM or BitLocker change was performed.**
+
+**Next step:** Confirm the user has a current independent backup and a usable recovery method before planning any Secure Boot or BitLocker change. Never collect or publish BitLocker recovery secrets.
 
 ## Classification rules
 
