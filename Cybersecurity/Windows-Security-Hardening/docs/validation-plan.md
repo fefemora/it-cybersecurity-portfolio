@@ -21,7 +21,7 @@
 |---|---|---|---|
 | Firewall posture review | Ensure intended profiles are protected | Actual enabled state plus connectivity testing appropriate to device role | Disruption of remote services or applications |
 | Defender health improvements | Detect unavailable protection or aging signatures | Fresh protection/status output | Third-party AV management and policy precedence |
-| Security log retention review | Fresh log query: 33,959 records, 20 MiB Circular; prior history span ~2.03 days | Fresh oldest/newest timestamp span and documented target; recheck after any change | Disk consumption, log rollover, data access, privacy |
+| Security log retention review | Fresh capacity 33,959 records / 20 MiB Circular; new observed span **1.93 days** versus **2.03 days** in earlier separate run | Agree on retention target, confirm disk space, then compare endpoint spans after any approved adjustment | Disk consumption, log rollover, data access, privacy |
 | Process creation auditing pilot | **Fresh query** confirms `No Auditing` | After approved enabling, verify Success audit policy and new benign 4688 records | Higher event volume, faster overwrite of 20 MiB circular log, sensitive fields, managed policy conflicts |
 
 ## Proposed controlled change: Process Creation auditing (not approved or executed)
@@ -33,7 +33,7 @@
 **Preconditions:**
 
 1. Confirm the workstation is personally controlled or that local changes are authorized, and determine whether AD Group Policy/MDM manages audit settings.
-2. Confirm adequate disk space and choose an evidence retention goal. A fresh query found **33,959 records, 20 MiB maximum, Circular**; a separate earlier lab measured ~**2.03 days** between retained endpoints. A fresh time-span check is **pending**. Adding process events could reduce retained history.
+2. Confirm adequate disk space and choose an evidence retention goal. A fresh query found **33,959 records, 20 MiB maximum, Circular**; a separate earlier lab measured ~**2.03 days** between retained endpoints. A fresh time-span check found **1.93 days** between oldest/newest events, down **0.10 days** compared with the earlier independent snapshot; this does not establish overwrite or a trend. Adding process events could reduce retained history.
 3. Record the current audit subcategory state and Security log properties, plus a timestamped, privacy-safe change note.
 4. Set a planned observation window and rollback criterion (for example, unexpected event volume or disruption to the expected logging baseline).
 5. Do **not** publish command lines, executable paths, or user identities from event 4688 without sanitization.
@@ -74,7 +74,7 @@ Get-WinEvent -ListLog Security |
 
 **Observed:** Security; **33,959 records**; **20,971,520 bytes (20 MiB) maximum**; **Circular**. Compared with **33,898** records measured in the earlier event-analysis lab, the count differs by **61**, but this is *not* evidence that exactly 61 new events occurred because circular retention and the different collection times prevent that inference.
 
-**Next prerequisite:** Recalculate oldest and newest event timestamps in the current log before deciding whether to increase log capacity or enable additional event generation. The result will measure observed retention span, not unused disk space. **No change has been approved or applied.**
+**Follow-up verified:** Oldest retained event **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, elapsed **1.93 days**. Compared with the prior separate **2.03-day** observation, the difference is **0.10 days (~2h 24m)**. These snapshots are not evidence of a specific rollover event. **Next prerequisite:** choose a target retention window and verify disk free space prior to sizing an approved trial. **No change has been approved or applied.**
 
 ## Evidence fields for every *future* approved change
 
