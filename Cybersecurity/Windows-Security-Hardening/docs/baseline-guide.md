@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Logon success/failure audit policy confirmed in Step 25; 235 successful 4624 events and no 4625 matches in Step 26's 24-hour window. Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM/HKCU Module Logging policy keys absent at inspected paths, and zero retained event 4103 records retrieved; HKLM/HKCU Transcription policy keys absent at inspected paths; PowerShell logging baseline summarized. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Logon success/failure audit policy confirmed in Step 25; 235 successful 4624 events and no 4625 matches in Step 26's 24-hour window; Step 27 showed 229 service, 4 cached-interactive, 2 unlock events. Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM/HKCU Module Logging policy keys absent at inspected paths, and zero retained event 4103 records retrieved; HKLM/HKCU Transcription policy keys absent at inspected paths; PowerShell logging baseline summarized. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -1025,7 +1025,56 @@ $types | Group-Object | Sort-Object Count -Descending |
 
 The aggregate type distributions are sampled later and may not sum to 235 because the query time window advances.
 
-## Step 27 — Evaluate additional controls (scoped, not executed)
+## Step 27 — Successful logon type distribution (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+$from = (Get-Date).AddHours(-24)
+$types = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $from
+} -ErrorAction Stop | ForEach-Object {
+    $xml = [xml]$_.ToXml()
+    ($xml.Event.EventData.Data | Where-Object Name -eq 'LogonType').'#text'
+}
+$types | Group-Object | Sort-Object Count -Descending |
+    Select-Object Name, Count | Format-Table -AutoSize
+```
+
+**Actual observed aggregate output:**
+
+```text
+Name Count
+---- -----
+5      229
+11       4
+7        2
+```
+
+**Finding:** The query returned **235 retained Security event 4624 records**, grouped as **LogonType 5 (Service): 229**, **LogonType 11 (CachedInteractive): 4**, and **LogonType 7 (Unlock): 2**. Totals reconcile exactly to the prior separate 24-hour 4624 count (235), although the two 24-hour windows were queried at different times and may evolve.
+
+**Interpretation:** **97.4%** of these records were **service-type logons**, **1.7%** cached interactive, and **0.9%** unlock events. These are **event records**, not unique users or proof of legitimacy. The distribution does not independently establish what accounts, services or circumstances generated the records; no anomalous activity was confirmed based on the aggregate metadata. Prior audit-policy query returned Logon: Success and Failure; the earlier 24-hour query returned no 4625 group.
+
+**Privacy/change control:** Source event XML was parsed **locally** only to extract the LogonType field. No usernames, IP addresses, session IDs or full records were transmitted or committed. No policy, logging, BitLocker or firmware changes were made.
+
+**Next proposed read-only assessment:** Inspect only the count of Security event **4672** (special privileges assigned to a new logon) over the preceding 24 hours, to compare privilege-related event volume without disclosing account names. This is a different event type and must not be equated with a confirmed administrator login or suspicious activity.
+
+```powershell
+try {
+    $count = (Get-WinEvent -FilterHashtable @{
+        LogName = 'Security'
+        Id = 4672
+        StartTime = (Get-Date).AddHours(-24)
+    } -ErrorAction Stop | Measure-Object).Count
+    [PSCustomObject]@{ EventId = 4672; Count = $count } | Format-List
+} catch {
+    'Query status: ' + $_.Exception.Message
+}
+```
+
+## Step 28 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
