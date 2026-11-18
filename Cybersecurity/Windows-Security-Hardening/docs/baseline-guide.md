@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Steps 1, 1b, 2, 3, 4 and 5 verified; remediation has not been implemented.  
+**Status:** Steps 1, 1b, 2, 3, 4, 5 and 6 verified; no remediation implemented.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -166,7 +166,52 @@ Seguimiento detallado
 
 **Change status:** **Proposed only.** No audit configuration changes have been made during this hardening lab.
 
-## Step 6 — Evaluate additional controls (scoped, not executed)
+## Step 6 — Verify Security log capacity (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+Get-WinEvent -ListLog Security |
+    Select-Object LogName,
+                  RecordCount,
+                  MaximumSizeInBytes,
+                  LogMode |
+    Format-List
+```
+
+**Observed console result:**
+
+```text
+LogName            : Security
+RecordCount        : 33959
+MaximumSizeInBytes : 20971520
+LogMode            : Circular
+```
+
+**Assessment:** The Security log was configured with a **20 MiB maximum** and **Circular** retention, holding **33,959 records** at inspection time. A separate previous case recorded **33,898 records**, an apparent difference of **61**. These were taken at different moments and, with circular retention, **the difference is not a count of newly generated events**; older records may have been replaced.
+
+**Limitations:** `MaximumSizeInBytes` is a configured maximum, not free capacity. This query does not show the earliest retained event, actual occupied bytes, the frequency of rollover, or whether retention is adequate for a defined goal. No changes were made.
+
+### Step 6b — Refresh oldest/newest retained timestamps (planned)
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent  = $oldest.TimeCreated
+    NewestEvent  = $newest.TimeCreated
+    RetainedDays = [math]::Round(
+        ($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2
+    )
+}
+```
+
+**Purpose:** Determine the currently observed timestamp span before considering a change that may increase event volume. This does **not** by itself measure how much disk capacity remains.
+
+**Status:** Not executed in this hardening lab.
+
+## Step 7 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
