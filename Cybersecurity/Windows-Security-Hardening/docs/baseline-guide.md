@@ -2,10 +2,10 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Procedure prepared; **no commands have been verified on this workstation for this project**.  
+**Status:** Step 1 executed and verified; further baseline checks pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
-## Step 1 — Review Windows Firewall profiles (ready to execute)
+## Step 1 — Review Windows Firewall profiles (verified)
 
 ```powershell
 Get-NetFirewallProfile |
@@ -15,19 +15,31 @@ Get-NetFirewallProfile |
 
 **Purpose:** Inspect how the built-in firewall is configured for Domain, Private and Public profiles, including whether each profile is enabled and the default inbound/outbound actions.
 
-**Expected output shape (illustrative only; not a measured result):**
+**Observed output (actual user-provided PowerShell console):**
 
 ```text
-Name     Enabled DefaultInboundAction DefaultOutboundAction
-----     ------- -------------------- ---------------------
-Domain   <value> <value>              <value>
-Private  <value> <value>              <value>
-Public   <value> <value>              <value>
+Name    Enabled DefaultInboundAction DefaultOutboundAction
+----    ------- -------------------- ---------------------
+Domain     True        NotConfigured         NotConfigured
+Private    True        NotConfigured         NotConfigured
+Public     True        NotConfigured         NotConfigured
 ```
 
-**Interpretation guide:** A disabled profile could reduce protection when that profile is active. `NotConfigured`/unspecified actions should not be silently assumed to be explicitly set to Allow or Block; assess effective configuration in context. These settings **do not** enumerate every rule or establish that all traffic is blocked or permitted.
+**Interpretation:** All three firewall profiles are enabled (`Enabled=True`). Both default-action fields returned `NotConfigured` for each profile. This **does not establish** that all inbound or outbound connections are allowed, that the firewall is inactive, or what default behavior is effective after applied policy. Do not call these fields `Allow` or `Block` without a separate effective-policy check.
 
-**Evidence status:** **Pending user console output.** Do not record fabricated setting values.
+**Limits:** A profile may be enabled without necessarily being the currently active network profile. Individual firewall rules, source-policy precedence, packet behavior, and profile selection were not assessed. No changes were performed.
+
+### Step 1b — Inspect active policy store (planned; read-only)
+
+```powershell
+Get-NetFirewallProfile -PolicyStore ActiveStore |
+    Select-Object Name, Enabled, DefaultInboundAction, DefaultOutboundAction |
+    Format-Table -AutoSize
+```
+
+**Purpose:** Check the resultant policy store for the same four fields. If `NotConfigured` persists, it remains important not to infer effective traffic behavior from those fields alone; additional supported observations may be needed.
+
+**Evidence status:** Not executed.
 
 ## Step 2 — Review Microsoft Defender Antivirus status (planned, read-only)
 
