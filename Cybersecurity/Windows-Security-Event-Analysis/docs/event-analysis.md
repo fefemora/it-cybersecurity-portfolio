@@ -98,7 +98,13 @@ A read-only query extracted metadata from the **five most recent retained** even
 
 **Finding:** All five share a one-second timestamp and consecutive record IDs. They are compatible with a burst of logged process creations. The current Process Creation subcategory was subsequently observed as `No Auditing`, but the audit policy at the exact earlier event time is not established. No change event, specific process, security incident, or root cause is confirmed.
 
-**Next verification:** Query a bounded set of event 4719 metadata to look for retained audit-policy-change records. Do not infer the precise subcategory modified without examining the relevant event's fields.
+**Follow-up result:** A bounded event 4719 query found no matches. The audit-policy history remains unconfirmed.
+
+## Verified event 4719 search result
+
+The read-only query `Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4719} -MaxEvents 5 | Select-Object TimeCreated, Id, RecordId` returned **no matching events** and PowerShell reported `NoMatchingEventsFound`.
+
+This supports only the statement that **no event 4719 record was returned from the currently retained log**. It does not prove that audit policy never changed, that a change took place, or why event 4688 records exist while Process Creation auditing is currently disabled. The log's circular retention and limited retained history constrain this finding.
 
 ## Interpretation and limitations
 
@@ -110,7 +116,7 @@ A read-only query extracted metadata from the **five most recent retained** even
 
 ## Next investigation steps
 
-1. Check for retained audit-policy-change events 4719 using a bounded metadata-only query.
+1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
 3. Review selected 4624 and 4672 records for privacy-safe context and correlation.
 4. Document hypotheses and supporting or contradictory evidence.
