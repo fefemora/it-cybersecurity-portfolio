@@ -366,9 +366,81 @@ Event4672Time       Matching4624Events CorrelationFound
 
 **Limitations:** One 4672 event and up to 100 candidate 4624 events were inspected. The event log can change over time, and this result must not be generalized to every 4672 event. The time and logon ID correlation were performed locally; no raw identity or identifier was shared.
 
-## Step 12 — Follow-up (planned)
+## Step 12 — Classify the account and logon type of a correlated session (verified)
 
-If needed, classify the account and logon type of this correlated pair locally and return only sanitized categories. Otherwise summarize the evidence and limitations in a short case report.
+**Purpose:** Independently select the most recent 4672, find a matching 4624 using its logon ID in a narrow time window, and report only a boolean result, logon type, and built-in account category.
+
+**Reproducible read-only command:**
+
+```powershell
+$special = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4672
+} -MaxEvents 1
+
+$s = [xml]$special.ToXml()
+$logonId = ($s.Event.EventData.Data |
+    Where-Object Name -eq 'SubjectLogonId').'#text'
+
+$start = $special.TimeCreated.AddMinutes(-2)
+$end = $special.TimeCreated.AddMinutes(1)
+
+$match = Get-WinEvent -FilterHashtable @{
+    LogName = 'Security'
+    Id = 4624
+    StartTime = $start
+    EndTime = $end
+} -MaxEvents 100 | Where-Object {
+    $x = [xml]$_.ToXml()
+    ($x.Event.EventData.Data |
+        Where-Object Name -eq 'TargetLogonId').'#text' -eq $logonId
+} | Select-Object -First 1
+
+if ($match) {
+    $x = [xml]$match.ToXml()
+    $d = @{}
+    foreach ($item in $x.Event.EventData.Data) {
+        $d[$item.Name] = $item.'#text'
+    }
+
+    $category = switch ($d['TargetUserSid']) {
+        'S-1-5-18' { 'LocalSystem'; break }
+        'S-1-5-19' { 'LocalService'; break }
+        'S-1-5-20' { 'NetworkService'; break }
+        default { 'Other' }
+    }
+
+    [PSCustomObject]@{
+        MatchFound = $true
+        LogonType = $d['LogonType']
+        AccountCategory = $category
+    }
+} else {
+    [PSCustomObject]@{
+        MatchFound = $false
+        LogonType = 'N/A'
+        AccountCategory = 'N/A'
+    }
+}
+```
+
+**Troubleshooting note:** An intermediate attempt to inspect `$match` returned `No matching event stored. Rerun Step 12.` because the variable did not contain a matching event in that session. Running the complete standalone query subsequently succeeded.
+
+**Observed output (user-provided console):**
+
+```text
+MatchFound LogonType AccountCategory
+---------- --------- ---------------
+      True 5         LocalSystem
+```
+
+**Finding:** A successful logon event 4624 was matched to a selected special-logon event 4672. The 4624 record was **Logon Type 5 (Service)** and its target account was the built-in **LocalSystem** principal.
+
+**Scope:** This run selected the **latest 4672 at execution time**, not an event pinned to a specific record ID. The output did not include the selected timestamp, so the matched session cannot be asserted to be the same 4672 previously observed at 21:08:51. The result does not establish privilege use or malicious activity.
+
+## Next: Evidence-based case summary (planned)
+
+Summarize verified observations, unresolved questions (including 4688 versus current audit policy), retention limitations, and proposed monitoring improvements. Do not present unconfirmed causes as findings.
 
 ## Documentation rules
 
