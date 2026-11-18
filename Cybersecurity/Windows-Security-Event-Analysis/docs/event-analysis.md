@@ -149,6 +149,20 @@ A later bounded three-event query parsed the `SubjectUserSid` and `PrivilegeList
 
 **Limitations:** These are only the three latest records at that particular collection time, not all 614 records from the initial query. No identity, executable, session correlation, or misuse has been established.
 
+## Verified 4672-to-4624 session correlation
+
+A bounded read-only query compared the `SubjectLogonId` of the latest selected event 4672 with the `TargetLogonId` of event 4624 records in a window from two minutes before to one minute after the 4672 record.
+
+| Field | Observed result |
+|---|---|
+| Selected 4672 timestamp (local) | 2026-11-17 21:08:51 |
+| Matching event 4624 records | 1 |
+| `CorrelationFound` | `True` |
+
+**Finding:** One matching successful logon was returned for the selected privileged-logon event, using a matching logon ID. This demonstrates an observed link between the two event types, not attribution to an individual or evidence of unauthorized access. The specific account category for this correlated pair and actual privilege use were **not** established.
+
+**Limitations:** The query examined one recent 4672 and capped the candidate 4624 set at 100 within a narrow time interval. No raw logon ID was disclosed. The observation cannot be generalized to all records.
+
 ## Interpretation and limitations
 
 - The high 4672 count cannot be classified as suspicious without examining logon context, account types, and related events. Legitimate system and administrative logons can generate these records.
@@ -161,7 +175,7 @@ A later bounded three-event query parsed the `SubjectUserSid` and `PrivilegeList
 
 1. Retain the discrepancy between earlier 4688 records and currently disabled Process Creation auditing as unresolved; consider only privacy-safe, bounded checks if further investigation is justified.
 2. If useful, expand beyond the latest service-logon-heavy sample using bounded queries.
-3. Correlate a limited 4672 sample with 4624 records using matching logon IDs locally, without exposing those IDs or usernames in public documentation.
+3. If useful, classify the exact correlated 4672/4624 session locally using non-identifying categories, without publishing usernames or logon IDs.
 4. Document hypotheses and supporting or contradictory evidence.
 
 ## References & Official Documentation
