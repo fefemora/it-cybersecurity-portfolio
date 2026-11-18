@@ -462,7 +462,43 @@ IsSystem       : True
 
 **Next step:** Confirm the user has a current independent backup and a usable recovery method before planning any Secure Boot or BitLocker change. Never collect or publish BitLocker recovery secrets.
 
-**Next:** Ask about existing offline/independent backup and recovery readiness before considering any boot or encryption changes.
+## Step 13 — Windows PowerShell Script Block Logging policy key (verified; read-only)
+
+**Exact command executed:**
+
+```powershell
+$path = 'HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableScriptBlockLogging |
+        Format-List
+} else {
+    'Policy registry key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+Policy registry key: Not configured
+```
+
+**Interpretation:** The queried **machine-level Windows PowerShell ScriptBlockLogging policy registry key was absent** at the specified HKLM path. No explicit machine policy value was observed at that location. This is **not proof of complete Script Block Logging inactivity**: other policy scopes (including HKCU), PowerShell editions and specific automatic script-block logging behaviors were not tested. Absence of a policy key is not, on its own, a confirmed vulnerability.
+
+**Limits/privacy:** No event payloads or script text were inspected, no registry settings were modified, and no logging configuration was enabled. If investigating event 4104 later, report only event counts and configuration metadata until any potentially sensitive script contents can be safely excluded.
+
+**Next read-only check proposed:**
+
+```powershell
+Get-WinEvent -ListLog 'Microsoft-Windows-PowerShell/Operational' |
+    Select-Object LogName, IsEnabled, RecordCount, MaximumSizeInBytes, LogMode |
+    Format-List
+```
+
+This tests the channel's availability and status only, not whether full Script Block Logging policy is enabled.
+
+**Next:** Confirm the Windows PowerShell Operational event channel status, without reading logged script content. BitLocker and Secure Boot changes remain deferred until recovery readiness.
 
 ## Evidence integrity
 
