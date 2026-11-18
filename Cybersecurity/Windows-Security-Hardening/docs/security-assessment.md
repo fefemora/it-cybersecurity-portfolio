@@ -6,13 +6,23 @@
 
 | Control domain | Objective | Directly observed in this project | Provisional next step | Status |
 |---|---|---|---|---|
-| Firewall | Confirm native protection across network profiles | None | Run bounded `Get-NetFirewallProfile` query | **Pending evidence** |
+| Firewall | Confirm native protection across network profiles | Domain, Private, Public: `Enabled=True`; inbound/outbound actions each `NotConfigured` in local query | Query `ActiveStore` for same fields; do not infer effective Allow/Block without evidence | **Initial baseline verified; effective actions unknown** |
 | Antivirus | Review on-device malware protection status | None | Inspect selected `Get-MpComputerStatus` fields | **Pending evidence** |
 | Security log retention | Ensure enough history for investigations | None in this project; **prior lab:** 20 MiB Circular, ~2.03-day observed span | Define retention target and review feasibility | **Prior evidence / proposed review** |
 | Process creation auditing | Improve process activity visibility if justified | None in this project; **prior lab:** `No Auditing` | Evaluate volume, privacy, and test approval | **Prior evidence / proposed review** |
 | Identity & access | Review local role exposure in a privacy-safe way | None | Define narrow, redacted query only when needed | **Not assessed** |
 | Update posture | Identify missing or stale protection within defined scope | None | Choose supported read-only check | **Not assessed** |
 | Platform protections | Review relevant built-in security features | None | Determine OS/build and device support before selecting checks | **Not assessed** |
+
+## Verified firewall evidence — Initial query
+
+```powershell
+Get-NetFirewallProfile |
+    Select-Object Name, Enabled, DefaultInboundAction, DefaultOutboundAction |
+    Format-Table -AutoSize
+```
+
+The actual output returned three profiles (`Domain`, `Private`, `Public`), all `Enabled=True`, and `NotConfigured` for both default-action properties across the three. This indicates profile enablement, **not** proof of effective traffic-allowance policy. The next read-only step is to inspect `-PolicyStore ActiveStore` and evaluate any remaining ambiguity. No firewall rules or settings have been modified.
 
 ## Classification rules
 
