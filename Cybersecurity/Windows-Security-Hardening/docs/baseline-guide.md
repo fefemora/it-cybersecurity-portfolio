@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Validation plan](validation-plan.md) · [Related event-analysis case](../../Windows-Security-Event-Analysis/README.md)
 
-**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM/HKCU Module Logging policy keys absent at inspected paths, and zero retained event 4103 records retrieved; HKLM Transcription policy key absent at inspected path. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
+**Status:** Baseline steps including BitLocker, TPM, Secure Boot, UEFI, GPT and the Windows PowerShell ScriptBlockLogging machine policy key and PowerShell Operational channel status, 4104 count, 11-ID distribution, queried HKCU policy-key absence, and 4104 warning-severity count, and 5.05-day Operational event-history span verified; HKLM/HKCU Module Logging policy keys absent at inspected paths, and zero retained event 4103 records retrieved; HKLM/HKCU Transcription policy keys absent at inspected paths; PowerShell logging baseline summarized. **CHG-001 implemented; size and immediate retained-event accessibility verified**; seven-day retention target pending.  
 **Operating principle:** Minimal impact, read-only, anonymized output. Avoid changing live defenses while investigating.
 
 ## Step 1 — Review Windows Firewall profiles (verified)
@@ -898,7 +898,44 @@ if (Test-Path $path) {
 }
 ```
 
-## Step 24 — Evaluate additional controls (scoped, not executed)
+## Step 24 — Windows PowerShell Transcription current-user policy (verified; read-only)
+
+**Exact executed command:**
+
+```powershell
+$path = 'HKCU:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription'
+
+if (Test-Path $path) {
+    Get-ItemProperty -Path $path |
+        Select-Object EnableTranscripting |
+        Format-List
+} else {
+    'HKCU Transcription policy key: Not configured'
+}
+```
+
+**Actual observed output:**
+
+```text
+HKCU Transcription policy key: Not configured
+```
+
+**Interpretation:** No `Transcription` policy key was found at the **current-user HKCU** path. Along with Step 23, **both examined Windows PowerShell Transcription policy paths (HKLM and HKCU) lacked an explicit key**. This does not rule out session-level transcripts, other policy stores, PowerShell editions or effective settings not tested. No transcript files or contents were inspected.
+
+### PowerShell logging assessment summary (read-only)
+
+| Feature | HKLM key at queried path | HKCU key at queried path | Observed telemetry / limits |
+|---|---|---|---|
+| Script Block Logging | Absent | Absent | 4104 events observed; 438 in one query, 439 Warning events in a later query; logging scope undetermined |
+| Module Logging | Absent | Absent | No 4103 events retrieved by the count query (errors suppressed); effective logging unverified |
+| Transcription | Absent | Absent | No transcript-file check performed; effective transcription unverified |
+| Operational event channel | Not a policy-key check | Not a policy-key check | Enabled; 808 records and 15 MiB Circular at earlier snapshot; 5.05-day observed history span |
+
+**Assessment:** A missing explicit registry policy at the inspected paths is **not equivalent to no telemetry or a proven vulnerability**. The existence of 4104 events demonstrates some retained script-block-related records, but not comprehensive recording or a security incident. This phase produced **verified configuration and event metadata only**. No logging, TPM, Secure Boot, BitLocker, firewall or audit policy settings were modified.
+
+**Planned follow-up:** Draft a privacy-aware monitoring recommendations summary and prioritize any separate changes only after explicit owner approval. Secure Boot and BitLocker stay deferred until backup/recovery preparations.
+
+## Step 25 — Evaluate additional controls (scoped, not executed)
 
 Only after reviewing the first results, choose targeted read-only checks for local privilege exposure, update posture and device safeguards. Avoid dumping users, software inventory, registry secrets, local administrator memberships, firewall rule details, or recovery keys into a public repository.
 
