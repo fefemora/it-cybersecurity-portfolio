@@ -190,9 +190,34 @@ auditpol /get /category:*
 
 **Security visibility note:** Lack of Process Creation, Registry, and File System auditing constrains certain types of investigations. Enabling additional categories may increase log volume and expose sensitive data; configuration changes should be considered separately and are not part of this read-only lab phase.
 
-## Step 7 — Check timestamps of a small 4688 sample (planned)
+## Step 7 — Inspect timestamps of a bounded 4688 sample (verified)
 
-Use a bounded, read-only query without process names or command-line data; do not assume earlier 4688 records were produced under the current audit policy.
+```powershell
+Get-WinEvent -FilterHashtable @{LogName='Security'; Id=4688} -MaxEvents 5 |
+    Select-Object TimeCreated, Id, RecordId
+```
+
+**Purpose:** Identify when recent process creation audit events were logged without displaying process names, executable paths, commands, or accounts.
+
+**Observed console output:**
+
+```text
+TimeCreated           Id RecordId
+-----------           -- --------
+16-11-2026 14:30:43 4688  2266586
+16-11-2026 14:30:43 4688  2266585
+16-11-2026 14:30:43 4688  2266584
+16-11-2026 14:30:43 4688  2266583
+16-11-2026 14:30:43 4688  2266582
+```
+
+**Interpretation:** The five most recent retained 4688 records share the same second (**November 16, 2026 at 14:30:43**) and have consecutive event record identifiers. This is consistent with multiple process-creation records in rapid succession, but the processes and the reason for auditing at that time have not been examined.
+
+**Unresolved:** The subsequent audit policy check showed `Process Creation: No Auditing`. These observations were made at different times. A previous policy change is one possible explanation, **not a verified cause**.
+
+## Step 8 — Check for audit policy change events (planned)
+
+A lightweight, read-only query for recent **event 4719** timestamps will help determine whether retained Security logs show changes to system auditing policy. Record only event IDs, timestamps and record IDs initially; do not assume a matching event proves the Process Creation subcategory was changed.
 
 ## Documentation rules
 
@@ -209,4 +234,5 @@ Use a bounded, read-only query without process names or command-line data; do no
 - [Microsoft Learn — Event 4634](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4634)
 - [Microsoft Learn — Event 4672](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4672)
 - [Microsoft Learn — Well-known security identifiers](https://learn.microsoft.com/en-us/windows-server/identity/ad-ds/manage/understand-security-identifiers)
+- [Microsoft Learn — Event 4719: System audit policy was changed](https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-10/security/threat-protection/auditing/event-4719)
 - [Microsoft Learn — Event 4688](https://learn.microsoft.com/en-us/windows/security/threat-protection/auditing/event-4688)
