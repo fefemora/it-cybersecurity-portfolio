@@ -2,7 +2,7 @@
 
 [Project overview](../README.md) · [Assessment matrix](security-assessment.md) · [Baseline guide](baseline-guide.md)
 
-**State:** **CHG-001 authorized, executed and maximum-size configuration verified**. Seven-day retention remains unverified. Separate Process Creation auditing change is still a proposal; no rollback reported.
+**State:** **CHG-001 authorized, executed; maximum-size configuration and immediate retained-event access verified**. Immediate time span **1.96 days**; seven-day target not established. Process Creation auditing remains a separate proposal; no rollback.
 
 ## Change-control checklist
 
@@ -21,7 +21,7 @@
 |---|---|---|---|
 | Firewall posture review | Ensure intended profiles are protected | Actual enabled state plus connectivity testing appropriate to device role | Disruption of remote services or applications |
 | Defender health improvements | Detect unavailable protection or aging signatures | Fresh protection/status output | Third-party AV management and policy precedence |
-| Security log retention review — **CHG-001** | Before: 33,959 records / 20 MiB Circular, 1.93-day span; after: **128 MiB, 33,989 records, Circular, enabled** | **Maximum-size configuration verified**; follow-up 7-day retention goal pending | Disk consumption, event churn, shorter-than-target retention, policy conflict |
+| Security log retention review — **CHG-001** | Before 20 MiB Circular / **1.93 days**; after 128 MiB enabled/Circular, **33,989 records**, immediate retained span **1.96 days** | Maximum and immediate retained endpoints verified; **7-day target** requires later measurement | Disk consumption, event churn, shorter-than-target retention, policy conflict |
 | Process creation auditing pilot | **Fresh query** confirms `No Auditing` | After approved enabling, verify Success audit policy and new benign 4688 records | Higher event volume, faster overwrite if generated volume outpaces the configured Security log capacity, sensitive fields, managed policy conflicts |
 
 ## Proposed controlled change: Process Creation auditing (not approved or executed)
@@ -132,6 +132,37 @@ LogMode            : Circular
 
 **Change status:** **Implemented and post-change maximum-size configuration verified**. Long-term retention outcome **pending**; no rollback performed.
 
+### CHG-001 — Immediate post-change retention observation (verified)
+
+**Read-only query executed:**
+
+```powershell
+$oldest = Get-WinEvent -LogName Security -Oldest -MaxEvents 1
+$newest = Get-WinEvent -LogName Security -MaxEvents 1
+
+[PSCustomObject]@{
+    OldestEvent = $oldest.TimeCreated
+    NewestEvent = $newest.TimeCreated
+    OldestRecordId = $oldest.RecordId
+    NewestRecordId = $newest.RecordId
+    RetainedDays = [math]::Round(($newest.TimeCreated - $oldest.TimeCreated).TotalDays, 2)
+} | Format-List
+```
+
+**Actual console result:**
+
+```text
+OldestEvent    : 16-11-2026 0:52:21
+NewestEvent    : 18-11-2026 0:00:06
+OldestRecordId : 2256643
+NewestRecordId : 2291047
+RetainedDays   : 1,96
+```
+
+**Comparison:** Before CHG-001, the oldest observed timestamp was **2026-11-16 00:52:07**, newest **2026-11-17 23:06:29**, and rounded observed span **1.93 days**. At immediate follow-up, the oldest observed timestamp was **2026-11-16 00:52:21** (14 seconds later) and newest **2026-11-18 00:00:06**, with a rounded observed span **1.96 days**. This shows that events with timestamps predating CHG-001 remained accessible after the setting change. It is **not** proof of uninterrupted event-by-event continuity or that the added capacity already extends retention to 7 days. Record IDs are metadata and were not checked for gaps or correlated to the pre-change IDs.
+
+**Validation state:** Change applied; new 128 MiB maximum and enabled/Circular state confirmed; immediate timestamp endpoints recorded. **Seven-day retention target remains pending a later, time-separated observation**, with Process Creation auditing still not enabled in this project. No rollback performed.
+
 ## Evidence fields for every *future* approved change
 
 | Field | To be recorded |
@@ -141,8 +172,8 @@ LogMode            : Circular
 | Before snapshot | Security, 33,959 records, 20 MiB, Circular |
 | Exact command or administrative action | `wevtutil sl Security /ms:134217728` |
 | After snapshot | Security, `IsEnabled=True`, 33,989 records, 128 MiB, Circular |
-| Operational validation and rollback result | Maximum-size configuration verified; retained-history objective pending; rollback not performed |
-| Outcome | **CHG-001 implemented and configuration verified; retention target pending** |
+| Operational validation and rollback result | 128 MiB configuration verified; immediate retained span 1.96 days (oldest 2026-11-16 00:52:21); 7-day target pending; rollback not performed |
+| Outcome | **CHG-001 implemented; config and immediate access verified; 7-day retention target pending** |
 
 ## References & Official Documentation
 
