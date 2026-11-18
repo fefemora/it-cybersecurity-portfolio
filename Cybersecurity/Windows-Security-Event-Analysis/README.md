@@ -1,10 +1,10 @@
 # Windows Security Event Analysis Lab
 
 **Area:** Cybersecurity / Blue Team  
-**Status:** In progress — read-only event counts, retention, logon samples, audit policy, bounded 4688/4672 metadata, a three-record privilege sample, and two bounded 4672-to-4624 correlation checks verified; investigation not yet completed  
+**Status:** Initial read-only assessment documented and reviewed; proposed monitoring improvements remain unimplemented  
 **Environment:** Windows workstation, local Security event log, Windows PowerShell. No SIEM or additional virtual machines required.
 
-[Portfolio home](../../README.md) · [Lab guide](docs/lab-guide.md) · [Event analysis](docs/event-analysis.md)
+[Portfolio home](../../README.md) · **[Executive summary](docs/executive-summary.md)** · [Technical findings](docs/event-analysis.md) · [Step-by-step lab guide](docs/lab-guide.md) · [Recommendations](docs/monitoring-recommendations.md)
 
 ## Objective
 
@@ -24,7 +24,13 @@ Investigate native Windows Security events with read-only PowerShell commands, i
 10. Classify accounts and privilege names in three bounded 4672 records (**completed: 3 LocalSystem records with the same 12 privileges**).
 11. Correlate one recent 4672 with a 4624 using a local logon ID (**completed: one match found within a bounded time window**).
 12. Classify a matched 4624 logon by type and account category (**completed: Type 5 / LocalSystem in a later query**).
-13. Produce an evidence-backed case summary (**pending**).
+13. Produce an evidence-backed case summary (**completed: executive report, proposed actions, and visualization**).
+
+## Executive overview
+
+[![Windows event investigation dashboard](diagrams/security-review-overview.svg)](docs/executive-summary.md)
+
+**Read the [executive summary](docs/executive-summary.md)** for the recruiter-friendly outcome, **[technical analysis](docs/event-analysis.md)** for verifiable results, **[lab guide](docs/lab-guide.md)** for reproducible commands, and **[monitoring recommendations](docs/monitoring-recommendations.md)** for proposed next steps. The assessment is complete as an **initial triage case study**; it does not claim a security incident was discovered.
 
 ## Initial findings
 
