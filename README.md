@@ -106,5 +106,3 @@ My focus is to combine practical IT Support and troubleshooting with stronger cy
 - **GitHub:** [github.com/fefemora](https://github.com/fefemora)
 
 ---
-
-*English-language professional portfolio. Real and simulated work are distinguished throughout.*
