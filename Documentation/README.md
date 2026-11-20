@@ -1,48 +1,34 @@
+# <img src="../assets/icons/documentation.svg" width="32" alt="Documentation"> Technical Documentation
 
-# Technical Documentation
+![Focus: Runbooks](https://img.shields.io/badge/Focus-Runbooks-14283F?style=flat-square) ![Approach: Evidence based](https://img.shields.io/badge/Approach-Evidence_based-059669?style=flat-square)
 
-This section contains documentation templates, technical procedures, and resources used throughout my IT Support and Cybersecurity portfolio.
+[← Portfolio](../README.md) · [IT Support](../IT-Support/README.md)
 
-The objective is to demonstrate a structured approach to technical documentation, troubleshooting, incident management, and knowledge sharing.
+Good documentation makes the next incident easier to investigate. I keep my notes focused on the problem, the checks performed, the evidence collected, and the result—especially when a suspected cause cannot be confirmed.
 
-## Documentation Standards
+## Examples already in the portfolio
 
-My technical documentation follows these principles:
+| Document | Why it matters |
+|---|---|
+| [Incident report template](../IT-Support/Service-Desk-Incident-Management/templates/incident-report-template.md) | Consistent incident records, priorities and validation |
+| [INC-001 validation notes](../IT-Support/Windows-Troubleshooting-Lab/evidence/validation-notes.md) | A real resolution with clearly documented limits |
+| [Windows event analysis guide](../Cybersecurity/Windows-Security-Event-Analysis/docs/lab-guide.md) | Commands, observed results and interpretation |
+| [Windows baseline guide](../Cybersecurity/Windows-Security-Hardening/docs/baseline-guide.md) | Structured security checks and an approved change |
 
-- Clear and concise technical communication
-- Structured troubleshooting procedures
-- Reproducible implementation steps
-- Accurate evidence and validation
-- Security and confidentiality considerations
-- Continuous improvement and knowledge sharing
+## What I include in a technical record
 
-## Documentation Resources
+A useful record should answer five questions:
 
-| Resource | Description | Status |
-|---|---|---|
-| Troubleshooting Template | Standard format for documenting technical issues, diagnostics, and resolutions. | Planned |
-| Incident Report Template | Structured documentation for technical and security incidents. | Planned |
-| Lab Documentation Template | Standard format for technical labs and project implementations. | Planned |
-| Change Management Template | Documentation for planned technical changes, validation, and rollback procedures. | Planned |
+1. **What happened?** Symptoms, scope and operational impact.
+2. **What did I check?** Commands, observations and diagnostic decisions.
+3. **What changed?** Actions taken, authorization and possible rollback.
+4. **Did it work?** Independent validation and user or service confirmation.
+5. **What remains uncertain?** Limitations, unresolved hypotheses and follow-up.
 
-## Documentation Methodology
+## Reusable documentation
 
-Technical documentation should answer the following questions:
+The [service desk incident template](../IT-Support/Service-Desk-Incident-Management/templates/incident-report-template.md) is already available. Additional troubleshooting, lab and change-management templates may be added as the portfolio grows.
 
-1. What was the objective or problem?
-2. What environment or systems were involved?
-3. What diagnostic or implementation steps were performed?
-4. What results were obtained?
-5. How was the solution validated?
-6. What security considerations were identified?
-7. What lessons were learned?
+Public documentation uses fictional or sanitized data. Credentials, secrets and confidential customer details have no place here.
 
-## Confidentiality
-
-All examples and documentation will use simulated, public, or appropriately sanitized information.
-
-No confidential organizational data, credentials, customer information, or sensitive infrastructure details will be published.
-
-## Continuous Improvement
-
-Documentation will be reviewed and updated as projects evolve, new tools are introduced, and technical knowledge expands.
+[← Back to the portfolio](../README.md)
