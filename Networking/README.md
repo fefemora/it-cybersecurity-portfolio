@@ -1,36 +1,28 @@
+# <img src="../assets/icons/networking.svg" width="32" alt="Networking"> Networking
 
-# Networking
+![Focus: Troubleshooting](https://img.shields.io/badge/Focus-Troubleshooting-14283F?style=flat-square) ![Topics: DNS%2C_VPN%2C_TCP%2FIP](https://img.shields.io/badge/Topics-DNS%252C_VPN%252C_TCP%252FIP-14283F?style=flat-square) ![Dedicated labs: Planned](https://img.shields.io/badge/Dedicated_labs-Planned-64748B?style=flat-square)
 
-This section documents practical networking exercises focused on connectivity, network services, infrastructure troubleshooting, and network fundamentals.
+[← Portfolio](../README.md) · [IT Support](../IT-Support/README.md) · [Cloud](../Cloud/README.md)
 
-The goal is to demonstrate the ability to understand network behavior, identify connectivity issues, and apply structured troubleshooting techniques.
+Network troubleshooting starts with understanding **what works, what fails, and where the path breaks down**. I use that approach to reason through name resolution, IP connectivity, routing, and remote access.
 
-## Areas of Focus
+## Networking cases already documented
 
-- TCP/IP networking fundamentals
-- IPv4 and IPv6 addressing
-- DNS and DHCP services
-- Routing and switching fundamentals
-- VLAN concepts
-- Network connectivity troubleshooting
-- VPN and remote access fundamentals
-- Network monitoring and diagnostics
-
-## Projects
-
-| Project | Description | Status |
+| Case | Networking skills | Evidence |
 |---|---|---|
-| Network Troubleshooting Lab | Practical exercises involving connectivity, DNS, DHCP, and network diagnostics. | Planned |
-| Network Fundamentals Lab | Exercises covering IP addressing, subnetting, routing, and switching concepts. | Planned |
+| [INC-003 — DNS Resolution Failure](../IT-Support/Service-Desk-Incident-Management/incidents/INC-003-DNS-Resolution.md) | Resolver configuration, client testing and escalation | **Simulated** |
+| [INC-004 — VPN Connectivity Failure](../IT-Support/Service-Desk-Incident-Management/incidents/INC-004-VPN-Connectivity.md) | Tunnel state, routes, DNS and internal access | **Simulated** |
+| [DNS decision tree](../IT-Support/Service-Desk-Incident-Management/incidents/INC-003-DNS-Decision-Tree.md) | Structured isolation of DNS issues | **Simulated** |
 
-## Methodology
+## Technical focus
 
-Each project will include:
+**TCP/IP · IPv4/IPv6 · DNS · DHCP · VLANs · Routing · Switching · VPN · Network diagnostics**
 
-- Network topology and environment
-- Technical objectives
-- Configuration and testing
-- Troubleshooting process
-- Results and validation
-- Security considerations
-- Lessons learned
+## Planned hands-on work
+
+- **Network Troubleshooting Lab:** documented connectivity tests, DNS/DHCP checks and fault isolation.
+- **Network Fundamentals Lab:** addressing, subnetting, routing and switching exercises.
+
+These dedicated labs are still planned. The service desk scenarios above are diagnostic examples, **not real network test results**.
+
+[← Back to the portfolio](../README.md)
