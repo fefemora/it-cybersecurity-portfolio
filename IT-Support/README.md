@@ -1,69 +1,42 @@
-# IT Support & Troubleshooting
+# <img src="../assets/icons/it-support.svg" width="32" alt="IT Support"> IT Support & Troubleshooting
 
-[← Portfolio Home](../README.md)
+![Support](https://img.shields.io/badge/Support-L1%2FL2-14283F?style=flat-square) ![Incidents](https://img.shields.io/badge/Incidents-4_documented-14283F?style=flat-square) ![Evidence](https://img.shields.io/badge/Evidence-1_real_%2B_3_simulated-059669?style=flat-square)
 
-![IT Support navigation map](it-support-navigation.svg)
+[← Portfolio](../README.md) · [Networking](../Networking/README.md) · [Technical Documentation](../Documentation/README.md)
 
-**Explore four documented incidents across two project areas.** This page is the navigation hub for Windows troubleshooting and L2 service desk work.
+IT support is about narrowing down the problem without making the situation worse. These cases bring together Windows troubleshooting, incident triage, user communication and security-aware escalation.
 
-> **How to read the incident IDs:** `INC-001` to `INC-004` are portfolio case identifiers, not evidence that all incidents belong to one service desk queue. Each case is explicitly marked **Real** or **Simulated**.
+[![IT Support case map](it-support-navigation.svg)](Service-Desk-Incident-Management/README.md)
 
-## Choose Your Path
+## Incident library
 
-| Project area | Best starting point | What you will find | Evidence type |
-|---|---|---|---|
-| **[Windows Troubleshooting](Windows-Troubleshooting-Lab/README.md)** | [INC-001 — Windows Update and Application Troubleshooting](Windows-Troubleshooting-Lab/README.md) | Windows 11 diagnostics, PowerShell, event logs, storage remediation, and validation | **Real case — completed** |
-| **[Service Desk Incident Management](Service-Desk-Incident-Management/README.md)** | [Service Desk L2 Overview](Service-Desk-Incident-Management/README.md) | Three case reports covering identity, DNS, and VPN, with investigation plans and escalation paths | **Simulated cases — documented** |
+| Case | What happened | Type |
+|---|---|---|
+| **[INC-001 · Windows Update](Windows-Troubleshooting-Lab/README.md)** | Application updates failed; storage cleanup and restart restored normal updates | **Real · Resolved** |
+| **[INC-002 · Microsoft 365 MFA](Service-Desk-Incident-Management/incidents/INC-002-M365-Authentication.md)** | User loses access to a registered authentication method after changing phones | **Simulated · Plan documented** |
+| **[INC-003 · DNS resolution](Service-Desk-Incident-Management/incidents/INC-003-DNS-Resolution.md)** | Domain names fail to resolve despite apparent IP connectivity | **Simulated · Plan documented** |
+| **[INC-004 · VPN connectivity](Service-Desk-Incident-Management/incidents/INC-004-VPN-Connectivity.md)** | VPN shows connected but internal services remain unreachable | **Simulated · Plan documented** |
 
-## All Incidents — Direct Access
+*INC-001–INC-004 are portfolio identifiers, not tickets from a single real service desk queue.*
 
-| ID | Case study | Area | Status | Technical detail |
-|---|---|---|---|---|
-| **[INC-001](Windows-Troubleshooting-Lab/README.md)** | Windows Update / Application Update Failure | Windows Troubleshooting | **Real · Resolved** | [Sanitized evidence](Windows-Troubleshooting-Lab/evidence/validation-notes.md) |
-| **[INC-002](Service-Desk-Incident-Management/incidents/INC-002-M365-Authentication.md)** | Microsoft 365 Authentication / MFA | Service Desk L2 | **Simulated · Not executed** | [Entra ID diagnostic analysis](Service-Desk-Incident-Management/incidents/INC-002-Technical-Analysis.md) |
-| **[INC-003](Service-Desk-Incident-Management/incidents/INC-003-DNS-Resolution.md)** | DNS Resolution Failure | Service Desk L2 | **Simulated · Not executed** | [DNS decision tree](Service-Desk-Incident-Management/incidents/INC-003-DNS-Decision-Tree.md) |
-| **[INC-004](Service-Desk-Incident-Management/incidents/INC-004-VPN-Connectivity.md)** | VPN Connected / Internal Resources Unavailable | Service Desk L2 | **Simulated · Not executed** | [VPN diagnostic workflow](Service-Desk-Incident-Management/incidents/INC-004-VPN-Connectivity.md#3-diagnostic-workflow) |
+## Real troubleshooting evidence
 
-## Navigation Flow
+[![INC-001 storage recovery](Windows-Troubleshooting-Lab/storage-recovery.svg)](Windows-Troubleshooting-Lab/README.md)
 
-```mermaid
-flowchart TD
-    P["Portfolio Home"] --> IT["IT Support Hub"]
-    IT --> W["Windows Troubleshooting"]
-    IT --> SD["Service Desk / L2"]
-    W --> I1["INC-001 · Real · Resolved"]
-    SD --> I2["INC-002 · Microsoft 365 MFA"]
-    SD --> I3["INC-003 · DNS"]
-    SD --> I4["INC-004 · VPN"]
-    I2 --> D2["Entra ID technical analysis"]
-    I3 --> D3["DNS decision tree"]
-    style IT fill:#D1FAE5,stroke:#059669,color:#064E3B
-    style I1 fill:#D1FAE5,stroke:#059669,color:#064E3B
-    style SD fill:#E7EDF3,stroke:#14283F,color:#14283F
-```
+The Windows investigation recorded error `0x80073D02`, **44.5 GiB** of recovered free disk space, and successful application updates after cleanup and restart. The issue was resolved; its exact cause remains uncertain.
 
-## Featured Evidence — INC-001
+[Read INC-001 and the sanitized evidence](Windows-Troubleshooting-Lab/README.md)
 
-[![Actual storage recovery metrics from INC-001](Windows-Troubleshooting-Lab/storage-recovery.svg)](Windows-Troubleshooting-Lab/README.md)
+## L2 service desk scenarios
 
-**Verified:** Free disk space increased from **18.6 GiB to 63.1 GiB**, and application updates completed after cleanup and restart. **The precise root cause was not conclusively established.**
+[![Three simulated L2 incidents](Service-Desk-Incident-Management/incident-overview.svg)](Service-Desk-Incident-Management/README.md)
 
-## L2 Incident Scenarios — Visual Overview
+The three L2 cases explore how to handle authentication, DNS and VPN incidents from the first report through investigation and escalation. They describe **proposed diagnostics**, not tests performed on customer systems.
 
-[![Simulated L2 incident case overview](Service-Desk-Incident-Management/incident-overview.svg)](Service-Desk-Incident-Management/README.md)
+[Browse the L2 case studies](Service-Desk-Incident-Management/README.md)
 
-The Service Desk project contains three **fictional** incident scenarios. Troubleshooting commands, escalation decisions, and validation criteria are documented as proposed procedures, not real-world test results.
+## Skills in practice
 
-## Skills Demonstrated
+**Windows 11 · PowerShell · Event Viewer · Microsoft 365 / Entra ID · DNS · VPN · ITIL-aligned incident management · Escalation · Validation**
 
-**IT Support L1/L2 · Windows Troubleshooting · PowerShell · Event Log Analysis · Microsoft 365 / Entra ID · DNS · VPN · Incident Triage · Escalation · Security-Aware Documentation**
-
-## How to Explore
-
-Start with the **[real Windows incident](Windows-Troubleshooting-Lab/README.md)** for measured evidence, then review the **[L2 Service Desk scenarios](Service-Desk-Incident-Management/README.md)** for diagnostic reasoning and structured incident handling.
-
-[← Back to Portfolio Home](../README.md)
-
----
-
-*No confidential employer or customer data is published. All simulated work is explicitly identified.*
+[← Back to the portfolio](../README.md)
