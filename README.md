@@ -1,108 +1,99 @@
-# IT Support & Cybersecurity Portfolio
+# IT Support, Systems Administration & Cybersecurity Portfolio
+
+**Fefe Mora · IT Support L1/L2 · Systems Administration · Information Security · Cybersecurity**
+
+![IT Support](https://img.shields.io/badge/IT_Support-L1%2FL2-14283F?style=flat-square) ![Systems Administration](https://img.shields.io/badge/Systems-Administration-14283F?style=flat-square) ![Cybersecurity](https://img.shields.io/badge/Cybersecurity-Blue_Team-059669?style=flat-square) ![Evidence](https://img.shields.io/badge/Evidence-Real_%26_Simulated-64748B?style=flat-square)
 
 **[Versión en español / Spanish version](https://github.com/fefemora/it-portfolio-es)**
 
-**IT Support L1/L2 · Systems Administration · Information Security · Cybersecurity**
+I work across IT support, systems administration, and security. Much of my experience comes from troubleshooting systems, helping users get back to work, and keeping IT services running. This portfolio brings that work together with hands-on security investigations, technical documentation, and risk assessment.
 
-Welcome! I am an IT professional with experience in troubleshooting, user support, and systems administration. I use this portfolio to demonstrate how I investigate problems, document technical decisions, and approach cybersecurity risk.
+The projects below show **what I checked, what I found, and what I could verify**. Some are based on real workstation investigations; others are clearly labeled simulations designed to explore technical decisions without claiming production experience.
 
-My work connects three areas: **hands-on IT support**, **security-aware operations**, and **information security risk management**. Cloud networking and cloud security remain part of my ongoing development path.
+## Explore by area
 
-> **Evidence transparency:** Projects are labeled as **Real case**, **Simulated case study**, or **Planned**. Fictional scenarios do not represent real customer incidents, implemented security controls, or audited organizations.
+| Area | What you'll find |
+|---|---|
+| [<img src="assets/icons/it-support.svg" width="32" alt="IT Support icon"> **IT Support & Troubleshooting**](IT-Support/README.md) | Real Windows troubleshooting and three L2 service desk scenarios |
+| [<img src="assets/icons/cybersecurity.svg" width="32" alt="Cybersecurity icon"> **Cybersecurity**](Cybersecurity/README.md) | Windows event analysis, endpoint security assessment, and controlled change validation |
+| [<img src="assets/icons/information-security.svg" width="32" alt="Information Security icon"> **Information Security / GRC**](Information-Security/Enterprise-Risk-Assessment/README.md) | Fictional enterprise risk assessment mapped to NIST CSF 2.0 and CIS Controls |
+| [<img src="assets/icons/systems-administration.svg" width="32" alt="Systems Administration icon"> **Systems Administration**](Systems-Administration/README.md) | Windows Server, Active Directory and identity management focus |
+| [<img src="assets/icons/networking.svg" width="32" alt="Networking icon"> **Networking**](Networking/README.md) | DNS, VPN, addressing and structured connectivity troubleshooting |
+| [<img src="assets/icons/cloud.svg" width="32" alt="Cloud icon"> **Cloud Networking & Security**](Cloud/README.md) | Azure, cloud access controls and hybrid networking development plans |
+| [<img src="assets/icons/documentation.svg" width="32" alt="Documentation icon"> **Technical Documentation**](Documentation/README.md) | Incident reports, evidence practices and reusable documentation |
 
-## Explore the Portfolio
+## Featured work
 
-**[IT Support & Troubleshooting — Browse all four INC cases](IT-Support/README.md)** · [Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md) · **[Cybersecurity — Real Windows Event Analysis](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
+### <img src="assets/icons/it-support.svg" width="29" alt=""> INC-001 · Windows Update troubleshooting
 
-[![Visual map of IT Support projects and incident IDs](IT-Support/it-support-navigation.svg)](IT-Support/README.md)
+![Windows 11](https://img.shields.io/badge/Windows-11-14283F?style=flat-square) ![PowerShell](https://img.shields.io/badge/PowerShell-Diagnostics-14283F?style=flat-square) ![Real case](https://img.shields.io/badge/REAL_CASE-Resolved-059669?style=flat-square)
 
-## Featured Projects
+[![Verified disk space recovery](IT-Support/Windows-Troubleshooting-Lab/storage-recovery.svg)](IT-Support/Windows-Troubleshooting-Lab/README.md)
 
-| Project | What it demonstrates | Evidence type | Status |
-|---|---|---|---|
-| **[INC-001 — Windows Update and Application Troubleshooting](IT-Support/Windows-Troubleshooting-Lab/README.md)** | PowerShell diagnostics, Event Viewer, storage analysis, functional validation | **Real troubleshooting case**, sanitized evidence | **Completed** |
-| **[Service Desk Incident Management — L2 Case Studies](IT-Support/Service-Desk-Incident-Management/README.md)** | Microsoft 365 authentication, DNS, VPN troubleshooting and escalation | **Three simulated incidents** | **Documented** |
-| **[Enterprise Information Security Risk Assessment](Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, NIST CSF 2.0 / CIS IG1 mapping, treatment planning, executive reporting | **Fictional enterprise assessment** | **Documentation completed** |
-| **[Windows Security Event Analysis — Blue Team Lab](Cybersecurity/Windows-Security-Event-Analysis/README.md)** | Real Windows Security log triage, audit policy review, logon-ID event correlation and monitoring visibility assessment | **Real read-only workstation investigation**, sanitized console output | **Initial assessment completed** |
-| **[Windows Security Hardening — Baseline & Validation](Cybersecurity/Windows-Security-Hardening/README.md)** | Endpoint security baseline, firewall and Defender checks, change and rollback planning | **Real read-only baseline; one narrowly approved log-size change** | **30-step assessment documented; deferred hardening pending** |
+Investigated recurring application updates and error `0x80073D02`. After cleanup and restart, free space increased from **18.6 GiB to 63.1 GiB**, and the updates completed successfully. The issue was resolved, although the exact root cause could not be isolated.
 
-## Project Highlights
+[Read the troubleshooting case](IT-Support/Windows-Troubleshooting-Lab/README.md)
 
-### 01 — Real Windows Troubleshooting: INC-001
+### <img src="assets/icons/it-support.svg" width="29" alt=""> L2 service desk · Identity, DNS and VPN
 
-[![Windows disk recovery graphic](IT-Support/Windows-Troubleshooting-Lab/storage-recovery.svg)](IT-Support/Windows-Troubleshooting-Lab/README.md)
-
-A Windows 11 update investigation documented error `0x80073D02`, an increase in available disk space from **18.6 GiB to 63.1 GiB**, and successful update validation after cleanup and restart. The **exact root cause remains unconfirmed**.
-
-**[Explore the real troubleshooting case →](IT-Support/Windows-Troubleshooting-Lab/README.md)**
-
-### 02 — L2 Service Desk: Simulated Incident Cases
+![ITIL](https://img.shields.io/badge/Service_Desk-L2-14283F?style=flat-square) ![Scope](https://img.shields.io/badge/SIMULATED-3_Case_Studies-64748B?style=flat-square)
 
 [![L2 service desk scenarios](IT-Support/Service-Desk-Incident-Management/incident-overview.svg)](IT-Support/Service-Desk-Incident-Management/README.md)
 
-Three fictional incident reports demonstrate structured diagnostics, security-conscious escalation, and clear separation of proposed actions from verified outcomes.
+Three fictional incidents cover Microsoft 365 MFA recovery, DNS resolution, and VPN access to internal resources. Each case focuses on diagnostic reasoning, safe escalation, and the checks that would confirm a successful resolution. **The procedures were not executed against customer systems.**
 
-**[Explore the service desk case studies →](IT-Support/Service-Desk-Incident-Management/README.md)**
+[Browse the L2 incident cases](IT-Support/Service-Desk-Incident-Management/README.md)
 
-### 03 — Enterprise Information Security Risk Assessment
+### <img src="assets/icons/information-security.svg" width="29" alt=""> Enterprise information security risk assessment
 
-[![Executive information security dashboard](Information-Security/Enterprise-Risk-Assessment/reports/executive-dashboard.svg)](Information-Security/Enterprise-Risk-Assessment/README.md)
+![NIST](https://img.shields.io/badge/NIST-CSF_2.0-14283F?style=flat-square) ![CIS](https://img.shields.io/badge/CIS_Controls-v8.1_IG1-14283F?style=flat-square) ![Simulated](https://img.shields.io/badge/SIMULATED-Risk_Assessment-64748B?style=flat-square)
 
-A fictional 50-person enterprise assessment identifies **eight illustrative risk scenarios** (two Critical, four High, two Moderate), maps candidate safeguards to NIST CSF 2.0 and CIS Controls v8.1 IG1, and proposes a **90-day treatment roadmap**. **No real environment was assessed and no controls were verified.**
+[![Risk assessment executive dashboard](Information-Security/Enterprise-Risk-Assessment/reports/executive-dashboard.svg)](Information-Security/Enterprise-Risk-Assessment/README.md)
 
-**[Explore the complete risk assessment →](Information-Security/Enterprise-Risk-Assessment/README.md)**
+Built a qualitative risk assessment for a **fictional 50-person organization**. It includes an asset inventory, eight illustrative risk scenarios, proposed control mapping, and a 90-day treatment plan. The findings are hypothetical; no real organization or deployed safeguards were assessed.
 
-### 04 — Windows Security Event Analysis: Real Blue Team Investigation
+[Explore the risk assessment](Information-Security/Enterprise-Risk-Assessment/README.md)
 
-[![Visual summary of Windows Security event investigation](Cybersecurity/Windows-Security-Event-Analysis/diagrams/security-review-overview.svg)](Cybersecurity/Windows-Security-Event-Analysis/README.md)
+### <img src="assets/icons/cybersecurity.svg" width="29" alt=""> Windows Security Event Analysis
 
-A real, read-only Windows Security log assessment investigated successful logons (4624), special privileges assigned to new logons (4672), process creation events (4688), and audit policy settings. **A session correlation was verified**; a **2.03-day retained event span** and disabled process-creation auditing were identified as monitoring limitations. **No compromise or unauthorized activity was confirmed.**
+![Windows](https://img.shields.io/badge/Windows-Security_Events-14283F?style=flat-square) ![Blue Team](https://img.shields.io/badge/Blue_Team-Read--only_Investigation-059669?style=flat-square)
 
-**[Explore the Blue Team case and executive report →](Cybersecurity/Windows-Security-Event-Analysis/README.md)**
+[![Windows event analysis overview](Cybersecurity/Windows-Security-Event-Analysis/diagrams/security-review-overview.svg)](Cybersecurity/Windows-Security-Event-Analysis/README.md)
 
-### 05 — Windows Security Hardening: Baseline, Controlled Change and Validation
+Examined Windows Security events, audit-policy settings, and a bounded correlation between **4624** and **4672**. The workstation's Security log held approximately **2.03 days** of events at the time of measurement, and process-creation auditing was disabled. **No malicious activity was confirmed.**
 
-[![Windows hardening lifecycle](Cybersecurity/Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Cybersecurity/Windows-Security-Hardening/README.md)
+[Review the findings and evidence](Cybersecurity/Windows-Security-Event-Analysis/README.md)
 
-A follow-on Blue Team lab completed **28 evidence-based checks and two closure steps**, covering firewall, Microsoft Defender, PowerShell, logon auditing, BitLocker and boot security. **One narrowly authorized change (CHG-001)** increased the Security event log maximum from **20 MiB to 128 MiB** and its configuration was verified; the proposed seven-day retention outcome, BitLocker and Secure Boot changes remain pending.
+### <img src="assets/icons/cybersecurity.svg" width="29" alt=""> Windows Security Hardening
 
-**[Open the baseline and validation lab →](Cybersecurity/Windows-Security-Hardening/README.md)**
+![Windows](https://img.shields.io/badge/Windows-Security_Baseline-14283F?style=flat-square) ![Assessment](https://img.shields.io/badge/ASSESSMENT-30_Steps_Documented-059669?style=flat-square) ![Follow-up](https://img.shields.io/badge/FOLLOW--UP-Pending-E5A000?style=flat-square)
 
-## Technical Skills Demonstrated
+[![Windows security baseline workflow](Cybersecurity/Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Cybersecurity/Windows-Security-Hardening/README.md)
 
-| Area | Portfolio evidence |
+Completed **28 technical checks and two assessment/closure steps** across Windows Firewall, Defender, auditing, PowerShell logging, BitLocker, and boot protection. A single approved change, **CHG-001**, raised the Security log limit from **20 MiB to 128 MiB**. The new limit was verified; seven-day retention and further hardening remain unverified or pending.
+
+[Open the hardening assessment](Cybersecurity/Windows-Security-Hardening/README.md)
+
+## Technical strengths
+
+| Area | Evidence in this portfolio |
 |---|---|
-| **Windows & PowerShell** | Real diagnostic commands, event analysis, storage verification |
-| **IT Support L2 / ITIL-aligned practices** | Incident documentation, prioritization, investigation and escalation |
-| **Microsoft 365 & Identity** | Simulated Entra ID / MFA troubleshooting |
-| **Networking** | Simulated DNS and VPN troubleshooting workflows |
-| **Information Security / GRC** | Asset criticality, inherent risk scoring, control mapping and risk treatment |
-| **Cybersecurity / Blue Team** | Real Windows audit-policy review, bounded event log analysis, 4624/4672 Logon ID correlation, and monitoring improvement recommendations |
-| **Executive Communication** | Decision-oriented summaries, diagrams, risk visualization and evidence limitations |
+| **Windows & PowerShell** | Event logs, storage investigation, system checks and validation |
+| **IT Support / Service Desk L2** | Incident triage, troubleshooting, escalation and user-facing documentation |
+| **Microsoft 365 / Identity** | Simulated Entra ID and MFA recovery investigation |
+| **Networking** | DNS and VPN diagnostic workflows |
+| **Security Operations** | Windows logon/event analysis and endpoint security baselines |
+| **Information Security / GRC** | Risk register, control mapping and treatment planning |
+| **Communication** | Technical findings, executive summaries and clearly stated limitations |
 
-## Next Projects — Planned
+## What comes next
 
-These are future work, **not completed deliverables**.
+I'm building on this foundation with **Active Directory and identity labs**, deeper **network diagnostics**, **SIEM monitoring**, and **cloud networking/security**. These are areas of development, not completed case studies.
 
-| Area | Planned project |
-|---|---|
-| Systems Administration | Active Directory & Identity Management Lab |
-| Networking | Network Troubleshooting Lab |
-| Cybersecurity | Wazuh SIEM Home Lab |
-| Cloud | Cloud Networking & Security Lab |
+## How evidence is handled
 
-## Documentation Standards
-
-Each project aims to provide a clear problem statement, scope, methods, relevant commands or decisions, evidence, validation, security considerations, and lessons learned. **Simulations are explicitly identified**, and examples are never presented as real operational measurements.
-
-Sensitive employer, customer, and infrastructure details are excluded from this public repository.
-
-## Professional Direction
-
-My focus is to combine practical IT Support and troubleshooting with stronger cybersecurity and information security skills, while developing cloud networking and security capabilities.
-
-## Contact
-
-- **GitHub:** [github.com/fefemora](https://github.com/fefemora)
+Every project distinguishes **real observations**, **simulated scenarios**, and **proposed changes**. I document limitations where a test, root cause, or security outcome has not been established. Public examples exclude confidential customer data and credentials.
 
 ---
+
+**GitHub:** [github.com/fefemora](https://github.com/fefemora) · **Language:** [Español](https://github.com/fefemora/it-portfolio-es)
