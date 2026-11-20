@@ -27,18 +27,6 @@ flowchart LR
     G --> H[Functional resolution verified]
 ```
 
-**Verified case:** Available disk space increased from 18.6 GiB to 63.1 GiB (approximately 44.5 GiB recovered). The exact root cause was not conclusively established.
-
-## 1. Overview
-
-This project documents a real troubleshooting scenario involving recurring Windows and application update failures.
-
-The workstation repeatedly requested updates, but some application updates failed to install successfully.
-
-The investigation focused on identifying the errors, reviewing system health, checking Windows Update services, and applying a safe troubleshooting procedure.
-
-The issue was resolved following disk cleanup, a system restart, and another update attempt.
-
 ## 2. Problem Description
 
 The user reported that Windows repeatedly requested updates and did not successfully complete the update process.
