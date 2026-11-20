@@ -1,66 +1,33 @@
+# <img src="../assets/icons/cybersecurity.svg" width="32" alt="Cybersecurity"> Cybersecurity
 
-# Cybersecurity & Information Security
+![Focus: Blue Team](https://img.shields.io/badge/Focus-Blue_Team-14283F?style=flat-square) ![Lab work: Real evidence](https://img.shields.io/badge/Lab_work-Real_evidence-059669?style=flat-square) ![Scope: Authorized systems](https://img.shields.io/badge/Scope-Authorized_systems-64748B?style=flat-square)
 
-This section documents practical cybersecurity projects, security labs, and information security exercises.
+[← Portfolio](../README.md) · [Information security risk assessment](../Information-Security/Enterprise-Risk-Assessment/README.md)
 
-My approach to cybersecurity is built on a strong foundation in IT operations, systems administration, and technical troubleshooting.
+My security work starts with the systems I support: Windows endpoints, identity controls, audit logs, and the changes that can improve visibility without disrupting operations.
 
-The goal is to demonstrate how security principles can be applied to protect systems, manage risks, monitor threats, and improve organizational security practices.
+## Completed assessments
 
-## Areas of Focus
-
-### Technical Security
-
-- Endpoint Detection and Response (EDR)
-- Security Information and Event Management (SIEM)
-- Windows security hardening
-- Identity and Access Management (IAM)
-- Vulnerability assessment and remediation
-- Security monitoring and incident response fundamentals
-- Network security fundamentals
-
-### Information Security & Governance
-
-- Information security policies and procedures
-- Risk identification and assessment
-- Security controls and compliance
-- NIST Cybersecurity Framework (CSF)
-- CIS Controls
-- Security awareness and best practices
-- IT governance fundamentals
-
-## Projects
-
-| Project | Description | Status |
+| Project | What I investigated | Result |
 |---|---|---|
-| Wazuh SIEM Home Lab | Deploying and configuring a SIEM environment for security monitoring and event analysis. | Planned |
-| Windows Security Hardening | Applying security configurations and validating endpoint protection controls. | Planned |
-| IAM & Access Control Lab | Implementing and evaluating identity management and access control practices. | Planned |
-| Cybersecurity Risk Assessment | Identifying risks, evaluating security controls, and documenting mitigation recommendations. | Planned |
+| **[Windows Security Event Analysis](Windows-Security-Event-Analysis/README.md)** | 4624/4672 correlation, process auditing, log retention | **Real read-only investigation** · No confirmed incident |
+| **[Windows Security Hardening](Windows-Security-Hardening/README.md)** | Firewall, Defender, auditing, PowerShell, BitLocker and boot posture | **Real 30-step assessment** · One approved log-size change |
+| **[Enterprise Information Security Risk Assessment](../Information-Security/Enterprise-Risk-Assessment/README.md)** | Asset inventory, risk register, control mapping and treatment planning | **Simulated** · No real controls assessed |
 
-## Methodology
+## Windows security: two connected investigations
 
-Each project will include:
+[![Security event investigation summary](Windows-Security-Event-Analysis/diagrams/security-review-overview.svg)](Windows-Security-Event-Analysis/README.md)
 
-- Security objectives
-- Lab environment and tools
-- Threats, risks, or security requirements
-- Implementation and configuration
-- Testing and validation
-- Evidence and results
-- Security recommendations
-- Lessons learned
+The first investigation established what the available events could tell us—and where limited retention and audit settings restricted visibility. The later hardening assessment checked the wider Windows security baseline and documented **CHG-001**, the approved increase of the Security log maximum from 20 MiB to 128 MiB.
 
-## Security Principles
+[![Windows security assessment workflow](Windows-Security-Hardening/diagrams/hardening-workflow.svg)](Windows-Security-Hardening/README.md)
 
-My projects are guided by the following principles:
+## Areas I'm expanding
 
-- Defense in depth
-- Least privilege
-- Secure configuration
-- Continuous monitoring
-- Risk-based decision making
-- Clear technical documentation
-- Continuous improvement
+**SIEM and event monitoring**, **identity and access management**, and **incident response** are natural next steps. A Wazuh SIEM home lab and a dedicated IAM lab are planned; they are not presented as completed deployments.
 
-All projects will be developed in authorized lab environments using simulated or appropriately sanitized data.
+## Working principles
+
+I prefer small, verifiable changes, readable evidence, and explicit boundaries around what a test proves. A normal-looking event is not automatically safe; a high-privilege event is not automatically malicious. The context matters.
+
+[← Back to the portfolio](../README.md)
