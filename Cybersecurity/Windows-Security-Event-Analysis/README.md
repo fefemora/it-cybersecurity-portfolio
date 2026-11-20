@@ -26,11 +26,9 @@ I reviewed real Windows Security logs to understand the activity visible on a wo
 12. Classify a matched 4624 logon by type and account category (**completed: Type 5 / LocalSystem in a later query**).
 13. Produce an evidence-backed case summary (**completed: executive report, proposed actions, and visualization**).
 
-## Executive overview
+## Where to go deeper
 
-[![Windows event investigation dashboard](diagrams/security-review-overview.svg)](docs/executive-summary.md)
-
-**Read the [executive summary](docs/executive-summary.md)** for the recruiter-friendly outcome, **[technical analysis](docs/event-analysis.md)** for verifiable results, **[lab guide](docs/lab-guide.md)** for reproducible commands, and **[monitoring recommendations](docs/monitoring-recommendations.md)** for proposed next steps. The assessment is complete as an **initial triage case study**; it does not claim a security incident was discovered.
+The [executive summary](docs/executive-summary.md) gives the short version. The [technical analysis](docs/event-analysis.md) contains the findings and limits, while the [lab guide](docs/lab-guide.md) preserves the commands. Monitoring changes are [recommendations](docs/monitoring-recommendations.md), not implemented controls.
 
 ## Initial findings
 
