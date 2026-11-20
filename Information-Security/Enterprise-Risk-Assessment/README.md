@@ -1,17 +1,20 @@
-# Enterprise Information Security Risk Assessment
+# <img src="../../assets/icons/information-security.svg" width="32" alt="Information security"> Enterprise Information Security Risk Assessment
 
-![Emerald Technologies asset inventory overview](assets/asset-overview.svg)
+![NIST](https://img.shields.io/badge/NIST-CSF_2.0-14283F?style=flat-square) ![CIS](https://img.shields.io/badge/CIS_Controls-v8.1_IG1-14283F?style=flat-square) ![Scope](https://img.shields.io/badge/SIMULATED-Fictional_Organization-64748B?style=flat-square)
 
-**Framework references:** NIST Cybersecurity Framework (CSF) 2.0 · CIS Controls v8.1, Implementation Group 1 (IG1)  
-**Organization:** Emerald Technologies (fictional)  
-**Project type:** Portfolio case study — simulated assessment  
-**Status:** Documentation complete — simulated; no controls implemented or validated
+[← Portfolio](../../README.md) · [Risk register](risk-register/risk-register.md) · [Control mapping](controls/control-mapping.md) · [Treatment plan](treatment/risk-treatment-plan.md) · [Executive summary](reports/executive-summary.md)
+
+[![Emerald Technologies asset inventory overview](assets/asset-overview.svg)](assets/asset-inventory.md)
+
+**Emerald Technologies is fictional.** I used this 50-person organization to work through asset identification, qualitative risk scoring, control mapping and treatment planning. The assessment covers identity, Windows endpoints, email, backups and remote access.
+
+The result is a documented **risk assessment exercise**, not a claim of having audited a real company or validated deployed controls.
 
 ## Executive Overview
 
 This project develops a practical, qualitative information security risk assessment for **Emerald Technologies**, a fictional 50-person organization. The assessment focuses on identity and access, Windows endpoints, email threats, backups, and remote access.
 
-The goal is to demonstrate how an IT and cybersecurity professional can identify important assets, assess risk, prioritize security improvements, and communicate actionable recommendations to business stakeholders.
+The assessment connects the inventory and risk register to practical treatment options and an executive view of priorities.
 
 > **Evidence disclaimer:** All organizational details, asset inventories, ratings, and findings are fictional. No production environment was assessed. This is an educational portfolio exercise, not a certification or compliance audit.
 
