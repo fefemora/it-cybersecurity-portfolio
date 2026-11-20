@@ -1,14 +1,14 @@
-# Windows Security Event Analysis Lab
+# <img src="../../assets/icons/cybersecurity.svg" width="32" alt="Cybersecurity"> Windows Security Event Analysis
 
-**Area:** Cybersecurity / Blue Team  
-**Status:** Initial read-only assessment documented and reviewed; proposed monitoring improvements remain unimplemented  
-**Environment:** Windows workstation, local Security event log, Windows PowerShell. No SIEM or additional virtual machines required.
+![Windows](https://img.shields.io/badge/Windows-Security_Events-14283F?style=flat-square) ![PowerShell](https://img.shields.io/badge/PowerShell-Read--only-14283F?style=flat-square) ![Evidence](https://img.shields.io/badge/REAL_CASE-Initial_Assessment_Complete-059669?style=flat-square)
 
-[Portfolio home](../../README.md) · **[Executive summary](docs/executive-summary.md)** · [Technical findings](docs/event-analysis.md) · [Step-by-step lab guide](docs/lab-guide.md) · [Recommendations](docs/monitoring-recommendations.md)
+[← Cybersecurity](../README.md) · [Portfolio](../../README.md) · **[Executive summary](docs/executive-summary.md)** · [Technical findings](docs/event-analysis.md) · [Lab guide](docs/lab-guide.md) · [Recommendations](docs/monitoring-recommendations.md)
 
-## Objective
+[![Windows security event investigation](diagrams/security-review-overview.svg)](docs/executive-summary.md)
 
-Investigate native Windows Security events with read-only PowerShell commands, interpret the results without assuming malicious activity, and produce reproducible, privacy-safe evidence for an entry-level security monitoring workflow.
+I reviewed real Windows Security logs to understand the activity visible on a workstation, then checked how its audit settings and limited retention affected the investigation. A bounded correlation between events **4624** and **4672** was verified. The retained Security log covered approximately **2.03 days** at the time of measurement.
+
+**Finding:** a useful initial monitoring baseline, with clear visibility gaps. **No incident or unauthorized activity was confirmed.**
 
 ## Investigation workflow
 
