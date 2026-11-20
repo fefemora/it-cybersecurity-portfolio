@@ -10,19 +10,17 @@
 
 The result is a documented **risk assessment exercise**, not a claim of having audited a real company or validated deployed controls.
 
-## Executive Overview
+## Assessment snapshot
 
-This project develops a practical, qualitative information security risk assessment for **Emerald Technologies**, a fictional 50-person organization. The assessment focuses on identity and access, Windows endpoints, email threats, backups, and remote access.
+| Organization | Scope | Risk model | Deliverables |
+|---|---|---|---|
+| **Fictional · 50 people** | Identity, endpoints, email, backups and VPN | **Project-defined 5 × 5 matrix** | Risk register, control mapping, treatment plan and executive report |
 
-The assessment connects the inventory and risk register to practical treatment options and an executive view of priorities.
-
-> **Evidence disclaimer:** All organizational details, asset inventories, ratings, and findings are fictional. No production environment was assessed. This is an educational portfolio exercise, not a certification or compliance audit.
+*Every rating and asset count is illustrative. No production environment was assessed and no control effectiveness was verified.*
 
 ## Visual Organization Overview
 
-> **Illustrative figures:** Emerald Technologies is fictional. The 50 employees and the five security domains below are assumptions for this portfolio case study, not observed operational metrics.
-
-| 👥 Employees | 🛡️ Security domains | 📋 Assessment approach | 📚 Frameworks |
+| Employees | Security domains | Assessment approach | Frameworks |
 |:---:|:---:|:---:|:---:|
 | **50** | **5** | **5 × 5** risk matrix | **2** |
 | Assumed headcount | Identity · Endpoints · Email · Backup · VPN | Project-defined scoring | NIST CSF 2.0 · CIS v8.1 IG1 |
@@ -161,7 +159,7 @@ IG1 is a prioritized baseline of essential cyber hygiene safeguards. The treatme
 | [Risk Treatment Plan](treatment/risk-treatment-plan.md) | Assign mitigation actions and validation criteria | **Completed — proposed** |
 | [Executive Summary](reports/executive-summary.md) | Communicate priorities to management | **Completed — simulated** |
 
-## Intended Skills Demonstrated
+## Skills in practice
 
 - Information security risk assessment
 - Business impact and likelihood analysis
