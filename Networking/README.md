@@ -1,6 +1,6 @@
 # <img src="../assets/icons/networking.svg" width="32" alt="Networking"> Networking
 
-![Focus: Troubleshooting](https://img.shields.io/badge/Focus-Troubleshooting-14283F?style=flat-square) ![Topics: DNS%2C_VPN%2C_TCP%2FIP](https://img.shields.io/badge/Topics-DNS%252C_VPN%252C_TCP%252FIP-14283F?style=flat-square) ![Dedicated labs: Planned](https://img.shields.io/badge/Dedicated_labs-Planned-64748B?style=flat-square)
+![Focus: Troubleshooting](https://img.shields.io/badge/Focus-Troubleshooting-14283F?style=flat-square) ![Topics: DNS, VPN, TCP/IP](https://img.shields.io/badge/Topics-DNS%2C_VPN%2C_TCP%2FIP-14283F?style=flat-square) ![Dedicated labs: Planned](https://img.shields.io/badge/Dedicated_labs-Planned-64748B?style=flat-square)
 
 [← Portfolio](../README.md) · [IT Support](../IT-Support/README.md) · [Cloud](../Cloud/README.md)
 
