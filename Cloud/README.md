@@ -1,34 +1,29 @@
+# <img src="../assets/icons/cloud.svg" width="32" alt="Cloud"> Cloud Networking & Security
 
-# Cloud Networking & Security
+![Track: Cloud Networking](https://img.shields.io/badge/Track-Cloud_Networking-14283F?style=flat-square) ![Provider: Azure](https://img.shields.io/badge/Provider-Azure-14283F?style=flat-square) ![Projects: Planned](https://img.shields.io/badge/Projects-Planned-64748B?style=flat-square)
 
-This section is dedicated to my ongoing professional development in cloud infrastructure, networking, and security.
+[← Portfolio](../README.md) · [Networking](../Networking/README.md) · [Systems Administration](../Systems-Administration/README.md)
 
-Building on my experience in IT support, systems administration, and cybersecurity, my next goal is to develop practical skills in cloud environments and secure cloud connectivity.
+Cloud infrastructure is the next step in my work with networks, Windows environments, and access management. I'm focusing on how cloud services connect, how access is controlled, and how to validate the security of those configurations.
 
-## Learning Objectives
+## Areas of interest
 
-- Understand cloud infrastructure and service models
-- Explore Microsoft Azure networking fundamentals
-- Configure virtual networks and subnets
-- Understand cloud identity and access controls
-- Implement network security groups and firewall rules
-- Explore hybrid connectivity and cloud monitoring
-- Apply cloud security best practices
+| Focus | What I want to work with |
+|---|---|
+| **Virtual networking** | Azure VNets, subnetting, routing and connectivity |
+| **Access and identity** | Microsoft Entra ID, RBAC and least privilege |
+| **Network security** | Network Security Groups, firewall rules and segmentation |
+| **Hybrid environments** | Connectivity between on-premises networks and cloud services |
+| **Monitoring** | Network diagnostics, logs and configuration validation |
 
-## Planned Projects
+## Planned labs
 
-| Project | Description | Status |
+| Lab | Scope | Status |
 |---|---|---|
-| Azure Virtual Networking Lab | Configure virtual networks, subnets, and connectivity in a lab environment. | Future learning path |
-| Cloud IAM & Security Lab | Explore identity management, RBAC, and security controls in Azure. | Future learning path |
-| Cloud Network Security Lab | Implement and test network security rules and access restrictions. | Future learning path |
+| Azure Virtual Networking | VNets, subnets and connectivity tests | **Planned** |
+| Cloud IAM & Security | Roles, access boundaries and identity controls | **Planned** |
+| Cloud Network Security | Network rules and validation | **Planned** |
 
-## Learning Approach
+**Current status:** this area is a learning roadmap. I haven't published completed cloud lab evidence here yet. The documented Windows, identity and networking cases elsewhere in the portfolio provide the technical foundation.
 
-Projects will be developed progressively through hands-on labs, technical documentation, and practical testing.
-
-Each completed project will include its architecture, configuration steps, validation results, security considerations, and lessons learned.
-
-## Current Status
-
-This section represents a future specialization and will be expanded as practical projects are completed.
+[← Back to the portfolio](../README.md)
