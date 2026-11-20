@@ -1,17 +1,16 @@
+# <img src="../../assets/icons/it-support.svg" width="32" alt="Windows troubleshooting"> INC-001 · Windows Update & Application Troubleshooting
 
-# INC-001 — Windows Update and Application Troubleshooting
+![Windows](https://img.shields.io/badge/Windows-11-14283F?style=flat-square) ![PowerShell](https://img.shields.io/badge/PowerShell-Diagnostics-14283F?style=flat-square) ![Status](https://img.shields.io/badge/REAL_CASE-Resolved-059669?style=flat-square)
 
-[← IT Support Hub](../README.md) · [Portfolio Home](../../README.md)
+[← IT Support](../README.md) · [Portfolio](../../README.md) · [Validation notes](evidence/validation-notes.md)
 
-![Verified disk space recovery](storage-recovery.svg)
+[![Verified disk space recovery](storage-recovery.svg)](evidence/validation-notes.md)
 
-**Project:** Windows Troubleshooting Lab
+**Windows 11 · PowerShell · Event Viewer · Microsoft Store**
 
-**Category:** IT Support / Windows Troubleshooting  
-**Difficulty:** Intermediate  
-**Status:** Resolved  
-**Environment:** Windows 11 Pro, Version 25H2  
-**Tools:** PowerShell, Event Viewer, Windows Update, Microsoft Store
+The workstation kept reporting application update failures, including error `0x80073D02`. I reviewed the update events, service configuration and available storage, then worked through a low-impact cleanup and restart. The updates succeeded afterward, and free space increased from **18.6 GiB to 63.1 GiB**.
+
+**Outcome:** resolved and functionally validated. The precise cause of the update failures remains unconfirmed.
 
 ---
 
