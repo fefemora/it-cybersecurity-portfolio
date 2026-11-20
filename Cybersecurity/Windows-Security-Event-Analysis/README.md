@@ -10,21 +10,14 @@ I reviewed real Windows Security logs to understand the activity visible on a wo
 
 **Finding:** a useful initial monitoring baseline, with clear visibility gaps. **No incident or unauthorized activity was confirmed.**
 
-## Investigation workflow
+## Investigation approach
 
-1. Verify Security log configuration (**completed after correcting an initial paste-order error**).
-2. Count selected event IDs over a seven-day lookback (**completed; retained data covers only about 2.03 days**).
-3. Verify oldest/newest retained timestamps (**completed**).
-4. Sample and classify 100 recent successful logons by logon type (**completed: all 100 were type 5 / Service**).
-5. Classify built-in account SIDs on a five-record 4624 sample (**completed: 5 of 5 LocalSystem / S-1-5-18**).
-6. Review current advanced audit policy with `auditpol /get /category:*` (**completed; read-only**).
-7. Check five recent 4688 event timestamps (**completed: 2026-11-16 14:30:43**).
-8. Search for retained 4719 audit-policy-change events (**completed: no matching events returned**).
-9. Collect five recent 4672 timestamps and record IDs (**completed**).
-10. Classify accounts and privilege names in three bounded 4672 records (**completed: 3 LocalSystem records with the same 12 privileges**).
-11. Correlate one recent 4672 with a 4624 using a local logon ID (**completed: one match found within a bounded time window**).
-12. Classify a matched 4624 logon by type and account category (**completed: Type 5 / LocalSystem in a later query**).
-13. Produce an evidence-backed case summary (**completed: executive report, proposed actions, and visualization**).
+1. **Check the available history:** confirm log settings, retention limits and which event IDs are present.
+2. **Look at small, relevant samples:** classify successful logons, built-in accounts and privilege assignments.
+3. **Correlate carefully:** match 4624 and 4672 using session IDs without publishing account identifiers.
+4. **Report what the evidence supports:** document audit gaps, the unexplained historical 4688 records and what remains unknown.
+
+The [12-step PowerShell lab guide](docs/lab-guide.md) records the individual commands and outputs. The investigation did not establish a security incident.
 
 ## Where to go deeper
 
