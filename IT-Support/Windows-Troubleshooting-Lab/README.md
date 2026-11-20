@@ -27,7 +27,7 @@ flowchart LR
     G --> H[Functional resolution verified]
 ```
 
-## 2. Problem Description
+## 1. Problem Description
 
 The user reported that Windows repeatedly requested updates and did not successfully complete the update process.
 
@@ -35,7 +35,7 @@ No significant performance issues, Wi-Fi connectivity problems, or other system 
 
 The main objective was to identify the cause of the update failures and restore normal update functionality.
 
-## 3. Technical Environment
+## 2. Technical Environment
 
 | Component | Details |
 |---|---|
@@ -48,11 +48,11 @@ The main objective was to identify the cause of the update failures and restore 
 | Storage Health | Healthy |
 | Primary Diagnostic Tool | Windows PowerShell |
 
-## 4. Initial Assessment
+## 3. Initial Assessment
 
 The troubleshooting process started with a general system assessment.
 
-### 4.1 System Information
+### 3.1 System Information
 
 ```powershell
 Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion, OsBuildNumber, OsArchitecture
@@ -73,7 +73,7 @@ Select-Object ProductName, DisplayVersion, CurrentBuild, UBR
 
 Some system information fields displayed a legacy Windows 10 product name, while the build number and version identified Windows 11.
 
-### 4.2 Storage Assessment
+### 3.2 Storage Assessment
 
 ```powershell
 Get-Volume |
@@ -100,9 +100,9 @@ Select-Object FriendlyName, MediaType, HealthStatus, OperationalStatus, Size
 
 The NVMe SSD reported a Healthy status and normal operational state.
 
-## 5. Windows Update Investigation
+## 4. Windows Update Investigation
 
-### 5.1 Checking Update Services
+### 4.1 Checking Update Services
 
 ```powershell
 Get-Service wuauserv, bits, cryptsvc, usosvc |
@@ -122,7 +122,7 @@ The Windows Update service was stopped but configured for manual startup, which 
 
 No obvious service configuration issue was identified.
 
-### 5.2 Reviewing Installed Updates
+### 4.2 Reviewing Installed Updates
 
 ```powershell
 Get-HotFix |
@@ -132,7 +132,7 @@ Select-Object -First 10 HotFixID, Description, InstalledOn
 
 The system showed recently installed security updates, indicating that at least some Windows updates had been installed successfully.
 
-### 5.3 Reviewing Event Logs
+### 4.3 Reviewing Event Logs
 
 The following PowerShell command was used to identify recent Windows Update errors:
 
@@ -163,7 +163,7 @@ The error code is commonly associated with application package updates that cann
 
 This suggested a possible application update conflict rather than a complete Windows Update service failure.
 
-## 6. Troubleshooting Hypotheses
+## 5. Troubleshooting Hypotheses
 
 Two primary hypotheses were considered:
 
@@ -177,7 +177,7 @@ The system drive had only 3.9% free space, potentially affecting update operatio
 
 Although limited storage was a relevant risk factor, the available evidence did not establish it as the direct cause of error 0x80073D02.
 
-## 7. Resolution Procedure
+## 6. Resolution Procedure
 
 A conservative troubleshooting approach was selected to avoid unnecessary changes to Windows services or system components.
 
@@ -212,7 +212,7 @@ Final storage results:
 
 Approximately **44.5 GiB** of storage was recovered.
 
-## 8. Results and Validation
+## 7. Results and Validation
 
 Following disk cleanup and a system restart:
 
@@ -227,7 +227,7 @@ The issue was considered functionally resolved based on successful update attemp
 
 The exact root cause was not conclusively isolated. Both the release of application resources during restart and the increased available storage may have contributed to the successful outcome.
 
-## 9. Technical Evidence
+## 8. Technical Evidence
 
 The following files contain sanitized technical evidence collected during the troubleshooting process.
 
@@ -243,7 +243,7 @@ All evidence has been reviewed to avoid exposing personal information or sensiti
 The evidence includes historical diagnostic findings and post-remediation observations. It does not establish a single confirmed root cause.
 
 
-## 10. Security Considerations
+## 9. Security Considerations
 
 The troubleshooting process followed several security and operational principles:
 
@@ -254,7 +254,7 @@ The troubleshooting process followed several security and operational principles
 - Prioritized low-risk and reversible troubleshooting actions.
 - Avoided exposing sensitive system or user information.
 
-## 11. Lessons Learned
+## 10. Lessons Learned
 
 This lab reinforced several important troubleshooting practices:
 
@@ -266,7 +266,7 @@ This lab reinforced several important troubleshooting practices:
 6. Verify the outcome and distinguish confirmed findings from technical hypotheses.
 7. Document both successful actions and diagnostic limitations.
 
-## 12. Skills Demonstrated
+## 11. Skills Demonstrated
 
 - Windows 11 troubleshooting
 - PowerShell diagnostics
